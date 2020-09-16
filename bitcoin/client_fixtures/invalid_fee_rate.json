@@ -1,0 +1,8 @@
+{
+  "result": null,
+  "error": {
+    "code": -8,
+    "message": "Invalid conf_target, must be between 1 - 1008"
+  },
+  "id": "curltest"
+}

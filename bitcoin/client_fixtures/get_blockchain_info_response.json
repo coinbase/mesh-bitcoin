@@ -1,0 +1,45 @@
+{
+  "result": {
+    "chain": "main",
+    "blocks": 1000,
+    "headers": 1000,
+    "bestblockhash": "00000000c937983704a73af28acdec37b049d214adbda81d7e2a3dd146f6ed09",
+    "difficulty": 16947802333946.61,
+    "mediantime": 1597603357,
+    "verificationprogress": 0.9999978065942465,
+    "initialblockdownload": false,
+    "chainwork": "0000000000000000000000000000000000000000127a25606c744d562654d78c",
+    "size_on_disk": 333786409564,
+    "pruned": false,
+    "softforks": {
+      "bip34": {
+        "type": "buried",
+        "active": true,
+        "height": 227931
+      },
+      "bip66": {
+        "type": "buried",
+        "active": true,
+        "height": 363725
+      },
+      "bip65": {
+        "type": "buried",
+        "active": true,
+        "height": 388381
+      },
+      "csv": {
+        "type": "buried",
+        "active": true,
+        "height": 419328
+      },
+      "segwit": {
+        "type": "buried",
+        "active": true,
+        "height": 481824
+      }
+    },
+    "warnings": ""
+  },
+  "error": null,
+  "id": "curltest"
+}
