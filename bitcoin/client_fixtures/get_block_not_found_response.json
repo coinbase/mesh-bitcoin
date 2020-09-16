@@ -1,0 +1,8 @@
+{
+    "result": null,
+    "error": {
+        "code": -5,
+        "message": "Block not found"
+    },
+    "id": 1
+}

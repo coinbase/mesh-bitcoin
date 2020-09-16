@@ -1,0 +1,8 @@
+{
+    "result": null,
+    "error": {
+        "code": -8,
+        "message": "Block height out of range"
+    },
+    "id": "curltext"
+}
