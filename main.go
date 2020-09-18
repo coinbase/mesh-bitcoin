@@ -94,7 +94,13 @@ func startOnlineDependencies(
 		return bitcoin.StartBitcoind(ctx, cfg.ConfigPath, g)
 	})
 
-	i, err := indexer.Initialize(ctx, cancel, cfg, client)
+	i, err := indexer.Initialize(
+		ctx,
+		cancel,
+		cfg,
+		client,
+		indexer.DefaultIndexCacheSize,
+	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: unable to initialize indexer", err)
 	}

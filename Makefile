@@ -7,6 +7,7 @@ ADDLICENCE_SCRIPT=${ADDLICENSE_CMD} -c "Coinbase, Inc." -l "apache" -v
 SPELLCHECK_CMD=go run github.com/client9/misspell/cmd/misspell
 GOLINES_CMD=go run github.com/segmentio/golines
 GOLINT_CMD=go run golang.org/x/lint/golint
+GOVERALLS_CMD=go run github.com/mattn/goveralls
 GOIMPORTS_CMD=go run golang.org/x/tools/cmd/goimports
 GO_PACKAGES=./services/... ./indexer/... ./bitcoin/... ./configuration/...
 GO_FOLDERS=$(shell echo ${GO_PACKAGES} | sed -e "s/\.\///g" | sed -e "s/\/\.\.\.//g")
