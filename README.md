@@ -61,6 +61,9 @@ sysctl -w net.ipv4.tcp_max_syn_backlog=10000
 sysctl -w net.core.somaxconn=10000
 sysctl -p (when done)
 ```
+_We have not tested `rosetta-bitcoin` with `net.ipv4.tcp_tw_recycle` and do not recommend
+enabling it._
+
 You should also modify your open file settings to `100000`. This can be done on a linux-based OS
 with the command: `ulimit -n 100000`.
 
