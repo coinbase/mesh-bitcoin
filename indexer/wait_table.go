@@ -40,8 +40,8 @@ func (t *waitTable) Unlock() {
 	t.lock.Unlock()
 }
 
-func (t *waitTable) Get(key string, unsafe bool) (*waitTableEntry, bool) {
-	if !unsafe {
+func (t *waitTable) Get(key string, safe bool) (*waitTableEntry, bool) {
+	if safe {
 		t.lock.Lock()
 		defer t.lock.Unlock()
 	}
@@ -54,16 +54,16 @@ func (t *waitTable) Get(key string, unsafe bool) (*waitTableEntry, bool) {
 	return v, true
 }
 
-func (t *waitTable) Set(key string, value *waitTableEntry, unsafe bool) {
-	if !unsafe {
+func (t *waitTable) Set(key string, value *waitTableEntry, safe bool) {
+	if safe {
 		t.lock.Lock()
 		defer t.lock.Unlock()
 	}
 	t.table[key] = value
 }
 
-func (t *waitTable) Delete(key string, unsafe bool) {
-	if !unsafe {
+func (t *waitTable) Delete(key string, safe bool) {
+	if safe {
 		t.lock.Lock()
 		defer t.lock.Unlock()
 	}

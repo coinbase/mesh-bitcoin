@@ -288,7 +288,7 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	for _, transaction := range block.Transactions {
 		ops += len(transaction.Operations)
 		txHash := transaction.TransactionIdentifier.Hash
-		val, ok := i.waiter.Get(txHash, true)
+		val, ok := i.waiter.Get(txHash, false)
 		if !ok {
 			continue
 		}
@@ -435,7 +435,7 @@ func (i *Indexer) findCoin(
 		// Put Transaction in WaitTable if doesn't already exist (could be
 		// multiple listeners)
 		transactionHash := bitcoin.TransactionHash(coinIdentifier)
-		val, ok := i.waiter.Get(transactionHash, true)
+		val, ok := i.waiter.Get(transactionHash, false)
 		if !ok {
 			val = &waitTableEntry{
 				channel:       make(chan struct{}),
@@ -446,7 +446,7 @@ func (i *Indexer) findCoin(
 			val.earliestBlock = btcBlock.Height
 		}
 		val.listeners++
-		i.waiter.Set(transactionHash, val, true)
+		i.waiter.Set(transactionHash, val, false)
 		i.waiter.Unlock()
 
 		return nil, nil, errMissingTransaction
@@ -517,7 +517,7 @@ func (i *Indexer) findCoins(
 	for _, coinIdentifier := range remainingCoins {
 		// Wait on Channel
 		txHash := bitcoin.TransactionHash(coinIdentifier)
-		entry, ok := i.waiter.Get(txHash, false)
+		entry, ok := i.waiter.Get(txHash, true)
 		if !ok {
 			return nil, fmt.Errorf("transaction %s not in waiter", txHash)
 		}
@@ -530,7 +530,7 @@ func (i *Indexer) findCoins(
 
 		// Delete Transaction from WaitTable if last listener
 		i.waiter.Lock()
-		val, ok := i.waiter.Get(txHash, true)
+		val, ok := i.waiter.Get(txHash, false)
 		if !ok {
 			return nil, fmt.Errorf("transaction %s not in waiter", txHash)
 		}
@@ -544,9 +544,9 @@ func (i *Indexer) findCoins(
 
 		val.listeners--
 		if val.listeners == 0 {
-			i.waiter.Delete(txHash, true)
+			i.waiter.Delete(txHash, false)
 		} else {
-			i.waiter.Set(txHash, val, true)
+			i.waiter.Set(txHash, val, false)
 		}
 		i.waiter.Unlock()
 	}
