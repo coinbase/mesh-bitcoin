@@ -33,6 +33,10 @@ import (
 )
 
 const (
+	// DefaultIndexCacheSize is the default size of the indexer cache. The larger
+	// the index cache size, the better the performance.
+	DefaultIndexCacheSize = 5 << 30 // 5 GB
+
 	// indexPlaceholder is provided to the syncer
 	// to indicate we should both start from the
 	// last synced block and that we should sync
@@ -52,10 +56,9 @@ const (
 	// block fetched by the indexer.
 	sizeMultiplier = 15
 
-	// BadgerDB options overrides
+	// Other BadgerDB options overrides
 	defaultBlockSize      = 1 << 20 // use large blocks so less table indexes (1 MB)
 	defaultValueThreshold = 0       // put almost everything in value logs (only use table for key)
-	defaultIndexCacheSize = 5 << 30 // 5 GB
 )
 
 var (
@@ -117,11 +120,14 @@ func (i *Indexer) CloseDatabase(ctx context.Context) {
 // the Badger default so we have a lot less indexes to store. We also
 // ensure all values are stored in value log files (as to minimize
 // table bloat at the cost of some performance).
-func defaultBadgerOptions(path string) badger.Options {
+func defaultBadgerOptions(
+	path string,
+	indexCacheSize int64,
+) badger.Options {
 	defaultOps := storage.DefaultBadgerOptions(path)
 	defaultOps.BlockSize = defaultBlockSize
 	defaultOps.ValueThreshold = defaultValueThreshold
-	defaultOps.IndexCacheSize = defaultIndexCacheSize
+	defaultOps.IndexCacheSize = indexCacheSize
 
 	return defaultOps
 }
@@ -132,12 +138,16 @@ func Initialize(
 	cancel context.CancelFunc,
 	config *configuration.Configuration,
 	client Client,
+	indexCacheSize int64,
 ) (*Indexer, error) {
 	localStore, err := storage.NewBadgerStorage(
 		ctx,
 		config.IndexerPath,
 		storage.WithCompressorEntries(config.Compressors),
-		storage.WithCustomSettings(defaultBadgerOptions(config.IndexerPath)),
+		storage.WithCustomSettings(defaultBadgerOptions(
+			config.IndexerPath,
+			indexCacheSize,
+		)),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%w: unable to initialize storage", err)
