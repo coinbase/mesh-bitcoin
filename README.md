@@ -67,6 +67,49 @@ enabling it._
 You should also modify your open file settings to `100000`. This can be done on a linux-based OS
 with the command: `ulimit -n 100000`.
 
+## Architecture
+`rosetta-bitcoin` uses the `syncer`, `storage`, `parser`, and `server` package
+from [`rosetta-sdk-go`](https://github.com/coinbase/rosetta-sdk-go) instead
+of a new Bitcoin-specific implementation of packages of similar functionality. Below
+you can find a high-level overview of how everything fits together:
+```text
+                               +------------------------------------------------------------------+
+                               |                                                                  |
+                               |                 +--------------------------------------+         |
+                               |                 |                                      |         |
+                               |                 |                 indexer              |         |
+                               |                 |                                      |         |
+                               |                 | +--------+                           |         |
+                               +-------------------+ pruner <----------+                |         |
+                               |                 | +--------+          |                |         |
+                         +-----v----+            |                     |                |         |
+                         | bitcoind |            |              +------+--------+       |         |
+                         +-----+----+            |     +--------> block_storage <----+  |         |
+                               |                 |     |        +---------------+    |  |         |
+                               |                 | +---+----+                        |  |         |
+                               +-------------------> syncer |                        |  |         |
+                                                 | +---+----+                        |  |         |
+                                                 |     |        +--------------+     |  |         |
+                                                 |     +--------> coin_storage |     |  |         |
+                                                 |              +------^-------+     |  |         |
+                                                 |                     |             |  |         |
+                                                 +--------------------------------------+         |
+                                                                       |             |            |
++-------------------------------------------------------------------------------------------+     |
+|                                                                      |             |      |     |
+|         +------------------------------------------------------------+             |      |     |
+|         |                                                                          |      |     |
+|         |                     +---------------------+-----------------------+------+      |     |
+|         |                     |                     |                       |             |     |
+| +-------+---------+   +-------+---------+   +-------+-------+   +-----------+----------+  |     |
+| | account_service |   | network_service |   | block_service |   | construction_service +--------+
+| +-----------------+   +-----------------+   +---------------+   +----------------------+  |
+|                                                                                           |
+|                                         server                                            |
+|                                                                                           |
++-------------------------------------------------------------------------------------------+
+```
+
 ### Optimizations
 * Automatically prune bitcoind while indexing blocks
 * Reduce sync time with concurrent block indexing
@@ -113,49 +156,6 @@ in recently processed blocks to save to disk.
 +------+--------+
 |  coin_storage |
 +---------------+
-```
-
-### Architecture
-`rosetta-bitcoin` uses the `syncer`, `storage`, `parser`, and `server` package
-from [`rosetta-sdk-go`](https://github.com/coinbase/rosetta-sdk-go) instead
-of a new Bitcoin-specific implementation of packages of similar functionality. Below
-you can find a high-level overview of how everything fits together:
-```text
-                               +------------------------------------------------------------------+
-                               |                                                                  |
-                               |                 +--------------------------------------+         |
-                               |                 |                                      |         |
-                               |                 |                 indexer              |         |
-                               |                 |                                      |         |
-                               |                 | +--------+                           |         |
-                               +-------------------+ pruner <----------+                |         |
-                               |                 | +--------+          |                |         |
-                         +-----v----+            |                     |                |         |
-                         | bitcoind |            |              +------+--------+       |         |
-                         +-----+----+            |     +--------> block_storage <----+  |         |
-                               |                 |     |        +---------------+    |  |         |
-                               |                 | +---+----+                        |  |         |
-                               +-------------------> syncer |                        |  |         |
-                                                 | +---+----+                        |  |         |
-                                                 |     |        +--------------+     |  |         |
-                                                 |     +--------> coin_storage |     |  |         |
-                                                 |              +------^-------+     |  |         |
-                                                 |                     |             |  |         |
-                                                 +--------------------------------------+         |
-                                                                       |             |            |
-+-------------------------------------------------------------------------------------------+     |
-|                                                                      |             |      |     |
-|         +------------------------------------------------------------+             |      |     |
-|         |                                                                          |      |     |
-|         |                     +---------------------+-----------------------+------+      |     |
-|         |                     |                     |                       |             |     |
-| +-------+---------+   +-------+---------+   +-------+-------+   +-----------+----------+  |     |
-| | account_service |   | network_service |   | block_service |   | construction_service +--------+
-| +-----------------+   +-----------------+   +---------------+   +----------------------+  |
-|                                                                                           |
-|                                         server                                            |
-|                                                                                           |
-+-------------------------------------------------------------------------------------------+
 ```
 
 ## Testing with rosetta-cli
