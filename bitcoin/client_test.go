@@ -1243,6 +1243,72 @@ func TestSuggestedFeeRate(t *testing.T) {
 	}
 }
 
+func TestRawMempool(t *testing.T) {
+	tests := map[string]struct {
+		responses []responseFixture
+
+		expectedTransactions []string
+		expectedError        error
+	}{
+		"successful": {
+			responses: []responseFixture{
+				{
+					status: http.StatusOK,
+					body:   loadFixture("raw_mempool.json"),
+					url:    url,
+				},
+			},
+			expectedTransactions: []string{
+				"9cec12d170e97e21a876fa2789e6bfc25aa22b8a5e05f3f276650844da0c33ab",
+				"37b4fcc8e0b229412faeab8baad45d3eb8e4eec41840d6ac2103987163459e75",
+				"7bbb29ae32117597fcdf21b464441abd571dad52d053b9c2f7204f8ea8c4762e",
+			},
+		},
+		"500 error": {
+			responses: []responseFixture{
+				{
+					status: http.StatusInternalServerError,
+					body:   "{}",
+					url:    url,
+				},
+			},
+			expectedError: errors.New("invalid response: 500 Internal Server Error"),
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			var (
+				assert = assert.New(t)
+			)
+
+			responses := make(chan responseFixture, len(test.responses))
+			for _, response := range test.responses {
+				responses <- response
+			}
+
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				response := <-responses
+				assert.Equal("application/json", r.Header.Get("Content-Type"))
+				assert.Equal("POST", r.Method)
+				assert.Equal(response.url, r.URL.RequestURI())
+
+				w.WriteHeader(response.status)
+				fmt.Fprintln(w, response.body)
+			}))
+
+			client := NewClient(ts.URL, MainnetGenesisBlockIdentifier, MainnetCurrency)
+			txs, err := client.RawMempool(context.Background())
+			if test.expectedError != nil {
+				assert.Contains(err.Error(), test.expectedError.Error())
+			} else {
+				assert.NoError(err)
+				assert.Equal(test.expectedTransactions, txs)
+			}
+		})
+	}
+}
+
 // loadFixture takes a file name and returns the response fixture.
 func loadFixture(fileName string) string {
 	content, err := ioutil.ReadFile(fmt.Sprintf("client_fixtures/%s", fileName))
