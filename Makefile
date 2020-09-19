@@ -25,6 +25,12 @@ build:
 build-local:
 	docker build -t rosetta-bitcoin:latest .
 
+build-release:
+	# https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages
+	docker build -t rosetta-bitcoin:$(version) .;
+	docker tag rosetta-bitcoin:$(version) docker.pkg.github.com/coinbase/rosetta-bitcoin/rosetta-bitcoin:$(version);
+	docker push docker.pkg.github.com/coinbase/rosetta-bitcoin/rosetta-bitcoin:$(version);
+
 run-mainnet-online:
 	docker run -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
 
