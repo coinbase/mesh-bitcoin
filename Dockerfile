@@ -19,6 +19,7 @@ RUN mkdir -p /app \
   && chown -R nobody:nogroup /app
 WORKDIR /app
 
+# Source: https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md#ubuntu--debian
 RUN apt-get update && apt-get install -y make gcc g++ autoconf autotools-dev bsdmainutils build-essential git libboost-all-dev \
   libcurl4-openssl-dev libdb++-dev libevent-dev libssl-dev libtool pkg-config python python-pip libzmq3-dev wget
 
@@ -68,7 +69,9 @@ RUN cd src \
 ## Build Final Image
 FROM ubuntu:18.04
 
-RUN apt-get update && apt-get install -y libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev
+RUN apt-get update && \
+  apt-get install --no-install-recommends -y libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev && \
+  apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN mkdir -p /app \
   && chown -R nobody:nogroup /app \
@@ -77,10 +80,10 @@ RUN mkdir -p /app \
 
 WORKDIR /app
 
-# Copy binaries from build containers
-COPY --from=bitcoind-builder /app/* /app/
+# Copy binary from bitcoind-builder
+COPY --from=bitcoind-builder /app/bitcoind /app/bitcoind
 
-# Copy configuration files and set permissions
+# Copy binary from rosetta-builder
 COPY --from=rosetta-builder /app/* /app/
 
 # Set permissions for everything added to /app

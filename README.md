@@ -37,6 +37,7 @@ all Rosetta implementations must be deployable via Docker and support running vi
 ### Install
 #### Pre-Built
 You can download a pre-built Docker image from GitHub:
+TODO: Change to docker import from a release
 ```text
 docker pull docker.pkg.github.com/coinbase/rosetta-bitcoin/rosetta-bitcoin:v0.0.1
 ```
@@ -52,7 +53,7 @@ and start the `rosetta-bitcoin` server at port `8080`.
 
 #### Mainnet:Online
 ```text
-docker run -d --ulimit "nofile=100000:100000" -v "$(shell pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:v0.0.1
+docker run -d --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:v0.0.1
 ```
 
 #### Mainnet:Offline
@@ -62,7 +63,7 @@ docker run -d -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081
 
 #### Testnet:Online
 ```text
-docker run -d --ulimit "nofile=100000:100000" -v "$(shell pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:v0.0.1
+docker run -d --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:v0.0.1
 ```
 
 #### Testnet:Offline
