@@ -168,7 +168,7 @@ and run one of the following commands:
 
 ## Future Work
 * Publish benchamrks for sync speed, storage usage, and load testing
-* Rosetta API `/mempool/*` implementation
+* [Rosetta API `/mempool/transaction`](https://www.rosetta-api.org/docs/MempoolApi.html#mempooltransaction) implementation
 * Add CI test using `rosetta-cli` to run on each PR (likely on a regtest network)
 * Add performance mode to use unlimited RAM (implementation currently optimized to use <= 16 GB of RAM)
 * Support Multi-Sig Sends

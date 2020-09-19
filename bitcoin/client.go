@@ -78,6 +78,9 @@ const (
 	// https://developer.bitcoin.org/reference/rpc/estimatesmartfee.html
 	requestMethodEstimateSmartFee requestMethod = "estimatesmartfee"
 
+	// https://developer.bitcoin.org/reference/rpc/getrawmempool.html
+	requestMethodRawMempool requestMethod = "getrawmempool"
+
 	// blockNotFoundErrCode is the RPC error code when a block cannot be found
 	blockNotFoundErrCode = -5
 )
@@ -311,6 +314,23 @@ func (b *Client) PruneBlockchain(
 	response := &pruneBlockchainResponse{}
 	if err := b.post(ctx, requestMethodPruneBlockchain, params, response); err != nil {
 		return -1, fmt.Errorf("%w: error pruning blockchain", err)
+	}
+
+	return response.Result, nil
+}
+
+// RawMempool returns an array of all transaction
+// hashes currently in the mempool.
+func (b *Client) RawMempool(
+	ctx context.Context,
+) ([]string, error) {
+	// Parameters:
+	//   1. verbose
+	params := []interface{}{false}
+
+	response := &rawMempoolResponse{}
+	if err := b.post(ctx, requestMethodRawMempool, params, response); err != nil {
+		return nil, fmt.Errorf("%w: error getting raw mempool", err)
 	}
 
 	return response.Result, nil

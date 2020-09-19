@@ -18,20 +18,37 @@ import (
 	"context"
 	"testing"
 
+	mocks "github.com/coinbase/rosetta-bitcoin/mocks/services"
+
+	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMempoolEndpoints(t *testing.T) {
-	servicer := NewMempoolAPIService()
+	mockClient := &mocks.Client{}
+	servicer := NewMempoolAPIService(mockClient)
 	ctx := context.Background()
 
+	mockClient.On("RawMempool", ctx).Return([]string{
+		"tx1",
+		"tx2",
+	}, nil)
 	mem, err := servicer.Mempool(ctx, nil)
-	assert.Nil(t, mem)
-	assert.Equal(t, ErrUnimplemented.Code, err.Code)
-	assert.Equal(t, ErrUnimplemented.Message, err.Message)
+	assert.Nil(t, err)
+	assert.Equal(t, &types.MempoolResponse{
+		TransactionIdentifiers: []*types.TransactionIdentifier{
+			{
+				Hash: "tx1",
+			},
+			{
+				Hash: "tx2",
+			},
+		},
+	}, mem)
 
 	memTransaction, err := servicer.MempoolTransaction(ctx, nil)
 	assert.Nil(t, memTransaction)
 	assert.Equal(t, ErrUnimplemented.Code, err.Code)
 	assert.Equal(t, ErrUnimplemented.Message, err.Message)
+	mockClient.AssertExpectations(t)
 }
