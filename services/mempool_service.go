@@ -22,11 +22,15 @@ import (
 )
 
 // MempoolAPIService implements the server.MempoolAPIServicer interface.
-type MempoolAPIService struct{}
+type MempoolAPIService struct {
+	client Client
+}
 
 // NewMempoolAPIService creates a new instance of a MempoolAPIService.
-func NewMempoolAPIService() server.MempoolAPIServicer {
-	return &MempoolAPIService{}
+func NewMempoolAPIService(client Client) server.MempoolAPIServicer {
+	return &MempoolAPIService{
+		client: client,
+	}
 }
 
 // Mempool implements the /mempool endpoint.
@@ -34,7 +38,19 @@ func (s *MempoolAPIService) Mempool(
 	ctx context.Context,
 	request *types.NetworkRequest,
 ) (*types.MempoolResponse, *types.Error) {
-	return nil, wrapErr(ErrUnimplemented, nil)
+	mempoolTransactions, err := s.client.RawMempool(ctx)
+	if err != nil {
+		return nil, wrapErr(ErrBitcoind, err)
+	}
+
+	transactionIdentifiers := make([]*types.TransactionIdentifier, len(mempoolTransactions))
+	for i, mempoolTransaction := range mempoolTransactions {
+		transactionIdentifiers[i] = &types.TransactionIdentifier{Hash: mempoolTransaction}
+	}
+
+	return &types.MempoolResponse{
+		TransactionIdentifiers: transactionIdentifiers,
+	}, nil
 }
 
 // MempoolTransaction implements the /mempool/transaction endpoint.

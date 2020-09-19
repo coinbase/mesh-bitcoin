@@ -478,6 +478,25 @@ func (s suggestedFeeRateResponse) Err() error {
 	)
 }
 
+// rawMempoolResponse is the response body for `getrawmempool` requests.
+type rawMempoolResponse struct {
+	Result []string       `json:"result"`
+	Error  *responseError `json:"error"`
+}
+
+func (r rawMempoolResponse) Err() error {
+	if r.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"%w: error JSON RPC response, code: %d, message: %s",
+		ErrJSONRPCError,
+		r.Error.Code,
+		r.Error.Message,
+	)
+}
+
 // CoinIdentifier converts a tx hash and vout into
 // the canonical CoinIdentifier.Identifier used in
 // rosetta-bitcoin.
