@@ -44,7 +44,7 @@ check-comments:
 	${GOLINT_CMD} -set_exit_status ${GO_FOLDERS} .
 
 lint: | check-comments
-	golangci-lint run -v -E ${LINT_SETTINGS},gomnd
+	golangci-lint run --timeout 2m0s -v -E ${LINT_SETTINGS},gomnd
 
 add-license:
 	${ADDLICENCE_SCRIPT} .
