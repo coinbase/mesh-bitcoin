@@ -27,10 +27,12 @@ import (
 )
 
 var (
+	middlewareVersion     = "0.0.2"
 	defaultNetworkOptions = &types.NetworkOptionsResponse{
 		Version: &types.Version{
-			RosettaVersion: "1.4.2",
-			NodeVersion:    "0.0.1",
+			RosettaVersion:    "1.4.4",
+			NodeVersion:       "0.20.1",
+			MiddlewareVersion: &middlewareVersion,
 		},
 		Allow: &types.Allow{
 			OperationStatuses: bitcoin.OperationStatuses,

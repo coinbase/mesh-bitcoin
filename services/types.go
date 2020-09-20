@@ -22,6 +22,25 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
+const (
+	// RosettaVersion is the version of the
+	// Rosetta Specification we are using.
+	RosettaVersion = "1.4.4"
+
+	// NodeVersion is the version of
+	// bitcoin core we are using.
+	NodeVersion = "0.20.1"
+)
+
+var (
+	// MiddlewareVersion is the version
+	// of rosetta-bitcoin. We set this as a
+	// variable instead of a constant because
+	// we typically need the pointer of this
+	// value.
+	MiddlewareVersion = "0.0.2"
+)
+
 // Client is used by the servicers to get Peer information
 // and to submit transactions.
 type Client interface {

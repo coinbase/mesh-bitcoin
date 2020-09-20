@@ -87,8 +87,9 @@ func (s *NetworkAPIService) NetworkOptions(
 ) (*types.NetworkOptionsResponse, *types.Error) {
 	return &types.NetworkOptionsResponse{
 		Version: &types.Version{
-			RosettaVersion: "1.4.2",
-			NodeVersion:    "0.0.1",
+			RosettaVersion:    RosettaVersion,
+			NodeVersion:       NodeVersion,
+			MiddlewareVersion: &MiddlewareVersion,
 		},
 		Allow: &types.Allow{
 			OperationStatuses: bitcoin.OperationStatuses,
