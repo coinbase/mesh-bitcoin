@@ -26,8 +26,14 @@ build-local:
 	docker build -t rosetta-bitcoin:latest .
 
 build-release:
+	# make sure to always set version with vX.X.X
 	docker build -t rosetta-bitcoin:$(version) .;
-	docker save rosetta-bitcoin:$(version) | gzip > rosetta-bitcoin-$(version).tar.gz;
+	docker save rosetta-bitcoin:$(version) | gzip > rosetta-bitcoin.tar.gz;docker load --input rosetta-bitcoin.tar.gz;
+
+pull-remote:
+	curl -L https://github.com/coinbase/rosetta-bitcoin/releases/latest/download/rosetta-bitcoin.tar.gz -o rosetta-bitcoin.tar.gz;
+	docker load --input rosetta-bitcoin.tar.gz;
+	rm rosetta-bitcoin.tar.gz;
 
 run-mainnet-online:
 	docker run -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest

@@ -37,14 +37,19 @@ all Rosetta implementations must be deployable via Docker and support running vi
 ### Install
 #### Pre-Built
 You can download a pre-built Docker image from GitHub:
-TODO: Change to docker import from a release
+TODO: cast version as latest somehow?
+TODO: get latest from release info and then can do automatically? Could do another script...
 ```text
-docker pull docker.pkg.github.com/coinbase/rosetta-bitcoin/rosetta-bitcoin:v0.0.1
+curl -L https://github.com/coinbase/rosetta-bitcoin/releases/latest/download/rosetta-bitcoin.tar.gz -o rosetta-bitcoin.tar.gz;
+docker load --input rosetta-bitcoin.tar.gz;
+rm rosetta-bitcoin.tar.gz;
 ```
+_This will print the image tag out that must be used for running in later steps._
+
 #### From Source
 You can clone this repository and run the following command:
 ```text
-docker build -t rosetta-bitcoin:v0.0.1
+docker build -t rosetta-bitcoin:latest
 ```
 
 ### Run
@@ -53,22 +58,22 @@ and start the `rosetta-bitcoin` server at port `8080`.
 
 #### Mainnet:Online
 ```text
-docker run -d --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:v0.0.1
+docker run -d --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
 ```
 
 #### Mainnet:Offline
 ```text
-docker run -d -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:v0.0.1
+docker run -d -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
 ```
 
 #### Testnet:Online
 ```text
-docker run -d --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:v0.0.1
+docker run -d --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
 ```
 
 #### Testnet:Offline
 ```text
-docker run -d -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:v0.0.1
+docker run -d -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
 ```
 
 ## System Requirements
