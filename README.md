@@ -34,47 +34,54 @@ As specified in the [Rosetta API Principles](https://www.rosetta-api.org/docs/au
 all Rosetta implementations must be deployable via Docker and support running via either an
 [`online` or `offline` mode](https://www.rosetta-api.org/docs/node_deployment.html#multiple-modes).
 
+**YOU MUST INSTALL DOCKER FOR THE FOLLOWING INSTRUCTIONS TO WORK. YOU CAN DOWNLOAD
+DOCKER [HERE](https://www.docker.com/get-started).**
+
 ### Install
-#### Pre-Built
-You can download a pre-built Docker image from GitHub:
-TODO: cast version as latest somehow?
-TODO: get latest from release info and then can do automatically? Could do another script...
+Running the following commands will create a Docker image called `rosetta-bitcoin:latest`.
+
+#### From GitHub
+To download the pre-built Docker image from the latest release, run:
 ```text
-curl -L https://github.com/coinbase/rosetta-bitcoin/releases/latest/download/rosetta-bitcoin.tar.gz -o rosetta-bitcoin.tar.gz;
-docker load --input rosetta-bitcoin.tar.gz;
-rm rosetta-bitcoin.tar.gz;
+curl -sSfL https://raw.githubusercontent.com/coinbase/rosetta-bitcoin/master/install.sh | sh -s
 ```
-_This will print the image tag out that must be used for running in later steps._
+_Do not try to install rosetta-bitcoin using GitHub Packages!_
 
 #### From Source
-You can clone this repository and run the following command:
+After cloning this repository, run:
 ```text
-docker build -t rosetta-bitcoin:latest
+make build-local
 ```
 
 ### Run
-By default, running these commands will create a data directory at `<working directory>/bitcoin-data`
-and start the `rosetta-bitcoin` server at port `8080`.
+Running the following commands will start a Docker container in
+[detached mode](https://docs.docker.com/engine/reference/run/#detached--d) with
+a data directory at `<working directory>/bitcoin-data` and the Rosetta API accessible
+at port `8080`.
 
 #### Mainnet:Online
 ```text
 docker run -d --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
 ```
+_If you cloned the repository, you can run `make run-mainnet-online`._
 
 #### Mainnet:Offline
 ```text
 docker run -d -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
 ```
+_If you cloned the repository, you can run `make run-mainnet-offline`._
 
 #### Testnet:Online
 ```text
 docker run -d --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
 ```
+_If you cloned the repository, you can run `make run-testnet-online`._
 
 #### Testnet:Offline
 ```text
 docker run -d -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
 ```
+_If you cloned the repository, you can run `make run-testnet-offline`._
 
 ## System Requirements
 `rosetta-bitcoin` has been tested on an [AWS c5.2xlarge instance](https://aws.amazon.com/ec2/instance-types/c5).

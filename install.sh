@@ -45,8 +45,9 @@ execute() {
   http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}" "" "1"
   docker load --input "${tmpdir}/${TARBALL}"
   docker tag "rosetta-bitcoin:${TAG}" "rosetta-bitcoin:latest"
-  log_info "installed rosetta-bitcoin:${TAG} and tagged as rosetta-bitcoin:latest"
+  log_info "loaded rosetta-bitcoin:${TAG} and tagged as rosetta-bitcoin:latest"
   rm -rf "${tmpdir}"
+  log_info "removed temporary directory ${tmpdir}"
 }
 github_tag() {
   log_info "checking GitHub for latest tag"
