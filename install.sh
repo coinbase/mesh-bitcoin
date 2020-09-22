@@ -41,8 +41,8 @@ parse_args() {
 }
 execute() {
   tmpdir=$(mktemp -d)
-  log_debug "downloading image into ${tmpdir}"
-  http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
+  log_info "downloading image into ${tmpdir}"
+  http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}" "" "1"
   docker load --input "${tmpdir}/${TARBALL}"
   docker tag "rosetta-bitcoin:${TAG}" "rosetta-bitcoin:latest"
   log_info "installed rosetta-bitcoin:${TAG} and tagged as rosetta-bitcoin:latest"
@@ -111,15 +111,6 @@ log_crit() {
   log_priority 2 || return 0
   echoerr "$(log_prefix)" "$(log_tag 2)" "$@"
 }
-uname_os() {
-  os=$(uname -s | tr '[:upper:]' '[:lower:]')
-  case "$os" in
-    cygwin_nt*) os="windows" ;;
-    mingw*) os="windows" ;;
-    msys_nt*) os="windows" ;;
-  esac
-  echo "$os"
-}
 untar() {
   tarball=$1
   case "${tarball}" in
@@ -136,10 +127,15 @@ http_download_curl() {
   local_file=$1
   source_url=$2
   header=$3
+  loud=$4
+  quiet_var="-L"
+  if [ -z "$loud" ]; then
+    quiet_var="-sL"
+  fi
   if [ -z "$header" ]; then
-    code=$(curl -w '%{http_code}' -sL -o "$local_file" "$source_url")
+    code=$(curl -w '%{http_code}' "$quiet_var" -o "$local_file" "$source_url")
   else
-    code=$(curl -w '%{http_code}' -sL -H "$header" -o "$local_file" "$source_url")
+    code=$(curl -w '%{http_code}' "$quiet_var" -H "$header" -o "$local_file" "$source_url")
   fi
   if [ "$code" != "200" ]; then
     log_debug "http_download_curl received HTTP status $code"
@@ -151,10 +147,16 @@ http_download_wget() {
   local_file=$1
   source_url=$2
   header=$3
+  loud=$4
+  quiet_var=""
+  if [ -z "$loud" ]; then
+    quiet_var="-q"
+  fi
+
   if [ -z "$header" ]; then
-    wget -q -O "$local_file" "$source_url"
+    wget "$quiet_var" -O "$local_file" "$source_url"
   else
-    wget -q --header "$header" -O "$local_file" "$source_url"
+    wget "$quiet_var" --header "$header" -O "$local_file" "$source_url"
   fi
 }
 http_download() {
