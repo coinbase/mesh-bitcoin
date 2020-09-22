@@ -28,7 +28,7 @@ build-local:
 build-release:
 	# make sure to always set version with vX.X.X
 	docker build -t rosetta-bitcoin:$(version) .;
-	docker save rosetta-bitcoin:$(version) | gzip > rosetta-bitcoin.tar.gz;docker load --input rosetta-bitcoin.tar.gz;
+	docker save rosetta-bitcoin:$(version) | gzip > rosetta-bitcoin-$(version).tar.gz;
 
 pull-remote:
 	curl -L https://github.com/coinbase/rosetta-bitcoin/releases/latest/download/rosetta-bitcoin.tar.gz -o rosetta-bitcoin.tar.gz;
