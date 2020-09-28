@@ -38,13 +38,13 @@ var (
 	// variable instead of a constant because
 	// we typically need the pointer of this
 	// value.
-	MiddlewareVersion = "0.0.2"
+	MiddlewareVersion = "0.0.3"
 )
 
 // Client is used by the servicers to get Peer information
 // and to submit transactions.
 type Client interface {
-	NetworkStatus(context.Context) (*types.NetworkStatusResponse, error)
+	GetPeers(context.Context) ([]*types.Peer, error)
 	SendRawTransaction(context.Context, string) (string, error)
 	SuggestedFeeRate(context.Context, int64) (float64, error)
 	RawMempool(context.Context) ([]string, error)

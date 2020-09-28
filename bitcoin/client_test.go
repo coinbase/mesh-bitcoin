@@ -431,6 +431,109 @@ func TestNetworkStatus(t *testing.T) {
 	}
 }
 
+func TestGetPeers(t *testing.T) {
+	tests := map[string]struct {
+		responses []responseFixture
+
+		expectedPeers []*types.Peer
+		expectedError error
+	}{
+		"successful": {
+			responses: []responseFixture{
+				{
+					status: http.StatusOK,
+					body:   loadFixture("get_peer_info_response.json"),
+					url:    url,
+				},
+			},
+			expectedPeers: []*types.Peer{
+				{
+					PeerID: "77.93.223.9:8333",
+					Metadata: forceMarshalMap(t, &PeerInfo{
+						Addr:           "77.93.223.9:8333",
+						Version:        70015,
+						SubVer:         "/Satoshi:0.14.2/",
+						StartingHeight: 643579,
+						RelayTxes:      true,
+						LastSend:       1597606676,
+						LastRecv:       1597606677,
+						BanScore:       0,
+						SyncedHeaders:  644046,
+						SyncedBlocks:   644046,
+					}),
+				},
+				{
+					PeerID: "172.105.93.179:8333",
+					Metadata: forceMarshalMap(t, &PeerInfo{
+						Addr:           "172.105.93.179:8333",
+						RelayTxes:      true,
+						LastSend:       1597606678,
+						LastRecv:       1597606676,
+						Version:        70015,
+						SubVer:         "/Satoshi:0.18.1/",
+						StartingHeight: 643579,
+						BanScore:       0,
+						SyncedHeaders:  644046,
+						SyncedBlocks:   644046,
+					}),
+				},
+			},
+		},
+		"blockchain warming up error": {
+			responses: []responseFixture{
+				{
+					status: http.StatusOK,
+					body:   loadFixture("rpc_in_warmup_response.json"),
+					url:    url,
+				},
+			},
+			expectedError: errors.New("rpc in warmup"),
+		},
+		"peer info error": {
+			responses: []responseFixture{
+				{
+					status: http.StatusInternalServerError,
+					body:   "{}",
+					url:    url,
+				},
+			},
+			expectedError: errors.New("invalid response: 500 Internal Server Error"),
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			var (
+				assert = assert.New(t)
+			)
+
+			responses := make(chan responseFixture, len(test.responses))
+			for _, response := range test.responses {
+				responses <- response
+			}
+
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				response := <-responses
+				assert.Equal("application/json", r.Header.Get("Content-Type"))
+				assert.Equal("POST", r.Method)
+				assert.Equal(response.url, r.URL.RequestURI())
+
+				w.WriteHeader(response.status)
+				fmt.Fprintln(w, response.body)
+			}))
+
+			client := NewClient(ts.URL, MainnetGenesisBlockIdentifier, MainnetCurrency)
+			peers, err := client.GetPeers(context.Background())
+			if test.expectedError != nil {
+				assert.Contains(err.Error(), test.expectedError.Error())
+			} else {
+				assert.NoError(err)
+				assert.Equal(test.expectedPeers, peers)
+			}
+		})
+	}
+}
+
 func TestGetRawBlock(t *testing.T) {
 	tests := map[string]struct {
 		blockIdentifier *types.PartialBlockIdentifier
