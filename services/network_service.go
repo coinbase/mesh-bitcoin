@@ -65,7 +65,7 @@ func (s *NetworkAPIService) NetworkStatus(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
-	rawStatus, err := s.client.NetworkStatus(ctx)
+	peers, err := s.client.GetPeers(ctx)
 	if err != nil {
 		return nil, wrapErr(ErrBitcoind, err)
 	}
@@ -75,9 +75,12 @@ func (s *NetworkAPIService) NetworkStatus(
 		return nil, wrapErr(ErrNotReady, nil)
 	}
 
-	rawStatus.CurrentBlockIdentifier = cachedBlockResponse.Block.BlockIdentifier
-
-	return rawStatus, nil
+	return &types.NetworkStatusResponse{
+		CurrentBlockIdentifier: cachedBlockResponse.Block.BlockIdentifier,
+		CurrentBlockTimestamp:  cachedBlockResponse.Block.Timestamp,
+		GenesisBlockIdentifier: s.config.GenesisBlockIdentifier,
+		Peers:                  peers,
+	}, nil
 }
 
 // NetworkOptions implements the /network/options endpoint.

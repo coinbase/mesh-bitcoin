@@ -161,32 +161,6 @@ func newHTTPClient(timeout time.Duration) *http.Client {
 	return httpClient
 }
 
-// NetworkStatus returns the *types.NetworkStatusResponse for
-// bitcoind.
-func (b *Client) NetworkStatus(ctx context.Context) (*types.NetworkStatusResponse, error) {
-	rawBlock, err := b.getBlock(ctx, nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: unable to get current block", err)
-	}
-
-	currentBlock, err := b.parseBlockData(rawBlock)
-	if err != nil {
-		return nil, fmt.Errorf("%w: unable to parse current block", err)
-	}
-
-	peers, err := b.GetPeers(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.NetworkStatusResponse{
-		CurrentBlockIdentifier: currentBlock.BlockIdentifier,
-		CurrentBlockTimestamp:  currentBlock.Timestamp,
-		GenesisBlockIdentifier: b.genesisBlockIdentifier,
-		Peers:                  peers,
-	}, nil
-}
-
 // GetPeers fetches the list of peer nodes
 func (b *Client) GetPeers(ctx context.Context) ([]*types.Peer, error) {
 	info, err := b.getPeerInfo(ctx)

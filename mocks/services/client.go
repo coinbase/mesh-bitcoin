@@ -15,16 +15,16 @@ type Client struct {
 	mock.Mock
 }
 
-// NetworkStatus provides a mock function with given fields: _a0
-func (_m *Client) NetworkStatus(_a0 context.Context) (*types.NetworkStatusResponse, error) {
+// GetPeers provides a mock function with given fields: _a0
+func (_m *Client) GetPeers(_a0 context.Context) ([]*types.Peer, error) {
 	ret := _m.Called(_a0)
 
-	var r0 *types.NetworkStatusResponse
-	if rf, ok := ret.Get(0).(func(context.Context) *types.NetworkStatusResponse); ok {
+	var r0 []*types.Peer
+	if rf, ok := ret.Get(0).(func(context.Context) []*types.Peer); ok {
 		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*types.NetworkStatusResponse)
+			r0 = ret.Get(0).([]*types.Peer)
 		}
 	}
 
