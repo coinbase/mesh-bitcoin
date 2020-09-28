@@ -293,66 +293,51 @@ var (
 	}
 )
 
-func TestNetworkStatus(t *testing.T) {
+func TestGetPeers(t *testing.T) {
 	tests := map[string]struct {
 		responses []responseFixture
 
-		expectedStatus *types.NetworkStatusResponse
-		expectedError  error
+		expectedPeers []*types.Peer
+		expectedError error
 	}{
 		"successful": {
 			responses: []responseFixture{
-				{
-					status: http.StatusOK,
-					body:   loadFixture("get_blockchain_info_response.json"),
-					url:    url,
-				},
-				{
-					status: http.StatusOK,
-					body:   loadFixture("get_block_response.json"),
-					url:    url,
-				},
 				{
 					status: http.StatusOK,
 					body:   loadFixture("get_peer_info_response.json"),
 					url:    url,
 				},
 			},
-			expectedStatus: &types.NetworkStatusResponse{
-				CurrentBlockIdentifier: blockIdentifier1000,
-				CurrentBlockTimestamp:  block1000.Time * 1000,
-				GenesisBlockIdentifier: MainnetGenesisBlockIdentifier,
-				Peers: []*types.Peer{
-					{
-						PeerID: "77.93.223.9:8333",
-						Metadata: forceMarshalMap(t, &PeerInfo{
-							Addr:           "77.93.223.9:8333",
-							Version:        70015,
-							SubVer:         "/Satoshi:0.14.2/",
-							StartingHeight: 643579,
-							RelayTxes:      true,
-							LastSend:       1597606676,
-							LastRecv:       1597606677,
-							BanScore:       0,
-							SyncedHeaders:  644046,
-							SyncedBlocks:   644046,
-						}),
-					},
-					{
-						PeerID: "172.105.93.179:8333",
-						Metadata: forceMarshalMap(t, &PeerInfo{
-							Addr:           "172.105.93.179:8333",
-							RelayTxes:      true,
-							LastSend:       1597606678,
-							LastRecv:       1597606676,
-							Version:        70015,
-							SubVer:         "/Satoshi:0.18.1/",
-							StartingHeight: 643579,
-							BanScore:       0,
-							SyncedHeaders:  644046,
-							SyncedBlocks:   644046,
-						}),
-					},
+			expectedPeers: []*types.Peer{
+				{
+					PeerID: "77.93.223.9:8333",
+					Metadata: forceMarshalMap(t, &PeerInfo{
+						Addr:           "77.93.223.9:8333",
+						Version:        70015,
+						SubVer:         "/Satoshi:0.14.2/",
+						StartingHeight: 643579,
+						RelayTxes:      true,
+						LastSend:       1597606676,
+						LastRecv:       1597606677,
+						BanScore:       0,
+						SyncedHeaders:  644046,
+						SyncedBlocks:   644046,
+					}),
+				},
+				{
+					PeerID: "172.105.93.179:8333",
+					Metadata: forceMarshalMap(t, &PeerInfo{
+						Addr:           "172.105.93.179:8333",
+						RelayTxes:      true,
+						LastSend:       1597606678,
+						LastRecv:       1597606676,
+						Version:        70015,
+						SubVer:         "/Satoshi:0.18.1/",
+						StartingHeight: 643579,
+						BanScore:       0,
+						SyncedHeaders:  644046,
+						SyncedBlocks:   644046,
+					}),
 				},
 			},
 		},
@@ -366,28 +351,8 @@ func TestNetworkStatus(t *testing.T) {
 			},
 			expectedError: errors.New("rpc in warmup"),
 		},
-		"blockchain info error": {
+		"peer info error": {
 			responses: []responseFixture{
-				{
-					status: http.StatusInternalServerError,
-					body:   "{}",
-					url:    url,
-				},
-			},
-			expectedError: errors.New("invalid response: 500 Internal Server Error"),
-		},
-		"peer info not accessible": {
-			responses: []responseFixture{
-				{
-					status: http.StatusOK,
-					body:   loadFixture("get_blockchain_info_response.json"),
-					url:    url,
-				},
-				{
-					status: http.StatusOK,
-					body:   loadFixture("get_block_response.json"),
-					url:    url,
-				},
 				{
 					status: http.StatusInternalServerError,
 					body:   "{}",
@@ -420,12 +385,12 @@ func TestNetworkStatus(t *testing.T) {
 			}))
 
 			client := NewClient(ts.URL, MainnetGenesisBlockIdentifier, MainnetCurrency)
-			status, err := client.NetworkStatus(context.Background())
+			peers, err := client.GetPeers(context.Background())
 			if test.expectedError != nil {
 				assert.Contains(err.Error(), test.expectedError.Error())
 			} else {
 				assert.NoError(err)
-				assert.Equal(test.expectedStatus, status)
+				assert.Equal(test.expectedPeers, peers)
 			}
 		})
 	}
