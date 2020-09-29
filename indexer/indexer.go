@@ -29,6 +29,7 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/syncer"
 	"github.com/coinbase/rosetta-sdk-go/types"
+	sdkUtils "github.com/coinbase/rosetta-sdk-go/utils"
 	"github.com/dgraph-io/badger/v2"
 )
 
@@ -194,7 +195,7 @@ func (i *Indexer) waitForNode(ctx context.Context) error {
 		}
 
 		logger.Infow("waiting for bitcoind...")
-		if err := utils.ContextSleep(ctx, nodeWaitSleep); err != nil {
+		if err := sdkUtils.ContextSleep(ctx, nodeWaitSleep); err != nil {
 			return err
 		}
 	}
@@ -394,7 +395,7 @@ func (i *Indexer) findCoin(
 			databaseTransaction,
 		)
 		if errors.Is(err, storage.ErrHeadBlockNotFound) {
-			if err := utils.ContextSleep(ctx, missingTransactionDelay); err != nil {
+			if err := sdkUtils.ContextSleep(ctx, missingTransactionDelay); err != nil {
 				return nil, nil, err
 			}
 
@@ -604,7 +605,7 @@ func (i *Indexer) Block(
 			return nil, fmt.Errorf("%w: unable to get raw block %+v", err, blockIdentifier)
 		}
 
-		if err := utils.ContextSleep(ctx, retryDelay); err != nil {
+		if err := sdkUtils.ContextSleep(ctx, retryDelay); err != nil {
 			return nil, err
 		}
 	}
