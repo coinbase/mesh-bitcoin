@@ -16,7 +16,6 @@ package utils
 
 import (
 	"context"
-	"runtime"
 	"time"
 
 	sdkUtils "github.com/coinbase/rosetta-sdk-go/utils"
@@ -41,23 +40,6 @@ func ExtractLogger(ctx context.Context, origin string) *zap.SugaredLogger {
 	return logger.Sugar()
 }
 
-// ContextSleep sleeps for the provided duration and returns
-// an error if context is canceled.
-func ContextSleep(ctx context.Context, duration time.Duration) error {
-	timer := time.NewTimer(duration)
-	defer timer.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-
-		case <-timer.C:
-			return nil
-		}
-	}
-}
-
 // MonitorMemoryUsage periodically logs memory usage
 // stats and triggers garbage collection when heap allocations
 // surpass maxHeapUsage.
@@ -70,32 +52,24 @@ func MonitorMemoryUsage(
 	maxHeap := float64(0)
 	garbageCollections := uint32(0)
 	for ctx.Err() == nil {
-		var m runtime.MemStats
-		runtime.ReadMemStats(&m)
-
-		heapAlloc := float64(m.HeapAlloc)
-		if heapAlloc > maxHeap {
-			maxHeap = heapAlloc
+		memUsage := sdkUtils.MonitorMemoryUsage(ctx, maxHeapUsage)
+		if memUsage.Heap > maxHeap {
+			maxHeap = memUsage.Heap
 		}
 
-		heapAllocMB := sdkUtils.BtoMb(heapAlloc)
-		if heapAllocMB > float64(maxHeapUsage) {
-			runtime.GC()
-		}
-
-		if m.NumGC > garbageCollections {
-			garbageCollections = m.NumGC
+		if memUsage.GarbageCollections > garbageCollections {
+			garbageCollections = memUsage.GarbageCollections
 			logger.Debugw(
 				"stats",
-				"heap (MB)", heapAllocMB,
-				"max heap (MB)", sdkUtils.BtoMb(maxHeap),
-				"stack (MB)", sdkUtils.BtoMb(float64(m.StackInuse)),
-				"system (MB)", sdkUtils.BtoMb(float64(m.Sys)),
-				"garbage collections", m.NumGC,
+				"heap (MB)", memUsage.Heap,
+				"max heap (MB)", maxHeap,
+				"stack (MB)", memUsage.Stack,
+				"system (MB)", memUsage.System,
+				"garbage collections", memUsage.GarbageCollections,
 			)
 		}
 
-		if err := ContextSleep(ctx, monitorMemorySleep); err != nil {
+		if err := sdkUtils.ContextSleep(ctx, monitorMemorySleep); err != nil {
 			return err
 		}
 	}
