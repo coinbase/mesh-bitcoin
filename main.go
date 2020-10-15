@@ -51,10 +51,6 @@ const (
 	// idleTimeout is the maximum amount of time to wait for the
 	// next request when keep-alives are enabled.
 	idleTimeout = 30 * time.Second
-
-	// maxHeapUsage is the size of the heap in MB before we manually
-	// trigger garbage collection.
-	maxHeapUsage = 8500 // ~8.5 GB
 )
 
 var (
@@ -143,7 +139,7 @@ func main() {
 	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
-		return utils.MonitorMemoryUsage(ctx, maxHeapUsage)
+		return utils.MonitorMemoryUsage(ctx, -1)
 	})
 
 	var i *indexer.Indexer
@@ -161,6 +157,7 @@ func main() {
 		bitcoin.OperationTypes,
 		false,
 		[]*types.NetworkIdentifier{cfg.Network},
+		nil,
 	)
 	if err != nil {
 		logger.Fatalw("unable to create new server asserter", "error", err)
