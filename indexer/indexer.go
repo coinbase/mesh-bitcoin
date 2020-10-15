@@ -31,13 +31,10 @@ import (
 	"github.com/coinbase/rosetta-sdk-go/types"
 	sdkUtils "github.com/coinbase/rosetta-sdk-go/utils"
 	"github.com/dgraph-io/badger/v2"
+	"github.com/dgraph-io/badger/v2/options"
 )
 
 const (
-	// DefaultIndexCacheSize is the default size of the indexer cache. The larger
-	// the index cache size, the better the performance.
-	DefaultIndexCacheSize = 5 << 30 // 5 GB
-
 	// indexPlaceholder is provided to the syncer
 	// to indicate we should both start from the
 	// last synced block and that we should sync
@@ -56,10 +53,6 @@ const (
 	// this is the estimated memory overhead for each
 	// block fetched by the indexer.
 	sizeMultiplier = 15
-
-	// Other BadgerDB options overrides
-	defaultBlockSize      = 1 << 20 // use large blocks so less table indexes (1 MB)
-	defaultValueThreshold = 0       // put almost everything in value logs (only use table for key)
 )
 
 var (
@@ -114,23 +107,47 @@ func (i *Indexer) CloseDatabase(ctx context.Context) {
 }
 
 // defaultBadgerOptions returns a set of badger.Options optimized
-// for running a Rosetta implementation. After extensive research
-// and profiling, we determined that the bottleneck to high RPC
-// load was fetching table indexes from disk on an index cache miss.
-// Thus, we increased the default block size to be much larger than
-// the Badger default so we have a lot less indexes to store. We also
-// ensure all values are stored in value log files (as to minimize
-// table bloat at the cost of some performance).
+// for running a Rosetta implementation.
 func defaultBadgerOptions(
-	path string,
-	indexCacheSize int64,
+	dir string,
 ) badger.Options {
-	defaultOps := storage.DefaultBadgerOptions(path)
-	defaultOps.BlockSize = defaultBlockSize
-	defaultOps.ValueThreshold = defaultValueThreshold
-	defaultOps.IndexCacheSize = indexCacheSize
+	opts := badger.DefaultOptions(dir)
 
-	return defaultOps
+	// By default, we do not compress the table at all. Doing so can
+	// significantly increase memory usage.
+	opts.Compression = options.None
+
+	// Load tables into memory and memory map value logs.
+	opts.TableLoadingMode = options.MemoryMap
+	opts.ValueLogLoadingMode = options.MemoryMap
+
+	// Use an extended table size for larger commits.
+	opts.MaxTableSize = storage.DefaultMaxTableSize
+
+	// To allow writes at a faster speed, we create a new memtable as soon as
+	// an existing memtable is filled up. This option determines how many
+	// memtables should be kept in memory.
+	opts.NumMemtables = 1
+
+	// Don't keep multiple memtables in memory. With larger
+	// memtable size, this explodes memory usage.
+	opts.NumLevelZeroTables = 1
+	opts.NumLevelZeroTablesStall = 2
+
+	// This option will have a significant effect the memory. If the level is kept
+	// in-memory, read are faster but the tables will be kept in memory. By default,
+	// this is set to false.
+	opts.KeepL0InMemory = false
+
+	// We don't compact L0 on close as this can greatly delay shutdown time.
+	opts.CompactL0OnClose = false
+
+	// LoadBloomsOnOpen=false will improve the db startup speed. This is also
+	// a waste to enable with a limited index cache size (as many of the loaded bloom
+	// filters will be immediately discarded from the cache).
+	opts.LoadBloomsOnOpen = false
+
+	return opts
 }
 
 // Initialize returns a new Indexer.
@@ -147,7 +164,6 @@ func Initialize(
 		storage.WithCompressorEntries(config.Compressors),
 		storage.WithCustomSettings(defaultBadgerOptions(
 			config.IndexerPath,
-			indexCacheSize,
 		)),
 	)
 	if err != nil {
