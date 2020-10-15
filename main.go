@@ -95,7 +95,6 @@ func startOnlineDependencies(
 		cancel,
 		cfg,
 		client,
-		indexer.DefaultIndexCacheSize,
 	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: unable to initialize indexer", err)

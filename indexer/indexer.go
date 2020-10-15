@@ -160,7 +160,6 @@ func Initialize(
 	cancel context.CancelFunc,
 	config *configuration.Configuration,
 	client Client,
-	indexCacheSize int64,
 ) (*Indexer, error) {
 	localStore, err := storage.NewBadgerStorage(
 		ctx,
