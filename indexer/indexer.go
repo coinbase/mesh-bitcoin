@@ -124,6 +124,10 @@ func defaultBadgerOptions(
 	// Use an extended table size for larger commits.
 	opts.MaxTableSize = storage.DefaultMaxTableSize
 
+	// Smaller value log sizes means smaller contiguous memory allocations
+	// and less RAM usage on cleanup.
+	opts.ValueLogFileSize = storage.DefaultLogValueSize
+
 	// To allow writes at a faster speed, we create a new memtable as soon as
 	// an existing memtable is filled up. This option determines how many
 	// memtables should be kept in memory.
