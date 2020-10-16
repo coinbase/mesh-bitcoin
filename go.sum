@@ -75,6 +75,8 @@ github.com/coinbase/rosetta-sdk-go v0.4.8 h1:+E1TM4q1c5/x/jE9FPI1IZIbNvUWy4tRRgD
 github.com/coinbase/rosetta-sdk-go v0.4.8/go.mod h1:8d4iN4VSGvLUzl+jRQlvYSLyS9TeY0QZebneWouizqU=
 github.com/coinbase/rosetta-sdk-go v0.5.4 h1:pM18LK2ci8zZwIu+uETmP6BXHqZbQGXRulwQCjYudg4=
 github.com/coinbase/rosetta-sdk-go v0.5.4/go.mod h1:QVVeKHWFNb0NyzEY06LxXMAylJkYa7n+Hk03pORr0ws=
+github.com/coinbase/rosetta-sdk-go v0.5.5 h1:Z61/VUO89BDVl1m6Zj0e6OWMl5GnVevj4z79Eh3sSL0=
+github.com/coinbase/rosetta-sdk-go v0.5.5/go.mod h1:JRO4BJjhWAI7nYGwzYZWFgYfCTsQOvdZB7tGyN6kEtE=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
@@ -118,6 +120,7 @@ github.com/ethereum/go-ethereum v1.9.21 h1:8qRlhzrItnmUGdVlBzZLI2Tb46S0RdSNjFwIC
 github.com/ethereum/go-ethereum v1.9.21/go.mod h1:RXAVzbGrSGmDkDnHymruTAIEjUR3E4TX0EOpaj702sI=
 github.com/ethereum/go-ethereum v1.9.22 h1:/Fea9n2EWJuNJ9oahMq9luqjRBcbW7QWdThbcJl13ek=
 github.com/ethereum/go-ethereum v1.9.22/go.mod h1:FQjK3ZwD8C5DYn7ukTmFee36rq1dOMESiUfXr5RUc1w=
+github.com/ethereum/go-ethereum v1.9.23/go.mod h1:JIfVb6esrqALTExdz9hRYvrP0xBDf6wCncIu1hNwHpM=
 github.com/fatih/color v1.3.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/fatih/color v1.9.0 h1:8xPHl4/q1VyqGIPif1F+1V3Y3lSmrq01EabUW3CoW5s=
 github.com/fatih/color v1.9.0/go.mod h1:eQcE1qtQxscV5RaZvpXrrb8Drkc3/DdQ+uUYCNjL+zU=
