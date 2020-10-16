@@ -25,7 +25,7 @@ import (
 const (
 	// RosettaVersion is the version of the
 	// Rosetta Specification we are using.
-	RosettaVersion = "1.4.4"
+	RosettaVersion = "1.4.5"
 
 	// NodeVersion is the version of
 	// bitcoin core we are using.
@@ -38,7 +38,7 @@ var (
 	// variable instead of a constant because
 	// we typically need the pointer of this
 	// value.
-	MiddlewareVersion = "0.0.3"
+	MiddlewareVersion = "0.0.4"
 )
 
 // Client is used by the servicers to get Peer information

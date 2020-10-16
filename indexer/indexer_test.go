@@ -72,7 +72,7 @@ func TestIndexer_Pruning(t *testing.T) {
 		IndexerPath: newDir,
 	}
 
-	i, err := Initialize(ctx, cancel, cfg, mockClient, storage.TinyIndexCacheSize)
+	i, err := Initialize(ctx, cancel, cfg, mockClient)
 	assert.NoError(t, err)
 
 	// Waiting for bitcoind...
@@ -232,7 +232,7 @@ func TestIndexer_Transactions(t *testing.T) {
 		IndexerPath:            newDir,
 	}
 
-	i, err := Initialize(ctx, cancel, cfg, mockClient, storage.TinyIndexCacheSize)
+	i, err := Initialize(ctx, cancel, cfg, mockClient)
 	assert.NoError(t, err)
 
 	// Sync to 1000
@@ -450,7 +450,7 @@ func TestIndexer_Reorg(t *testing.T) {
 		IndexerPath:            newDir,
 	}
 
-	i, err := Initialize(ctx, cancel, cfg, mockClient, storage.TinyIndexCacheSize)
+	i, err := Initialize(ctx, cancel, cfg, mockClient)
 	assert.NoError(t, err)
 
 	// Sync to 1000
@@ -692,7 +692,7 @@ func TestIndexer_HeaderReorg(t *testing.T) {
 		IndexerPath:            newDir,
 	}
 
-	i, err := Initialize(ctx, cancel, cfg, mockClient, storage.TinyIndexCacheSize)
+	i, err := Initialize(ctx, cancel, cfg, mockClient)
 	assert.NoError(t, err)
 
 	// Sync to 1000

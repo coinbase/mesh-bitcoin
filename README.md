@@ -85,10 +85,9 @@ _If you cloned the repository, you can run `make run-testnet-offline`._
 
 ## System Requirements
 `rosetta-bitcoin` has been tested on an [AWS c5.2xlarge instance](https://aws.amazon.com/ec2/instance-types/c5).
-This instance type has 8 vCPU and 16 GB of RAM. If you use a computer with less than 16 GB of RAM,
-it is possible that `rosetta-bitcoin` will exit with an OOM error.
+This instance type has 8 vCPU and 16 GB of RAM.
 
-### Recommended OS Settings
+### Network Settings
 To increase the load `rosetta-bitcoin` can handle, it is recommended to tune your OS
 settings to allow for more connections. On a linux-based OS, you can run the following
 commands ([source](http://www.tweaked.io/guide/kernel)):
@@ -105,6 +104,14 @@ enabling it._
 
 You should also modify your open file settings to `100000`. This can be done on a linux-based OS
 with the command: `ulimit -n 100000`.
+
+### Memory-Mapped Files
+`rosetta-bitcoin` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
+persist data in the `indexer`. As a result, you **must** run `rosetta-bitcoin` on a 64-bit
+architecture (the virtual address space easily exceeds 100s of GBs).
+
+If you receive a kernel OOM, you may need to increase the allocated size of swap space
+on your OS. There is a great tutorial for how to do this on Linux [here](https://linuxize.com/post/create-a-linux-swap-file/).
 
 ## Architecture
 `rosetta-bitcoin` uses the `syncer`, `storage`, `parser`, and `server` package
