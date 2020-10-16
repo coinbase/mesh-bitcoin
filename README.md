@@ -108,8 +108,10 @@ with the command: `ulimit -n 100000`.
 ### Memory-Mapped Files
 `rosetta-bitcoin` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
 persist data in the `indexer`. As a result, you **must** run `rosetta-bitcoin` on a 64-bit
-architecture (the virtual address space easily exceeds 100s of GBs) and may need to increase the
-allocated size of swap space to avoid a kernel OOM.
+architecture (the virtual address space easily exceeds 100s of GBs).
+
+If you receive a kernel OOM, you may need to increase the allocated size of swap space
+on your OS. There is a great tutorial for how to do this on Linux [here](https://linuxize.com/post/create-a-linux-swap-file/).
 
 ## Architecture
 `rosetta-bitcoin` uses the `syncer`, `storage`, `parser`, and `server` package
