@@ -55,7 +55,7 @@ func NewBlockchainRouter(
 		asserter,
 	)
 
-	mempoolAPIService := NewMempoolAPIService(client)
+	mempoolAPIService := NewMempoolAPIService(config, client)
 	mempoolAPIController := server.NewMempoolAPIController(
 		mempoolAPIService,
 		asserter,
