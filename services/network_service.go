@@ -90,7 +90,7 @@ func (s *NetworkAPIService) NetworkOptions(
 ) (*types.NetworkOptionsResponse, *types.Error) {
 	return &types.NetworkOptionsResponse{
 		Version: &types.Version{
-			RosettaVersion:    RosettaVersion,
+			RosettaVersion:    types.RosettaAPIVersion,
 			NodeVersion:       NodeVersion,
 			MiddlewareVersion: &MiddlewareVersion,
 		},
