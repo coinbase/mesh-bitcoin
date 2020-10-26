@@ -207,10 +207,9 @@ in recently processed blocks to save to disk.
 ## Testing with rosetta-cli
 To validate `rosetta-bitcoin`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
 and run one of the following commands:
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/bitcoin_testnet.json`
-* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/bitcoin_testnet.json`
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/bitcoin_mainnet.json`
-* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/bitcoin_mainnet.json`
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json`
+* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json`
+* `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json`
 
 ## Future Work
 * Publish benchamrks for sync speed, storage usage, and load testing
