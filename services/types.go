@@ -23,10 +23,6 @@ import (
 )
 
 const (
-	// RosettaVersion is the version of the
-	// Rosetta Specification we are using.
-	RosettaVersion = "1.4.5"
-
 	// NodeVersion is the version of
 	// bitcoin core we are using.
 	NodeVersion = "0.20.1"
