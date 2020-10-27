@@ -783,16 +783,17 @@ func (i *Indexer) GetBalance(
 	currency *types.Currency,
 	blockIdentifier *types.PartialBlockIdentifier,
 ) (*types.Amount, *types.BlockIdentifier, error) {
-	// TODO: add block lazy transactional
-	blockResponse, err := i.GetBlockLazy(ctx, blockIdentifier)
+	dbTx := i.database.NewDatabaseTransaction(ctx, false)
+	defer dbTx.Discard(ctx)
+
+	blockResponse, err := i.blockStorage.GetBlockLazyTransactional(
+		ctx,
+		blockIdentifier,
+		dbTx,
+	)
 	if err != nil {
 		return nil, nil, err
 	}
-
-	// TODO: when false if we query unknown, this could cause issue
-	// TODO: add switch to not create unknown
-	dbTx := i.database.NewDatabaseTransaction(ctx, false)
-	defer dbTx.Discard(ctx)
 
 	amount, err := i.balanceStorage.GetBalanceTransactional(
 		ctx,
@@ -800,6 +801,7 @@ func (i *Indexer) GetBalance(
 		accountIdentifier,
 		currency,
 		blockResponse.Block.BlockIdentifier,
+		false,
 	)
 	if err != nil {
 		return nil, nil, err
