@@ -25,6 +25,7 @@ import (
 
 var _ storage.BalanceStorageHelper = (*BalanceStorageHelper)(nil)
 
+// BalanceStorageHelper implements storage.BalanceStorageHelper.
 type BalanceStorageHelper struct {
 	a *asserter.Asserter
 }

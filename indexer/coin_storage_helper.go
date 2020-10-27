@@ -23,6 +23,7 @@ import (
 
 var _ storage.CoinStorageHelper = (*CoinStorageHelper)(nil)
 
+// CoinStorageHelper implements storage.CoinStorageHelper.
 type CoinStorageHelper struct {
 	b *storage.BlockStorage
 }
