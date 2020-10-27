@@ -199,7 +199,14 @@ func Initialize(
 
 	coinStorage := storage.NewCoinStorage(localStore, i, asserter)
 	i.coinStorage = coinStorage
-	i.workers = []storage.BlockWorker{coinStorage}
+
+	balanceStorage := storage.NewBalanceStorage(localStore)
+	balanceStorage.Initialize(
+		&BalanceStorageHelper{asserter},
+		&BalanceStorageHandler{},
+	)
+
+	i.workers = []storage.BlockWorker{coinStorage, balanceStorage}
 
 	return i, nil
 }
