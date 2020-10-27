@@ -775,6 +775,8 @@ func (i *Indexer) GetCoins(
 	return i.coinStorage.GetCoins(ctx, accountIdentifier)
 }
 
+// GetBalance returns the balance of an account
+// at a particular *types.PartialBlockIdentifier.
 func (i *Indexer) GetBalance(
 	ctx context.Context,
 	accountIdentifier *types.AccountIdentifier,
