@@ -207,7 +207,6 @@ func TestBlockService_Online_External(t *testing.T) {
 		assert.Equal(t, &types.BlockTransactionResponse{
 			Transaction: tx,
 		}, bTx)
-
 	}
 
 	mockIndexer.AssertExpectations(t)
