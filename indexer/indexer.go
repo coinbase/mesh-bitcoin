@@ -746,6 +746,7 @@ func (i *Indexer) GetScriptPubKeys(
 
 // GetBlockLazy returns a *types.BlockResponse from the indexer's block storage.
 // All transactions in a block must be fetched individually.
+// TODO: replace with GetBlock
 func (i *Indexer) GetBlockLazy(
 	ctx context.Context,
 	blockIdentifier *types.PartialBlockIdentifier,
@@ -755,6 +756,7 @@ func (i *Indexer) GetBlockLazy(
 
 // GetBlockTransaction returns a *types.Transaction if it is in the provided
 // *types.BlockIdentifier.
+// TODO: remove method
 func (i *Indexer) GetBlockTransaction(
 	ctx context.Context,
 	blockIdentifier *types.BlockIdentifier,
@@ -783,13 +785,20 @@ func (i *Indexer) GetBalance(
 	currency *types.Currency,
 	blockIdentifier *types.PartialBlockIdentifier,
 ) (*types.Amount, *types.BlockIdentifier, error) {
+	// TODO: add block lazy transactional
 	blockResponse, err := i.GetBlockLazy(ctx, blockIdentifier)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	amount, err := i.balanceStorage.GetBalance(
+	// TODO: when false if we query unknown, this could cause issue
+	// TODO: add switch to not create unknown
+	dbTx := i.database.NewDatabaseTransaction(ctx, false)
+	defer dbTx.Discard(ctx)
+
+	amount, err := i.balanceStorage.GetBalanceTransactional(
 		ctx,
+		dbTx,
 		accountIdentifier,
 		currency,
 		blockResponse.Block.BlockIdentifier,
