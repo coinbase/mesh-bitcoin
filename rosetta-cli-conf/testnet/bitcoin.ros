@@ -1,4 +1,4 @@
-request_funds(1) {
+request_funds(1){
   find_account{
     currency = {"symbol":"tBTC", "decimals":8};
     random_account = find_balance({
@@ -142,7 +142,7 @@ transfer(10){
         "amount":{"value":{{change_amount}},"currency":{{currency}}}
       }
     ];
-  },
+  }
 }
 
 return_funds(10){
@@ -213,5 +213,5 @@ return_funds(10){
         "amount":{"value":{{recipient_amount}},"currency":{{currency}}}
       }
     ];
-  },
+  }
 }
