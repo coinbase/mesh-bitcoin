@@ -53,6 +53,9 @@ const (
 	// this is the estimated memory overhead for each
 	// block fetched by the indexer.
 	sizeMultiplier = 15
+
+	// zeroValue is 0 as a string
+	zeroValue = "0"
 )
 
 var (
@@ -804,7 +807,7 @@ func (i *Indexer) GetBalance(
 	)
 	if errors.Is(err, storage.ErrAccountMissing) {
 		return &types.Amount{
-			Value:    "0",
+			Value:    zeroValue,
 			Currency: currency,
 		}, blockResponse.Block.BlockIdentifier, nil
 	}

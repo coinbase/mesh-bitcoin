@@ -39,7 +39,7 @@ func (h *BalanceStorageHelper) AccountBalance(
 	block *types.BlockIdentifier,
 ) (*types.Amount, error) {
 	return &types.Amount{
-		Value:    "0",
+		Value:    zeroValue,
 		Currency: currency,
 	}, nil
 }
