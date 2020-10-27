@@ -17,6 +17,38 @@ type Indexer struct {
 	mock.Mock
 }
 
+// GetBalance provides a mock function with given fields: _a0, _a1, _a2, _a3
+func (_m *Indexer) GetBalance(_a0 context.Context, _a1 *types.AccountIdentifier, _a2 *types.Currency, _a3 *types.PartialBlockIdentifier) (*types.Amount, *types.BlockIdentifier, error) {
+	ret := _m.Called(_a0, _a1, _a2, _a3)
+
+	var r0 *types.Amount
+	if rf, ok := ret.Get(0).(func(context.Context, *types.AccountIdentifier, *types.Currency, *types.PartialBlockIdentifier) *types.Amount); ok {
+		r0 = rf(_a0, _a1, _a2, _a3)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*types.Amount)
+		}
+	}
+
+	var r1 *types.BlockIdentifier
+	if rf, ok := ret.Get(1).(func(context.Context, *types.AccountIdentifier, *types.Currency, *types.PartialBlockIdentifier) *types.BlockIdentifier); ok {
+		r1 = rf(_a0, _a1, _a2, _a3)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*types.BlockIdentifier)
+		}
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(context.Context, *types.AccountIdentifier, *types.Currency, *types.PartialBlockIdentifier) error); ok {
+		r2 = rf(_a0, _a1, _a2, _a3)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // GetBlockLazy provides a mock function with given fields: _a0, _a1
 func (_m *Indexer) GetBlockLazy(_a0 context.Context, _a1 *types.PartialBlockIdentifier) (*types.BlockResponse, error) {
 	ret := _m.Called(_a0, _a1)

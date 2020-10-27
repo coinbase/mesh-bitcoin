@@ -26,6 +26,14 @@ const (
 	// NodeVersion is the version of
 	// bitcoin core we are using.
 	NodeVersion = "0.20.1"
+
+	// HistoricalBalanceLookup indicates
+	// that historical balance lookup is supported.
+	HistoricalBalanceLookup = true
+
+	// inlineFetchLimit is the maximum number
+	// of transactions to fetch inline.
+	inlineFetchLimit = 100
 )
 
 var (
@@ -34,7 +42,7 @@ var (
 	// variable instead of a constant because
 	// we typically need the pointer of this
 	// value.
-	MiddlewareVersion = "0.0.4"
+	MiddlewareVersion = "0.0.5"
 )
 
 // Client is used by the servicers to get Peer information
@@ -48,7 +56,10 @@ type Client interface {
 
 // Indexer is used by the servicers to get block and account data.
 type Indexer interface {
-	GetBlockLazy(context.Context, *types.PartialBlockIdentifier) (*types.BlockResponse, error)
+	GetBlockLazy(
+		context.Context,
+		*types.PartialBlockIdentifier,
+	) (*types.BlockResponse, error)
 	GetBlockTransaction(
 		context.Context,
 		*types.BlockIdentifier,
@@ -62,6 +73,12 @@ type Indexer interface {
 		context.Context,
 		[]*types.Coin,
 	) ([]*bitcoin.ScriptPubKey, error)
+	GetBalance(
+		context.Context,
+		*types.AccountIdentifier,
+		*types.Currency,
+		*types.PartialBlockIdentifier,
+	) (*types.Amount, *types.BlockIdentifier, error)
 }
 
 type unsignedTransaction struct {

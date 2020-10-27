@@ -53,6 +53,9 @@ const (
 	// this is the estimated memory overhead for each
 	// block fetched by the indexer.
 	sizeMultiplier = 15
+
+	// zeroValue is 0 as a string
+	zeroValue = "0"
 )
 
 var (
@@ -74,7 +77,6 @@ type Client interface {
 var _ syncer.Handler = (*Indexer)(nil)
 var _ syncer.Helper = (*Indexer)(nil)
 var _ services.Indexer = (*Indexer)(nil)
-var _ storage.CoinStorageHelper = (*Indexer)(nil)
 
 // Indexer caches blocks and provides balance query functionality.
 type Indexer struct {
@@ -85,11 +87,12 @@ type Indexer struct {
 
 	client Client
 
-	asserter     *asserter.Asserter
-	database     storage.Database
-	blockStorage *storage.BlockStorage
-	coinStorage  *storage.CoinStorage
-	workers      []storage.BlockWorker
+	asserter       *asserter.Asserter
+	database       storage.Database
+	blockStorage   *storage.BlockStorage
+	balanceStorage *storage.BalanceStorage
+	coinStorage    *storage.CoinStorage
+	workers        []storage.BlockWorker
 
 	waiter *waitTable
 }
@@ -197,9 +200,21 @@ func Initialize(
 		asserter:      asserter,
 	}
 
-	coinStorage := storage.NewCoinStorage(localStore, i, asserter)
+	coinStorage := storage.NewCoinStorage(
+		localStore,
+		&CoinStorageHelper{blockStorage},
+		asserter,
+	)
 	i.coinStorage = coinStorage
-	i.workers = []storage.BlockWorker{coinStorage}
+
+	balanceStorage := storage.NewBalanceStorage(localStore)
+	balanceStorage.Initialize(
+		&BalanceStorageHelper{asserter},
+		&BalanceStorageHandler{},
+	)
+	i.balanceStorage = balanceStorage
+
+	i.workers = []storage.BlockWorker{coinStorage, balanceStorage}
 
 	return i, nil
 }
@@ -748,7 +763,11 @@ func (i *Indexer) GetBlockTransaction(
 	blockIdentifier *types.BlockIdentifier,
 	transactionIdentifier *types.TransactionIdentifier,
 ) (*types.Transaction, error) {
-	return i.blockStorage.GetBlockTransaction(ctx, blockIdentifier, transactionIdentifier)
+	return i.blockStorage.GetBlockTransaction(
+		ctx,
+		blockIdentifier,
+		transactionIdentifier,
+	)
 }
 
 // GetCoins returns all unspent coins for a particular *types.AccountIdentifier.
@@ -759,11 +778,42 @@ func (i *Indexer) GetCoins(
 	return i.coinStorage.GetCoins(ctx, accountIdentifier)
 }
 
-// CurrentBlockIdentifier returns the current head block identifier
-// and is used to comply with the CoinStorageHelper interface.
-func (i *Indexer) CurrentBlockIdentifier(
+// GetBalance returns the balance of an account
+// at a particular *types.PartialBlockIdentifier.
+func (i *Indexer) GetBalance(
 	ctx context.Context,
-	transaction storage.DatabaseTransaction,
-) (*types.BlockIdentifier, error) {
-	return i.blockStorage.GetHeadBlockIdentifierTransactional(ctx, transaction)
+	accountIdentifier *types.AccountIdentifier,
+	currency *types.Currency,
+	blockIdentifier *types.PartialBlockIdentifier,
+) (*types.Amount, *types.BlockIdentifier, error) {
+	dbTx := i.database.NewDatabaseTransaction(ctx, false)
+	defer dbTx.Discard(ctx)
+
+	blockResponse, err := i.blockStorage.GetBlockLazyTransactional(
+		ctx,
+		blockIdentifier,
+		dbTx,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	amount, err := i.balanceStorage.GetBalanceTransactional(
+		ctx,
+		dbTx,
+		accountIdentifier,
+		currency,
+		blockResponse.Block.BlockIdentifier.Index,
+	)
+	if errors.Is(err, storage.ErrAccountMissing) {
+		return &types.Amount{
+			Value:    zeroValue,
+			Currency: currency,
+		}, blockResponse.Block.BlockIdentifier, nil
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return amount, blockResponse.Block.BlockIdentifier, nil
 }

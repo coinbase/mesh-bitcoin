@@ -40,6 +40,7 @@ var (
 		ErrUnableToGetCoins,
 		ErrTransactionNotFound,
 		ErrCouldNotGetFeeRate,
+		ErrUnableToGetBalance,
 	}
 
 	// ErrUnimplemented is returned when an endpoint
@@ -59,8 +60,9 @@ var (
 	// ErrNotReady is returned when bitcoind is not
 	// yet ready to serve queries.
 	ErrNotReady = &types.Error{
-		Code:    2, //nolint
-		Message: "Bitcoind is not ready",
+		Code:      2, //nolint
+		Message:   "Bitcoind is not ready",
+		Retriable: true,
 	}
 
 	// ErrBitcoind is returned when bitcoind
@@ -173,6 +175,14 @@ var (
 		Code:    17, // nolint
 		Message: "Could not get suggested fee rate",
 	}
+
+	// ErrUnableToGetBalance is returned by the indexer
+	// when it is not possible to get the balance
+	// of a *types.AccountIdentifier.
+	ErrUnableToGetBalance = &types.Error{
+		Code:    18, //nolint
+		Message: "Unable to get balance",
+	}
 )
 
 // wrapErr adds details to the types.Error provided. We use a function
@@ -180,8 +190,8 @@ var (
 // errors.
 func wrapErr(rErr *types.Error, err error) *types.Error {
 	newErr := &types.Error{
-		Code:    rErr.Code,
-		Message: rErr.Message,
+		Code:      rErr.Code,
+		Message:   rErr.Message,
 		Retriable: rErr.Retriable,
 	}
 	if err != nil {

@@ -95,9 +95,10 @@ func (s *NetworkAPIService) NetworkOptions(
 			MiddlewareVersion: &MiddlewareVersion,
 		},
 		Allow: &types.Allow{
-			OperationStatuses: bitcoin.OperationStatuses,
-			OperationTypes:    bitcoin.OperationTypes,
-			Errors:            Errors,
+			OperationStatuses:       bitcoin.OperationStatuses,
+			OperationTypes:          bitcoin.OperationTypes,
+			Errors:                  Errors,
+			HistoricalBalanceLookup: HistoricalBalanceLookup,
 		},
 	}, nil
 }

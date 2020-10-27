@@ -61,8 +61,8 @@ github.com/client9/misspell v0.3.4 h1:ta993UF76GwbvJcIo3Y68y/M3WxlpEHPWIGDkJYwzJ
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudflare/cloudflare-go v0.10.2-0.20190916151808-a80f83b9add9/go.mod h1:1MxXX1Ux4x6mqPmjkUgTP1CdXIBXKX7T+Jk9Gxrmx+U=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
-github.com/coinbase/rosetta-sdk-go v0.5.7 h1:BaR/+O3GzrsyunVNkVQHtjDCcId8G1Fh/RqEbeyExnk=
-github.com/coinbase/rosetta-sdk-go v0.5.7/go.mod h1:l5aNeyeZKBkmWbVdkdLpWdToQ6hTwI7cZ1OU9cMbljY=
+github.com/coinbase/rosetta-sdk-go v0.5.8-0.20201027222031-dd9e29377d5f h1:aWkN9dKMkMMpZKX5QycpePxH176Fj2fNNC7jESfLZw0=
+github.com/coinbase/rosetta-sdk-go v0.5.8-0.20201027222031-dd9e29377d5f/go.mod h1:l5aNeyeZKBkmWbVdkdLpWdToQ6hTwI7cZ1OU9cMbljY=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
