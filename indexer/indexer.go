@@ -74,7 +74,6 @@ type Client interface {
 var _ syncer.Handler = (*Indexer)(nil)
 var _ syncer.Helper = (*Indexer)(nil)
 var _ services.Indexer = (*Indexer)(nil)
-var _ storage.CoinStorageHelper = (*Indexer)(nil)
 
 // Indexer caches blocks and provides balance query functionality.
 type Indexer struct {
@@ -197,7 +196,11 @@ func Initialize(
 		asserter:      asserter,
 	}
 
-	coinStorage := storage.NewCoinStorage(localStore, i, asserter)
+	coinStorage := storage.NewCoinStorage(
+		localStore,
+		&CoinStorageHelper{blockStorage},
+		asserter,
+	)
 	i.coinStorage = coinStorage
 
 	balanceStorage := storage.NewBalanceStorage(localStore)
@@ -764,13 +767,4 @@ func (i *Indexer) GetCoins(
 	accountIdentifier *types.AccountIdentifier,
 ) ([]*types.Coin, *types.BlockIdentifier, error) {
 	return i.coinStorage.GetCoins(ctx, accountIdentifier)
-}
-
-// CurrentBlockIdentifier returns the current head block identifier
-// and is used to comply with the CoinStorageHelper interface.
-func (i *Indexer) CurrentBlockIdentifier(
-	ctx context.Context,
-	transaction storage.DatabaseTransaction,
-) (*types.BlockIdentifier, error) {
-	return i.blockStorage.GetHeadBlockIdentifierTransactional(ctx, transaction)
 }
