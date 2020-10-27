@@ -26,6 +26,10 @@ const (
 	// NodeVersion is the version of
 	// bitcoin core we are using.
 	NodeVersion = "0.20.1"
+
+	// HistoricalBalanceLookup indicates
+	// that historical balance lookup is supported.
+	HistoricalBalanceLookup = true
 )
 
 var (

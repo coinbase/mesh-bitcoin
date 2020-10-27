@@ -154,7 +154,7 @@ func main() {
 	// requests.
 	asserter, err := asserter.NewServer(
 		bitcoin.OperationTypes,
-		true,
+		services.HistoricalBalanceLookup,
 		[]*types.NetworkIdentifier{cfg.Network},
 		nil,
 	)
