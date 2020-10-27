@@ -800,9 +800,14 @@ func (i *Indexer) GetBalance(
 		dbTx,
 		accountIdentifier,
 		currency,
-		blockResponse.Block.BlockIdentifier,
-		false,
+		blockResponse.Block.BlockIdentifier.Index,
 	)
+	if errors.Is(err, storage.ErrAccountMissing) {
+		return &types.Amount{
+			Value:    "0",
+			Currency: currency,
+		}, blockResponse.Block.BlockIdentifier, nil
+	}
 	if err != nil {
 		return nil, nil, err
 	}
