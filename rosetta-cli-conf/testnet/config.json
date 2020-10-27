@@ -3,7 +3,7 @@
   "blockchain": "Bitcoin",
   "network": "Testnet3"
  },
- "data_directory": "bitcoin-testnet-data",
+ "data_directory": "cli-data",
  "http_timeout": 300,
  "max_retries": 5,
  "retry_elapsed_time": 0,
