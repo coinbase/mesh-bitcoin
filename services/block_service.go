@@ -54,6 +54,22 @@ func (s *BlockAPIService) Block(
 		return nil, wrapErr(ErrBlockNotFound, err)
 	}
 
+	txs := make([]*types.Transaction, len(blockResponse.OtherTransactions))
+	for i, otherTx := range blockResponse.OtherTransactions {
+		transaction, err := s.i.GetBlockTransaction(
+			ctx,
+			blockResponse.Block.BlockIdentifier,
+			otherTx,
+		)
+		if err != nil {
+			return nil, wrapErr(ErrTransactionNotFound, err)
+		}
+
+		txs[i] = transaction
+	}
+	blockResponse.Block.Transactions = txs
+
+	blockResponse.OtherTransactions = nil
 	return blockResponse, nil
 }
 
@@ -62,20 +78,5 @@ func (s *BlockAPIService) BlockTransaction(
 	ctx context.Context,
 	request *types.BlockTransactionRequest,
 ) (*types.BlockTransactionResponse, *types.Error) {
-	if s.config.Mode != configuration.Online {
-		return nil, wrapErr(ErrUnavailableOffline, nil)
-	}
-
-	transaction, err := s.i.GetBlockTransaction(
-		ctx,
-		request.BlockIdentifier,
-		request.TransactionIdentifier,
-	)
-	if err != nil {
-		return nil, wrapErr(ErrTransactionNotFound, err)
-	}
-
-	return &types.BlockTransactionResponse{
-		Transaction: transaction,
-	}, nil
+	return nil, ErrUnimplemented
 }

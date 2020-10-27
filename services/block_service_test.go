@@ -40,8 +40,8 @@ func TestBlockService_Offline(t *testing.T) {
 
 	blockTransaction, err := servicer.BlockTransaction(ctx, &types.BlockTransactionRequest{})
 	assert.Nil(t, blockTransaction)
-	assert.Equal(t, ErrUnavailableOffline.Code, err.Code)
-	assert.Equal(t, ErrUnavailableOffline.Message, err.Message)
+	assert.Equal(t, ErrUnimplemented.Code, err.Code)
+	assert.Equal(t, ErrUnimplemented.Message, err.Message)
 
 	mockIndexer.AssertExpectations(t)
 }
@@ -54,19 +54,10 @@ func TestBlockService_Online(t *testing.T) {
 	servicer := NewBlockAPIService(cfg, mockIndexer)
 	ctx := context.Background()
 
-	block := &types.Block{
+	rawBlock := &types.Block{
 		BlockIdentifier: &types.BlockIdentifier{
 			Index: 100,
 			Hash:  "block 100",
-		},
-	}
-
-	blockResponse := &types.BlockResponse{
-		Block: block,
-		OtherTransactions: []*types.TransactionIdentifier{
-			{
-				Hash: "tx1",
-			},
 		},
 	}
 
@@ -76,29 +67,36 @@ func TestBlockService_Online(t *testing.T) {
 		},
 	}
 
+	block := &types.Block{
+		BlockIdentifier: &types.BlockIdentifier{
+			Index: 100,
+			Hash:  "block 100",
+		},
+		Transactions: []*types.Transaction{
+			transaction,
+		},
+	}
+
+	blockResponse := &types.BlockResponse{
+		Block: block,
+	}
+
 	t.Run("nil identifier", func(t *testing.T) {
 		mockIndexer.On(
 			"GetBlockLazy",
 			ctx,
 			(*types.PartialBlockIdentifier)(nil),
 		).Return(
-			blockResponse,
+			&types.BlockResponse{
+				Block: rawBlock,
+				OtherTransactions: []*types.TransactionIdentifier{
+					{
+						Hash: "tx1",
+					},
+				},
+			},
 			nil,
 		).Once()
-		b, err := servicer.Block(ctx, &types.BlockRequest{})
-		assert.Nil(t, err)
-		assert.Equal(t, blockResponse, b)
-	})
-
-	t.Run("populated identifier", func(t *testing.T) {
-		pbIdentifier := types.ConstructPartialBlockIdentifier(block.BlockIdentifier)
-		mockIndexer.On("GetBlockLazy", ctx, pbIdentifier).Return(blockResponse, nil).Once()
-		b, err := servicer.Block(ctx, &types.BlockRequest{
-			BlockIdentifier: pbIdentifier,
-		})
-		assert.Nil(t, err)
-		assert.Equal(t, blockResponse, b)
-
 		mockIndexer.On(
 			"GetBlockTransaction",
 			ctx,
@@ -108,12 +106,42 @@ func TestBlockService_Online(t *testing.T) {
 			transaction,
 			nil,
 		).Once()
-		blockTransaction, err := servicer.BlockTransaction(ctx, &types.BlockTransactionRequest{
-			BlockIdentifier:       blockResponse.Block.BlockIdentifier,
-			TransactionIdentifier: transaction.TransactionIdentifier,
+		b, err := servicer.Block(ctx, &types.BlockRequest{})
+		assert.Nil(t, err)
+		assert.Equal(t, blockResponse, b)
+	})
+
+	t.Run("populated identifier", func(t *testing.T) {
+		pbIdentifier := types.ConstructPartialBlockIdentifier(block.BlockIdentifier)
+		mockIndexer.On(
+			"GetBlockLazy",
+			ctx,
+			pbIdentifier,
+		).Return(
+			&types.BlockResponse{
+				Block: rawBlock,
+				OtherTransactions: []*types.TransactionIdentifier{
+					{
+						Hash: "tx1",
+					},
+				},
+			},
+			nil,
+		).Once()
+		mockIndexer.On(
+			"GetBlockTransaction",
+			ctx,
+			blockResponse.Block.BlockIdentifier,
+			transaction.TransactionIdentifier,
+		).Return(
+			transaction,
+			nil,
+		).Once()
+		b, err := servicer.Block(ctx, &types.BlockRequest{
+			BlockIdentifier: pbIdentifier,
 		})
 		assert.Nil(t, err)
-		assert.Equal(t, transaction, blockTransaction.Transaction)
+		assert.Equal(t, blockResponse, b)
 	})
 
 	mockIndexer.AssertExpectations(t)
