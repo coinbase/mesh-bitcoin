@@ -49,27 +49,51 @@ func (s *AccountAPIService) AccountBalance(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
-	coins, block, err := s.i.GetCoins(ctx, request.AccountIdentifier)
-	if err != nil {
-		return nil, wrapErr(ErrUnableToGetCoins, err)
+	// If we are fetching the current balance,
+	// return all coins for an address and calculate
+	// the balance from those coins.
+	if request.BlockIdentifier == nil {
+		coins, block, err := s.i.GetCoins(ctx, request.AccountIdentifier)
+		if err != nil {
+			return nil, wrapErr(ErrUnableToGetCoins, err)
+		}
+
+		balance := "0"
+		for _, coin := range coins {
+			balance, err = types.AddValues(balance, coin.Amount.Value)
+			if err != nil {
+				return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
+			}
+		}
+
+		return &types.AccountBalanceResponse{
+			BlockIdentifier: block,
+			Coins:           coins,
+			Balances: []*types.Amount{
+				{
+					Value:    balance,
+					Currency: s.config.Currency,
+				},
+			},
+		}, nil
 	}
 
-	balance := "0"
-	for _, coin := range coins {
-		balance, err = types.AddValues(balance, coin.Amount.Value)
-		if err != nil {
-			return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
-		}
+	// If we are fetching a historical balance,
+	// use balance storage and don't return coins.
+	amount, block, err := s.i.GetBalance(
+		ctx,
+		request.AccountIdentifier,
+		s.config.Currency,
+		request.BlockIdentifier,
+	)
+	if err != nil {
+		return nil, wrapErr(ErrUnableToGetBalance, err)
 	}
 
 	return &types.AccountBalanceResponse{
 		BlockIdentifier: block,
-		Coins:           coins,
 		Balances: []*types.Amount{
-			{
-				Value:    balance,
-				Currency: s.config.Currency,
-			},
+			amount,
 		},
 	}, nil
 }

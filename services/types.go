@@ -48,7 +48,10 @@ type Client interface {
 
 // Indexer is used by the servicers to get block and account data.
 type Indexer interface {
-	GetBlockLazy(context.Context, *types.PartialBlockIdentifier) (*types.BlockResponse, error)
+	GetBlockLazy(
+		context.Context,
+		*types.PartialBlockIdentifier,
+	) (*types.BlockResponse, error)
 	GetBlockTransaction(
 		context.Context,
 		*types.BlockIdentifier,
@@ -62,6 +65,12 @@ type Indexer interface {
 		context.Context,
 		[]*types.Coin,
 	) ([]*bitcoin.ScriptPubKey, error)
+	GetBalance(
+		context.Context,
+		*types.AccountIdentifier,
+		*types.Currency,
+		*types.PartialBlockIdentifier,
+	) (*types.Amount, *types.BlockIdentifier, error)
 }
 
 type unsignedTransaction struct {

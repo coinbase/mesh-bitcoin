@@ -84,11 +84,12 @@ type Indexer struct {
 
 	client Client
 
-	asserter     *asserter.Asserter
-	database     storage.Database
-	blockStorage *storage.BlockStorage
-	coinStorage  *storage.CoinStorage
-	workers      []storage.BlockWorker
+	asserter       *asserter.Asserter
+	database       storage.Database
+	blockStorage   *storage.BlockStorage
+	balanceStorage *storage.BalanceStorage
+	coinStorage    *storage.CoinStorage
+	workers        []storage.BlockWorker
 
 	waiter *waitTable
 }
@@ -208,6 +209,7 @@ func Initialize(
 		&BalanceStorageHelper{asserter},
 		&BalanceStorageHandler{},
 	)
+	i.balanceStorage = balanceStorage
 
 	i.workers = []storage.BlockWorker{coinStorage, balanceStorage}
 
@@ -758,7 +760,11 @@ func (i *Indexer) GetBlockTransaction(
 	blockIdentifier *types.BlockIdentifier,
 	transactionIdentifier *types.TransactionIdentifier,
 ) (*types.Transaction, error) {
-	return i.blockStorage.GetBlockTransaction(ctx, blockIdentifier, transactionIdentifier)
+	return i.blockStorage.GetBlockTransaction(
+		ctx,
+		blockIdentifier,
+		transactionIdentifier,
+	)
 }
 
 // GetCoins returns all unspent coins for a particular *types.AccountIdentifier.
@@ -767,4 +773,28 @@ func (i *Indexer) GetCoins(
 	accountIdentifier *types.AccountIdentifier,
 ) ([]*types.Coin, *types.BlockIdentifier, error) {
 	return i.coinStorage.GetCoins(ctx, accountIdentifier)
+}
+
+func (i *Indexer) GetBalance(
+	ctx context.Context,
+	accountIdentifier *types.AccountIdentifier,
+	currency *types.Currency,
+	blockIdentifier *types.PartialBlockIdentifier,
+) (*types.Amount, *types.BlockIdentifier, error) {
+	blockResponse, err := i.GetBlockLazy(ctx, blockIdentifier)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	amount, err := i.balanceStorage.GetBalance(
+		ctx,
+		accountIdentifier,
+		currency,
+		blockResponse.Block.BlockIdentifier,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return amount, blockResponse.Block.BlockIdentifier, nil
 }
