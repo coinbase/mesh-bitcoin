@@ -30,6 +30,10 @@ const (
 	// HistoricalBalanceLookup indicates
 	// that historical balance lookup is supported.
 	HistoricalBalanceLookup = true
+
+	// inlineFetchLimit is the maximum number
+	// of transactions to fetch inline.
+	inlineFetchLimit = 100
 )
 
 var (

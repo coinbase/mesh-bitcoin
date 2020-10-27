@@ -746,7 +746,6 @@ func (i *Indexer) GetScriptPubKeys(
 
 // GetBlockLazy returns a *types.BlockResponse from the indexer's block storage.
 // All transactions in a block must be fetched individually.
-// TODO: replace with GetBlock
 func (i *Indexer) GetBlockLazy(
 	ctx context.Context,
 	blockIdentifier *types.PartialBlockIdentifier,
@@ -756,7 +755,6 @@ func (i *Indexer) GetBlockLazy(
 
 // GetBlockTransaction returns a *types.Transaction if it is in the provided
 // *types.BlockIdentifier.
-// TODO: remove method
 func (i *Indexer) GetBlockTransaction(
 	ctx context.Context,
 	blockIdentifier *types.BlockIdentifier,

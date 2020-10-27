@@ -16,6 +16,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
@@ -40,13 +41,13 @@ func TestBlockService_Offline(t *testing.T) {
 
 	blockTransaction, err := servicer.BlockTransaction(ctx, &types.BlockTransactionRequest{})
 	assert.Nil(t, blockTransaction)
-	assert.Equal(t, ErrUnimplemented.Code, err.Code)
-	assert.Equal(t, ErrUnimplemented.Message, err.Message)
+	assert.Equal(t, ErrUnavailableOffline.Code, err.Code)
+	assert.Equal(t, ErrUnavailableOffline.Message, err.Message)
 
 	mockIndexer.AssertExpectations(t)
 }
 
-func TestBlockService_Online(t *testing.T) {
+func TestBlockService_Online_Inline(t *testing.T) {
 	cfg := &configuration.Configuration{
 		Mode: configuration.Online,
 	}
@@ -143,6 +144,71 @@ func TestBlockService_Online(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, blockResponse, b)
 	})
+
+	mockIndexer.AssertExpectations(t)
+}
+
+func TestBlockService_Online_External(t *testing.T) {
+	cfg := &configuration.Configuration{
+		Mode: configuration.Online,
+	}
+	mockIndexer := &mocks.Indexer{}
+	servicer := NewBlockAPIService(cfg, mockIndexer)
+	ctx := context.Background()
+
+	blockResponse := &types.BlockResponse{
+		Block: &types.Block{
+			BlockIdentifier: &types.BlockIdentifier{
+				Index: 100,
+				Hash:  "block 100",
+			},
+		},
+	}
+
+	otherTxs := []*types.TransactionIdentifier{}
+	for i := 0; i < 200; i++ {
+		otherTxs = append(otherTxs, &types.TransactionIdentifier{
+			Hash: fmt.Sprintf("tx%d", i),
+		})
+	}
+	blockResponse.OtherTransactions = otherTxs
+
+	mockIndexer.On(
+		"GetBlockLazy",
+		ctx,
+		(*types.PartialBlockIdentifier)(nil),
+	).Return(
+		blockResponse,
+		nil,
+	).Once()
+	b, err := servicer.Block(ctx, &types.BlockRequest{})
+	assert.Nil(t, err)
+	assert.Equal(t, blockResponse, b)
+
+	for _, otherTx := range b.OtherTransactions {
+		tx := &types.Transaction{
+			TransactionIdentifier: otherTx,
+		}
+		mockIndexer.On(
+			"GetBlockTransaction",
+			ctx,
+			blockResponse.Block.BlockIdentifier,
+			otherTx,
+		).Return(
+			tx,
+			nil,
+		).Once()
+
+		bTx, err := servicer.BlockTransaction(ctx, &types.BlockTransactionRequest{
+			BlockIdentifier:       blockResponse.Block.BlockIdentifier,
+			TransactionIdentifier: otherTx,
+		})
+		assert.Nil(t, err)
+		assert.Equal(t, &types.BlockTransactionResponse{
+			Transaction: tx,
+		}, bTx)
+
+	}
 
 	mockIndexer.AssertExpectations(t)
 }

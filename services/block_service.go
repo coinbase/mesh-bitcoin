@@ -54,6 +54,12 @@ func (s *BlockAPIService) Block(
 		return nil, wrapErr(ErrBlockNotFound, err)
 	}
 
+	// Direct client to fetch transactions individually if
+	// more than inlineFetchLimit.
+	if len(blockResponse.OtherTransactions) > inlineFetchLimit {
+		return blockResponse, nil
+	}
+
 	txs := make([]*types.Transaction, len(blockResponse.OtherTransactions))
 	for i, otherTx := range blockResponse.OtherTransactions {
 		transaction, err := s.i.GetBlockTransaction(
@@ -78,5 +84,20 @@ func (s *BlockAPIService) BlockTransaction(
 	ctx context.Context,
 	request *types.BlockTransactionRequest,
 ) (*types.BlockTransactionResponse, *types.Error) {
-	return nil, ErrUnimplemented
+	if s.config.Mode != configuration.Online {
+		return nil, wrapErr(ErrUnavailableOffline, nil)
+	}
+
+	transaction, err := s.i.GetBlockTransaction(
+		ctx,
+		request.BlockIdentifier,
+		request.TransactionIdentifier,
+	)
+	if err != nil {
+		return nil, wrapErr(ErrTransactionNotFound, err)
+	}
+
+	return &types.BlockTransactionResponse{
+		Transaction: transaction,
+	}, nil
 }

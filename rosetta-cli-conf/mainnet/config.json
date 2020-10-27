@@ -11,6 +11,8 @@
  "max_sync_concurrency": 0,
  "tip_delay": 1800,
  "log_configuration": false,
+ "compression_disabled": true,
+ "memory_limit_disabled": true,
  "data": {
   "active_reconciliation_concurrency": 0,
   "inactive_reconciliation_concurrency": 0,
