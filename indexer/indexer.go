@@ -52,7 +52,7 @@ const (
 	// estimate for pre-fetching blocks. In other words,
 	// this is the estimated memory overhead for each
 	// block fetched by the indexer.
-	sizeMultiplier = 15
+	sizeMultiplier = 5
 
 	// zeroValue is 0 as a string
 	zeroValue = "0"
