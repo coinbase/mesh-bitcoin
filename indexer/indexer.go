@@ -94,7 +94,8 @@ type Indexer struct {
 	coinStorage    *storage.CoinStorage
 	workers        []storage.BlockWorker
 
-	waiter *waitTable
+	waiter  *waitTable
+	coinMap map[string]*storage.AccountCoin
 }
 
 // CloseDatabase closes a storage.Database. This should be called
@@ -198,6 +199,8 @@ func Initialize(
 		blockStorage:  blockStorage,
 		waiter:        newWaitTable(),
 		asserter:      asserter,
+		// TODO: only enable during fast catchup (i.e. far behind chain)
+		coinMap: map[string]*storage.AccountCoin{},
 	}
 
 	coinStorage := storage.NewCoinStorage(
@@ -317,6 +320,28 @@ func (i *Indexer) Prune(ctx context.Context) error {
 func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	logger := utils.ExtractLogger(ctx, "indexer")
 
+	// Update cache
+	for _, transaction := range block.Transactions {
+		for _, op := range transaction.Operations {
+			if op.CoinChange == nil || op.Amount == nil {
+				continue
+			}
+
+			if op.CoinChange.CoinAction == types.CoinSpent {
+				delete(i.coinMap, op.CoinChange.CoinIdentifier.Identifier)
+				continue
+			}
+
+			i.coinMap[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
+				Account: op.Account,
+				Coin: &types.Coin{
+					CoinIdentifier: op.CoinChange.CoinIdentifier,
+					Amount:         op.Amount,
+				},
+			}
+		}
+	}
+
 	err := i.blockStorage.AddBlock(ctx, block)
 	if err != nil {
 		return fmt.Errorf(
@@ -416,6 +441,24 @@ func (i *Indexer) NetworkStatus(
 	return i.client.NetworkStatus(ctx)
 }
 
+func (i *Indexer) getCoin(
+	ctx context.Context,
+	dbTx storage.DatabaseTransaction,
+	coinIdentifier *types.CoinIdentifier,
+) (*types.Coin, *types.AccountIdentifier, error) {
+	m, ok := i.coinMap[coinIdentifier.Identifier]
+	if ok {
+		fmt.Println("used cache", coinIdentifier.Identifier)
+		return m.Coin, m.Account, nil
+	}
+
+	return i.coinStorage.GetCoinTransactional(
+		ctx,
+		dbTx,
+		coinIdentifier,
+	)
+}
+
 func (i *Indexer) findCoin(
 	ctx context.Context,
 	btcBlock *bitcoin.Block,
@@ -444,7 +487,7 @@ func (i *Indexer) findCoin(
 		}
 
 		// Attempt to find coin
-		coin, owner, err := i.coinStorage.GetCoinTransactional(
+		coin, owner, err := i.getCoin(
 			ctx,
 			databaseTransaction,
 			&types.CoinIdentifier{
