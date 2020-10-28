@@ -63,6 +63,10 @@ github.com/cloudflare/cloudflare-go v0.10.2-0.20190916151808-a80f83b9add9/go.mod
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/coinbase/rosetta-sdk-go v0.5.8-0.20201027222031-dd9e29377d5f h1:aWkN9dKMkMMpZKX5QycpePxH176Fj2fNNC7jESfLZw0=
 github.com/coinbase/rosetta-sdk-go v0.5.8-0.20201027222031-dd9e29377d5f/go.mod h1:l5aNeyeZKBkmWbVdkdLpWdToQ6hTwI7cZ1OU9cMbljY=
+github.com/coinbase/rosetta-sdk-go v0.5.8-0.20201028155140-7a0801294d46 h1:fJheIoPxKS55g82PUYNJbLDXhPQ8ry+U1P/boFIPAWk=
+github.com/coinbase/rosetta-sdk-go v0.5.8-0.20201028155140-7a0801294d46/go.mod h1:xd4wYUhV3LkY78SPH8BUhc88rXfn2jYgN9BfiSjbcvM=
+github.com/coinbase/rosetta-sdk-go v0.5.8-0.20201028160450-38f9b995f67f h1:SY63lk+yS9mAGIT3W6efo2pOqkvHB3cLS42sKWyopqY=
+github.com/coinbase/rosetta-sdk-go v0.5.8-0.20201028160450-38f9b995f67f/go.mod h1:xd4wYUhV3LkY78SPH8BUhc88rXfn2jYgN9BfiSjbcvM=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
@@ -275,6 +279,7 @@ github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljT
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/vmihailenco/msgpack/v5 v5.0.0-beta.8 h1:R2L6zPq1pWFumpeIxAJoeiov5GxyEZUq9NyS8eus/6s=
 github.com/vmihailenco/msgpack/v5 v5.0.0-beta.8/go.mod h1:HVxBVPUK/+fZMonk4bi1islLa8V3cfnBug0+4dykPzo=
+github.com/vmihailenco/msgpack/v5 v5.0.0-beta.9/go.mod h1:HVxBVPUK/+fZMonk4bi1islLa8V3cfnBug0+4dykPzo=
 github.com/vmihailenco/tagparser v0.1.2 h1:gnjoVuB/kljJ5wICEEOpx98oXMWPLj22G67Vbd1qPqc=
 github.com/vmihailenco/tagparser v0.1.2/go.mod h1:OeAg3pn3UbLjkWt+rN9oFYB6u/cQgqMEUPoW2WPyhdI=
 github.com/wsddn/go-ecdh v0.0.0-20161211032359-48726bab9208/go.mod h1:IotVbo4F+mw0EzQ08zFqg7pK3FebNXpaMsRy2RT+Ees=
