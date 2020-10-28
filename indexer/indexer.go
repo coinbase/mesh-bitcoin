@@ -455,15 +455,11 @@ func (i *Indexer) getCoin(
 	m, ok := i.coinMap[coinIdentifier.Identifier]
 	i.coinMapMutex.RUnlock()
 	if ok {
-		fmt.Println("used cache", coinIdentifier.Identifier)
 		return m.Coin, m.Account, nil
 	}
 
-	return i.coinStorage.GetCoinTransactional(
-		ctx,
-		dbTx,
-		coinIdentifier,
-	)
+	// THis is SUPER dangerous (won't survive restart)
+	return nil, nil, storage.ErrCoinNotFound
 }
 
 func (i *Indexer) findCoin(
