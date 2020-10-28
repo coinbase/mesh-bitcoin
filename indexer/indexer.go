@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
@@ -94,8 +95,9 @@ type Indexer struct {
 	coinStorage    *storage.CoinStorage
 	workers        []storage.BlockWorker
 
-	waiter  *waitTable
-	coinMap map[string]*storage.AccountCoin
+	waiter       *waitTable
+	coinMapMutex sync.RWMutex
+	coinMap      map[string]*storage.AccountCoin
 }
 
 // CloseDatabase closes a storage.Database. This should be called
@@ -200,6 +202,7 @@ func Initialize(
 		waiter:        newWaitTable(),
 		asserter:      asserter,
 		// TODO: only enable during fast catchup (i.e. far behind chain)
+		// Delete oldest entries whenever some size: https://stackoverflow.com/questions/60829460/is-there-a-way-to-delete-first-element-from-map
 		coinMap: map[string]*storage.AccountCoin{},
 	}
 
@@ -321,6 +324,7 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	logger := utils.ExtractLogger(ctx, "indexer")
 
 	// Update cache
+	i.coinMapMutex.Lock()
 	for _, transaction := range block.Transactions {
 		for _, op := range transaction.Operations {
 			if op.CoinChange == nil || op.Amount == nil {
@@ -341,6 +345,7 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 			}
 		}
 	}
+	i.coinMapMutex.Unlock()
 
 	err := i.blockStorage.AddBlock(ctx, block)
 	if err != nil {
@@ -446,7 +451,9 @@ func (i *Indexer) getCoin(
 	dbTx storage.DatabaseTransaction,
 	coinIdentifier *types.CoinIdentifier,
 ) (*types.Coin, *types.AccountIdentifier, error) {
+	i.coinMapMutex.RLock()
 	m, ok := i.coinMap[coinIdentifier.Identifier]
+	i.coinMapMutex.RUnlock()
 	if ok {
 		fmt.Println("used cache", coinIdentifier.Identifier)
 		return m.Coin, m.Account, nil
