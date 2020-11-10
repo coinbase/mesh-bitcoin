@@ -68,7 +68,6 @@ func (s *AccountAPIService) AccountBalance(
 
 		return &types.AccountBalanceResponse{
 			BlockIdentifier: block,
-			Coins:           coins,
 			Balances: []*types.Amount{
 				{
 					Value:    balance,
@@ -96,4 +95,42 @@ func (s *AccountAPIService) AccountBalance(
 			amount,
 		},
 	}, nil
+}
+
+// AccountCoins implements /account/coins.
+func (s *AccountAPIService) AccountCoins(
+	ctx context.Context,
+	request *types.AccountCoinsRequest,
+) (*types.AccountCoinsResponse, *types.Error) {
+	if s.config.Mode != configuration.Online {
+		return nil, wrapErr(ErrUnavailableOffline, nil)
+	}
+
+	coins, block, err := s.i.GetCoins(ctx, request.AccountIdentifier)
+	if err != nil {
+		return nil, wrapErr(ErrUnableToGetCoins, err)
+	}
+
+	result := &types.AccountCoinsResponse{
+		BlockIdentifier: block,
+		Coins:           coins,
+	}
+	//@Todo include_mempool query
+
+	if len(request.Currencies) > 0 {
+		filtered := []*types.Coin{}
+		for _, curr := range request.Currencies {
+			if curr == nil {
+				continue
+			}
+			for _, coin := range coins {
+				if coin.Amount.Currency.Symbol == curr.Symbol {
+					filtered = append(filtered, coin)
+				}
+			}
+		}
+		result.Coins = filtered
+	}
+
+	return result, nil
 }
