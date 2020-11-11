@@ -31,6 +31,9 @@ const (
 	// that historical balance lookup is supported.
 	HistoricalBalanceLookup = true
 
+	//Include mempool coins when fetching account coints
+	MempoolCoins = false
+
 	// inlineFetchLimit is the maximum number
 	// of transactions to fetch inline.
 	inlineFetchLimit = 100

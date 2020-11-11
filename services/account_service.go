@@ -115,16 +115,17 @@ func (s *AccountAPIService) AccountCoins(
 		BlockIdentifier: block,
 		Coins:           coins,
 	}
-	//@Todo include_mempool query
+
+	//@Todo include_mempool query unsupported
+	//https://github.com/coinbase/rosetta-bitcoin/issues/36#issuecomment-724992022
+	//Once mempoolcoins are supported also change the bool service/types.go:MempoolCoins to true
 
 	if len(request.Currencies) > 0 {
 		filtered := []*types.Coin{}
+
 		for _, curr := range request.Currencies {
-			if curr == nil {
-				continue
-			}
 			for _, coin := range coins {
-				if coin.Amount.Currency.Symbol == curr.Symbol {
+				if types.Hash(curr) == types.Hash(coin.Amount.Currency) {
 					filtered = append(filtered, coin)
 				}
 			}
