@@ -43,7 +43,7 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 			return err
 		}
 
-		message := strings.Replace(str, "\n", "", -1)
+		message := strings.ReplaceAll(str, "\n", "")
 		messages := strings.SplitAfterN(message, " ", 2)
 
 		// Trim the timestamp from the log if it exists
