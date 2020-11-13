@@ -31,8 +31,10 @@ const (
 	// that historical balance lookup is supported.
 	HistoricalBalanceLookup = true
 
-	//Include mempool coins when fetching account coints
-	MempoolCoins = false
+	// IncludeMempoolCoins indicates that
+	// including mempool coins in the /account/coins
+	// response is not supported.
+	IncludeMempoolCoins = false
 
 	// inlineFetchLimit is the maximum number
 	// of transactions to fetch inline.
