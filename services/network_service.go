@@ -99,7 +99,7 @@ func (s *NetworkAPIService) NetworkOptions(
 			OperationTypes:          bitcoin.OperationTypes,
 			Errors:                  Errors,
 			HistoricalBalanceLookup: HistoricalBalanceLookup,
-			MempoolCoins:            IncludeMempoolCoins,
+			MempoolCoins:            MempoolCoins,
 		},
 	}, nil
 }
