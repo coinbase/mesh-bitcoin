@@ -255,7 +255,7 @@ func (i *Indexer) Sync(ctx context.Context) error {
 	// If previously processed blocks exist in storage, they are fetched.
 	// Otherwise, none are provided to the cache (the syncer will not attempt
 	// a reorg if the cache is empty).
-	pastBlocks := i.blockStorage.CreateBlockCache(ctx)
+	pastBlocks := i.blockStorage.CreateBlockCache(ctx, syncer.DefaultPastBlockLimit)
 
 	syncer := syncer.New(
 		i.network,

@@ -157,6 +157,7 @@ func main() {
 		services.HistoricalBalanceLookup,
 		[]*types.NetworkIdentifier{cfg.Network},
 		nil,
+		services.MempoolCoins,
 	)
 	if err != nil {
 		logger.Fatalw("unable to create new server asserter", "error", err)

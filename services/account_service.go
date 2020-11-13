@@ -49,34 +49,7 @@ func (s *AccountAPIService) AccountBalance(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
-	// If we are fetching the current balance,
-	// return all coins for an address and calculate
-	// the balance from those coins.
-	if request.BlockIdentifier == nil {
-		coins, block, err := s.i.GetCoins(ctx, request.AccountIdentifier)
-		if err != nil {
-			return nil, wrapErr(ErrUnableToGetCoins, err)
-		}
-
-		balance := "0"
-		for _, coin := range coins {
-			balance, err = types.AddValues(balance, coin.Amount.Value)
-			if err != nil {
-				return nil, wrapErr(ErrUnableToParseIntermediateResult, err)
-			}
-		}
-
-		return &types.AccountBalanceResponse{
-			BlockIdentifier: block,
-			Coins:           coins,
-			Balances: []*types.Amount{
-				{
-					Value:    balance,
-					Currency: s.config.Currency,
-				},
-			},
-		}, nil
-	}
+	// TODO: filter balances by request currencies
 
 	// If we are fetching a historical balance,
 	// use balance storage and don't return coins.
@@ -96,4 +69,32 @@ func (s *AccountAPIService) AccountBalance(
 			amount,
 		},
 	}, nil
+}
+
+// AccountCoins implements /account/coins.
+func (s *AccountAPIService) AccountCoins(
+	ctx context.Context,
+	request *types.AccountCoinsRequest,
+) (*types.AccountCoinsResponse, *types.Error) {
+	if s.config.Mode != configuration.Online {
+		return nil, wrapErr(ErrUnavailableOffline, nil)
+	}
+
+	// TODO: filter coins by request currencies
+
+	// TODO: support include_mempool query
+	// https://github.com/coinbase/rosetta-bitcoin/issues/36#issuecomment-724992022
+	// Once mempoolcoins are supported also change the bool service/types.go:MempoolCoins to true
+
+	coins, block, err := s.i.GetCoins(ctx, request.AccountIdentifier)
+	if err != nil {
+		return nil, wrapErr(ErrUnableToGetCoins, err)
+	}
+
+	result := &types.AccountCoinsResponse{
+		BlockIdentifier: block,
+		Coins:           coins,
+	}
+
+	return result, nil
 }

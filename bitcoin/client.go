@@ -516,9 +516,8 @@ func (b *Client) parseTransactions(
 				"block hash", block.Hash,
 				"transaction hash", transaction.Hash,
 			)
-
 			for _, op := range txOps {
-				op.Status = SkippedStatus
+				op.Status = types.String(SkippedStatus)
 			}
 		}
 
@@ -681,7 +680,7 @@ func (b *Client) parseOutputTransactionOperation(
 			NetworkIndex: &networkIndex,
 		},
 		Type:    OutputOpType,
-		Status:  SuccessStatus,
+		Status:  types.String(SuccessStatus),
 		Account: account,
 		Amount: &types.Amount{
 			Value:    strconv.FormatInt(int64(amount), 10),
@@ -738,7 +737,7 @@ func (b *Client) parseInputTransactionOperation(
 			NetworkIndex: &networkIndex,
 		},
 		Type:    InputOpType,
-		Status:  SuccessStatus,
+		Status:  types.String(SuccessStatus),
 		Account: accountCoin.Account,
 		Amount: &types.Amount{
 			Value:    newValue,
@@ -800,7 +799,7 @@ func (b *Client) coinbaseTxOperation(
 			NetworkIndex: &networkIndex,
 		},
 		Type:     CoinbaseOpType,
-		Status:   SuccessStatus,
+		Status:   types.String(SuccessStatus),
 		Metadata: metadata,
 	}, nil
 }

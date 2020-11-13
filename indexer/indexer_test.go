@@ -286,7 +286,7 @@ func TestIndexer_Transactions(t *testing.T) {
 							Index:        0,
 							NetworkIndex: &index0,
 						},
-						Status: bitcoin.SuccessStatus,
+						Status: types.String(bitcoin.SuccessStatus),
 						Type:   bitcoin.OutputOpType,
 						Account: &types.AccountIdentifier{
 							Address: rawHash,
@@ -505,7 +505,7 @@ func TestIndexer_Reorg(t *testing.T) {
 							Index:        0,
 							NetworkIndex: &index0,
 						},
-						Status: bitcoin.SuccessStatus,
+						Status: types.String(bitcoin.SuccessStatus),
 						Type:   bitcoin.OutputOpType,
 						Account: &types.AccountIdentifier{
 							Address: rawHash,

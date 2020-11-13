@@ -735,7 +735,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   CoinbaseOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Metadata: mustMarshalMap(&OperationMetadata{
 									Coinbase: "04ffff001d02fd04",
 									Sequence: 4294967295,
@@ -747,7 +747,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Account: &types.AccountIdentifier{
 									Address: "4104f5eeb2b10c944c6b9fbcfff94c35bdeecd93df977882babc7f3a2cf7f5c81d3b09a68db7f0e04f21de5d4230e75e6dbe7ad16eefe0d4325a62067dc6f369446aac", // nolint
 								},
@@ -788,7 +788,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Account: &types.AccountIdentifier{
 									Address: "mmtKKnjqTPdkBnBMbNt5Yu2SCwpMaEshEL", // nolint
 								},
@@ -820,7 +820,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(1),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Account: &types.AccountIdentifier{
 									Address: "4852fe372ff7534c16713b3146bbc1e86379c70bea4d5c02fb1fa0112980a081:1",
 								},
@@ -928,7 +928,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   CoinbaseOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Metadata: mustMarshalMap(&OperationMetadata{
 									Coinbase: "044c86041b020602",
 									Sequence: 4294967295,
@@ -940,7 +940,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Account: &types.AccountIdentifier{
 									Address: "34qkc2iac6RsyxZVfyE2S5U5WcRsbg2dpK",
 								},
@@ -972,7 +972,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(1),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Account: &types.AccountIdentifier{
 									Address: "6a24aa21a9ed10109f4b82aa3ed7ec9d02a2a90246478b3308c8b85daf62fe501d58d05727a4",
 								},
@@ -1007,7 +1007,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   InputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Amount: &types.Amount{
 									Value:    "-5000000000",
 									Currency: MainnetCurrency,
@@ -1035,7 +1035,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Account: &types.AccountIdentifier{
 									Address: "1JqDybm2nWTENrHvMyafbSXXtTk5Uv5QAn",
 								},
@@ -1067,7 +1067,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(1),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Account: &types.AccountIdentifier{
 									Address: "1EYTGtG4LnFfiMvjJdsU7GMGCQvsRSjYhx",
 								},
@@ -1112,7 +1112,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   InputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Amount: &types.Amount{
 									Value:    "-3467607",
 									Currency: MainnetCurrency,
@@ -1144,7 +1144,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(1),
 								},
 								Type:   InputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Amount: &types.Amount{
 									Value:    "0",
 									Currency: MainnetCurrency,
@@ -1172,7 +1172,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(2),
 								},
 								Type:   InputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Amount: &types.Amount{
 									Value:    "-556000000",
 									Currency: MainnetCurrency,
@@ -1200,7 +1200,7 @@ func TestParseBlock(t *testing.T) {
 									NetworkIndex: int64Pointer(0),
 								},
 								Type:   OutputOpType,
-								Status: SuccessStatus,
+								Status: types.String(SuccessStatus),
 								Account: &types.AccountIdentifier{
 									Address: "76a914c398efa9c392ba6013c5e04ee729755ef7f58b3288ac",
 								},
