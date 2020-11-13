@@ -49,6 +49,8 @@ func (s *AccountAPIService) AccountBalance(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
+	// TODO: filter balances by request currencies
+
 	// If we are fetching the current balance,
 	// return all coins for an address and calculate
 	// the balance from those coins.
@@ -106,6 +108,12 @@ func (s *AccountAPIService) AccountCoins(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
+	// TODO: filter coins by request currencies
+
+	// TODO: support include_mempool query
+	// https://github.com/coinbase/rosetta-bitcoin/issues/36#issuecomment-724992022
+	// Once mempoolcoins are supported also change the bool service/types.go:MempoolCoins to true
+
 	coins, block, err := s.i.GetCoins(ctx, request.AccountIdentifier)
 	if err != nil {
 		return nil, wrapErr(ErrUnableToGetCoins, err)
@@ -114,23 +122,6 @@ func (s *AccountAPIService) AccountCoins(
 	result := &types.AccountCoinsResponse{
 		BlockIdentifier: block,
 		Coins:           coins,
-	}
-
-	//@Todo include_mempool query unsupported
-	//https://github.com/coinbase/rosetta-bitcoin/issues/36#issuecomment-724992022
-	//Once mempoolcoins are supported also change the bool service/types.go:MempoolCoins to true
-
-	if len(request.Currencies) > 0 {
-		filtered := []*types.Coin{}
-
-		for _, curr := range request.Currencies {
-			for _, coin := range coins {
-				if types.Hash(curr) == types.Hash(coin.Amount.Currency) {
-					filtered = append(filtered, coin)
-				}
-			}
-		}
-		result.Coins = filtered
 	}
 
 	return result, nil
