@@ -487,7 +487,6 @@ func TestIndexer_Reorg(t *testing.T) {
 		}
 
 		transactions := []*types.Transaction{}
-		status := bitcoin.SuccessStatus
 		for j := 0; j < 5; j++ {
 			rawHash := fmt.Sprintf("block %d transaction %d", i, j)
 			hash := fmt.Sprintf("%x", sha256.Sum256([]byte(rawHash)))
@@ -507,7 +506,7 @@ func TestIndexer_Reorg(t *testing.T) {
 							Index:        0,
 							NetworkIndex: &index0,
 						},
-						Status: &status,
+						Status: types.String(bitcoin.SuccessStatus),
 						Type:   bitcoin.OutputOpType,
 						Account: &types.AccountIdentifier{
 							Address: rawHash,
