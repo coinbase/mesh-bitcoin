@@ -92,7 +92,7 @@ func (s *NetworkAPIService) NetworkOptions(
 		Version: &types.Version{
 			RosettaVersion:    types.RosettaAPIVersion,
 			NodeVersion:       NodeVersion,
-			MiddlewareVersion: &MiddlewareVersion,
+			MiddlewareVersion: types.String(MiddlewareVersion),
 		},
 		Allow: &types.Allow{
 			OperationStatuses:       bitcoin.OperationStatuses,
