@@ -516,9 +516,9 @@ func (b *Client) parseTransactions(
 				"block hash", block.Hash,
 				"transaction hash", transaction.Hash,
 			)
-
+			status := SuccessStatus
 			for _, op := range txOps {
-				op.Status = SkippedStatus
+				op.Status = &status
 			}
 		}
 
@@ -675,13 +675,14 @@ func (b *Client) parseOutputTransactionOperation(
 		coinChange = nil
 	}
 
+	status := SuccessStatus
 	return &types.Operation{
 		OperationIdentifier: &types.OperationIdentifier{
 			Index:        index,
 			NetworkIndex: &networkIndex,
 		},
 		Type:    OutputOpType,
-		Status:  SuccessStatus,
+		Status:  &status,
 		Account: account,
 		Amount: &types.Amount{
 			Value:    strconv.FormatInt(int64(amount), 10),
@@ -732,13 +733,14 @@ func (b *Client) parseInputTransactionOperation(
 		return nil, fmt.Errorf("%w: unable to negate previous output", err)
 	}
 
+	status := SuccessStatus
 	return &types.Operation{
 		OperationIdentifier: &types.OperationIdentifier{
 			Index:        index,
 			NetworkIndex: &networkIndex,
 		},
 		Type:    InputOpType,
-		Status:  SuccessStatus,
+		Status:  &status,
 		Account: accountCoin.Account,
 		Amount: &types.Amount{
 			Value:    newValue,
@@ -794,13 +796,14 @@ func (b *Client) coinbaseTxOperation(
 		return nil, fmt.Errorf("%w: unable to get input metadata", err)
 	}
 
+	status := SuccessStatus
 	return &types.Operation{
 		OperationIdentifier: &types.OperationIdentifier{
 			Index:        index,
 			NetworkIndex: &networkIndex,
 		},
 		Type:     CoinbaseOpType,
-		Status:   SuccessStatus,
+		Status:   &status,
 		Metadata: metadata,
 	}, nil
 }
