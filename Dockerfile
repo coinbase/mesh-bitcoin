@@ -30,7 +30,7 @@ RUN git clone https://github.com/bitcoin/bitcoin \
 
 RUN cd bitcoin \
   && ./autogen.sh \
-  && ./configure --enable-glibc-back-compat --disable-tests --without-miniupnpc --without-gui --with-incompatible-bdb --disable-hardening --disable-zmq --disable-bench --disable-wallet \
+  && ./configure --disable-tests --without-miniupnpc --without-gui --with-incompatible-bdb --disable-hardening --disable-zmq --disable-bench --disable-wallet \
   && make
 
 RUN mv bitcoin/src/bitcoind /app/bitcoind \
