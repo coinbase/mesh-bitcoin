@@ -26,7 +26,9 @@ import (
 	"github.com/coinbase/rosetta-bitcoin/utils"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/database"
+	storageErrs "github.com/coinbase/rosetta-sdk-go/storage/errors"
+	"github.com/coinbase/rosetta-sdk-go/storage/modules"
 	"github.com/coinbase/rosetta-sdk-go/syncer"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	sdkUtils "github.com/coinbase/rosetta-sdk-go/utils"
@@ -70,7 +72,7 @@ type Client interface {
 	ParseBlock(
 		context.Context,
 		*bitcoin.Block,
-		map[string]*storage.AccountCoin,
+		map[string]*types.AccountCoin,
 	) (*types.Block, error)
 }
 
@@ -88,11 +90,11 @@ type Indexer struct {
 	client Client
 
 	asserter       *asserter.Asserter
-	database       storage.Database
-	blockStorage   *storage.BlockStorage
-	balanceStorage *storage.BalanceStorage
-	coinStorage    *storage.CoinStorage
-	workers        []storage.BlockWorker
+	database       database.Database
+	blockStorage   *modules.BlockStorage
+	balanceStorage *modules.BalanceStorage
+	coinStorage    *modules.CoinStorage
+	workers        []modules.BlockWorker
 
 	waiter *waitTable
 }
@@ -125,11 +127,11 @@ func defaultBadgerOptions(
 	opts.ValueLogLoadingMode = options.MemoryMap
 
 	// Use an extended table size for larger commits.
-	opts.MaxTableSize = storage.DefaultMaxTableSize
+	opts.MaxTableSize = database.DefaultMaxTableSize
 
 	// Smaller value log sizes means smaller contiguous memory allocations
 	// and less RAM usage on cleanup.
-	opts.ValueLogFileSize = storage.DefaultLogValueSize
+	opts.ValueLogFileSize = database.DefaultLogValueSize
 
 	// To allow writes at a faster speed, we create a new memtable as soon as
 	// an existing memtable is filled up. This option determines how many
@@ -164,11 +166,11 @@ func Initialize(
 	config *configuration.Configuration,
 	client Client,
 ) (*Indexer, error) {
-	localStore, err := storage.NewBadgerStorage(
+	localStore, err := database.NewBadgerDatabase(
 		ctx,
 		config.IndexerPath,
-		storage.WithCompressorEntries(config.Compressors),
-		storage.WithCustomSettings(defaultBadgerOptions(
+		database.WithCompressorEntries(config.Compressors),
+		database.WithCustomSettings(defaultBadgerOptions(
 			config.IndexerPath,
 		)),
 	)
@@ -176,7 +178,7 @@ func Initialize(
 		return nil, fmt.Errorf("%w: unable to initialize storage", err)
 	}
 
-	blockStorage := storage.NewBlockStorage(localStore)
+	blockStorage := modules.NewBlockStorage(localStore)
 	asserter, err := asserter.NewClientWithOptions(
 		config.Network,
 		config.GenesisBlockIdentifier,
@@ -200,21 +202,21 @@ func Initialize(
 		asserter:      asserter,
 	}
 
-	coinStorage := storage.NewCoinStorage(
+	coinStorage := modules.NewCoinStorage(
 		localStore,
 		&CoinStorageHelper{blockStorage},
 		asserter,
 	)
 	i.coinStorage = coinStorage
 
-	balanceStorage := storage.NewBalanceStorage(localStore)
+	balanceStorage := modules.NewBalanceStorage(localStore)
 	balanceStorage.Initialize(
 		&BalanceStorageHelper{asserter},
 		&BalanceStorageHandler{},
 	)
 	i.balanceStorage = balanceStorage
 
-	i.workers = []storage.BlockWorker{coinStorage, balanceStorage}
+	i.workers = []modules.BlockWorker{coinStorage, balanceStorage}
 
 	return i, nil
 }
@@ -422,14 +424,14 @@ func (i *Indexer) findCoin(
 	coinIdentifier string,
 ) (*types.Coin, *types.AccountIdentifier, error) {
 	for ctx.Err() == nil {
-		databaseTransaction := i.database.NewDatabaseTransaction(ctx, false)
+		databaseTransaction := i.database.ReadTransaction(ctx)
 		defer databaseTransaction.Discard(ctx)
 
 		coinHeadBlock, err := i.blockStorage.GetHeadBlockIdentifierTransactional(
 			ctx,
 			databaseTransaction,
 		)
-		if errors.Is(err, storage.ErrHeadBlockNotFound) {
+		if errors.Is(err, storageErrs.ErrHeadBlockNotFound) {
 			if err := sdkUtils.ContextSleep(ctx, missingTransactionDelay); err != nil {
 				return nil, nil, err
 			}
@@ -455,7 +457,7 @@ func (i *Indexer) findCoin(
 			return coin, owner, nil
 		}
 
-		if !errors.Is(err, storage.ErrCoinNotFound) {
+		if !errors.Is(err, storageErrs.ErrCoinNotFound) {
 			return nil, nil, fmt.Errorf("%w: unable to lookup coin %s", err, coinIdentifier)
 		}
 
@@ -506,7 +508,7 @@ func (i *Indexer) checkHeaderMatch(
 	btcBlock *bitcoin.Block,
 ) error {
 	headBlock, err := i.blockStorage.GetHeadBlockIdentifier(ctx)
-	if err != nil && !errors.Is(err, storage.ErrHeadBlockNotFound) {
+	if err != nil && !errors.Is(err, storageErrs.ErrHeadBlockNotFound) {
 		return fmt.Errorf("%w: unable to lookup head block", err)
 	}
 
@@ -525,12 +527,12 @@ func (i *Indexer) findCoins(
 	ctx context.Context,
 	btcBlock *bitcoin.Block,
 	coins []string,
-) (map[string]*storage.AccountCoin, error) {
+) (map[string]*types.AccountCoin, error) {
 	if err := i.checkHeaderMatch(ctx, btcBlock); err != nil {
 		return nil, fmt.Errorf("%w: check header match failed", err)
 	}
 
-	coinMap := map[string]*storage.AccountCoin{}
+	coinMap := map[string]*types.AccountCoin{}
 	remainingCoins := []string{}
 	for _, coinIdentifier := range coins {
 		coin, owner, err := i.findCoin(
@@ -539,7 +541,7 @@ func (i *Indexer) findCoins(
 			coinIdentifier,
 		)
 		if err == nil {
-			coinMap[coinIdentifier] = &storage.AccountCoin{
+			coinMap[coinIdentifier] = &types.AccountCoin{
 				Account: owner,
 				Coin:    coin,
 			}
@@ -673,7 +675,7 @@ func (i *Indexer) GetScriptPubKeys(
 	ctx context.Context,
 	coins []*types.Coin,
 ) ([]*bitcoin.ScriptPubKey, error) {
-	databaseTransaction := i.database.NewDatabaseTransaction(ctx, false)
+	databaseTransaction := i.database.ReadTransaction(ctx)
 	defer databaseTransaction.Discard(ctx)
 
 	scripts := make([]*bitcoin.ScriptPubKey, len(coins))
@@ -786,7 +788,7 @@ func (i *Indexer) GetBalance(
 	currency *types.Currency,
 	blockIdentifier *types.PartialBlockIdentifier,
 ) (*types.Amount, *types.BlockIdentifier, error) {
-	dbTx := i.database.NewDatabaseTransaction(ctx, false)
+	dbTx := i.database.ReadTransaction(ctx)
 	defer dbTx.Discard(ctx)
 
 	blockResponse, err := i.blockStorage.GetBlockLazyTransactional(
@@ -805,7 +807,7 @@ func (i *Indexer) GetBalance(
 		currency,
 		blockResponse.Block.BlockIdentifier.Index,
 	)
-	if errors.Is(err, storage.ErrAccountMissing) {
+	if errors.Is(err, storageErrs.ErrAccountMissing) {
 		return &types.Amount{
 			Value:    zeroValue,
 			Currency: currency,

@@ -29,7 +29,6 @@ import (
 	bitcoinUtils "github.com/coinbase/rosetta-bitcoin/utils"
 
 	"github.com/btcsuite/btcutil"
-	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
 )
@@ -246,7 +245,7 @@ func (b *Client) GetRawBlock(
 func (b *Client) ParseBlock(
 	ctx context.Context,
 	block *Block,
-	coins map[string]*storage.AccountCoin,
+	coins map[string]*types.AccountCoin,
 ) (*types.Block, error) {
 	rblock, err := b.parseBlockData(block)
 	if err != nil {
@@ -493,7 +492,7 @@ func skipTransactionOperations(blockNumber int64, blockHash string, transactionH
 func (b *Client) parseTransactions(
 	ctx context.Context,
 	block *Block,
-	coins map[string]*storage.AccountCoin,
+	coins map[string]*types.AccountCoin,
 ) ([]*types.Transaction, error) {
 	logger := bitcoinUtils.ExtractLogger(ctx, "client")
 
@@ -547,7 +546,7 @@ func (b *Client) parseTransactions(
 				continue
 			}
 
-			coins[op.CoinChange.CoinIdentifier.Identifier] = &storage.AccountCoin{
+			coins[op.CoinChange.CoinIdentifier.Identifier] = &types.AccountCoin{
 				Coin: &types.Coin{
 					CoinIdentifier: op.CoinChange.CoinIdentifier,
 					Amount:         op.Amount,
@@ -565,7 +564,7 @@ func (b *Client) parseTransactions(
 func (b *Client) parseTxOperations(
 	tx *Transaction,
 	txIndex int,
-	coins map[string]*storage.AccountCoin,
+	coins map[string]*types.AccountCoin,
 ) ([]*types.Operation, error) {
 	txOps := []*types.Operation{}
 
@@ -719,7 +718,7 @@ func (b *Client) parseInputTransactionOperation(
 	input *Input,
 	index int64,
 	networkIndex int64,
-	accountCoin *storage.AccountCoin,
+	accountCoin *types.AccountCoin,
 ) (*types.Operation, error) {
 	metadata, err := input.Metadata()
 	if err != nil {

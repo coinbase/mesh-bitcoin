@@ -16,14 +16,21 @@ package indexer
 
 import (
 	"context"
+	"errors"
+	"math/big"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/parser"
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/database"
+	"github.com/coinbase/rosetta-sdk-go/storage/modules"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
-var _ storage.BalanceStorageHelper = (*BalanceStorageHelper)(nil)
+var _ modules.BalanceStorageHelper = (*BalanceStorageHelper)(nil)
+
+var (
+	errNotImplemented = errors.New("not implemented")
+)
 
 // BalanceStorageHelper implements storage.BalanceStorageHelper.
 type BalanceStorageHelper struct {
@@ -59,4 +66,20 @@ func (h *BalanceStorageHelper) ExemptFunc() parser.ExemptOperation {
 	return func(op *types.Operation) bool {
 		return false
 	}
+}
+
+// AccountsReconciled returns the total accounts reconciled by count.
+func (h *BalanceStorageHelper) AccountsReconciled(
+	ctx context.Context,
+	dbTx database.Transaction,
+) (*big.Int, error) {
+	return nil, errNotImplemented
+}
+
+// AccountsSeen returns the total accounts seen by count.
+func (h *BalanceStorageHelper) AccountsSeen(
+	ctx context.Context,
+	dbTx database.Transaction,
+) (*big.Int, error) {
+	return nil, errNotImplemented
 }

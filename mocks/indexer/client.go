@@ -9,8 +9,6 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	storage "github.com/coinbase/rosetta-sdk-go/storage"
-
 	types "github.com/coinbase/rosetta-sdk-go/types"
 )
 
@@ -75,11 +73,11 @@ func (_m *Client) NetworkStatus(_a0 context.Context) (*types.NetworkStatusRespon
 }
 
 // ParseBlock provides a mock function with given fields: _a0, _a1, _a2
-func (_m *Client) ParseBlock(_a0 context.Context, _a1 *bitcoin.Block, _a2 map[string]*storage.AccountCoin) (*types.Block, error) {
+func (_m *Client) ParseBlock(_a0 context.Context, _a1 *bitcoin.Block, _a2 map[string]*types.AccountCoin) (*types.Block, error) {
 	ret := _m.Called(_a0, _a1, _a2)
 
 	var r0 *types.Block
-	if rf, ok := ret.Get(0).(func(context.Context, *bitcoin.Block, map[string]*storage.AccountCoin) *types.Block); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *bitcoin.Block, map[string]*types.AccountCoin) *types.Block); ok {
 		r0 = rf(_a0, _a1, _a2)
 	} else {
 		if ret.Get(0) != nil {
@@ -88,7 +86,7 @@ func (_m *Client) ParseBlock(_a0 context.Context, _a1 *bitcoin.Block, _a2 map[st
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *bitcoin.Block, map[string]*storage.AccountCoin) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *bitcoin.Block, map[string]*types.AccountCoin) error); ok {
 		r1 = rf(_a0, _a1, _a2)
 	} else {
 		r1 = ret.Error(1)
