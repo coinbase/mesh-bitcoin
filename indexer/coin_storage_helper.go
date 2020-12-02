@@ -17,22 +17,23 @@ package indexer
 import (
 	"context"
 
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/database"
+	"github.com/coinbase/rosetta-sdk-go/storage/modules"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
-var _ storage.CoinStorageHelper = (*CoinStorageHelper)(nil)
+var _ modules.CoinStorageHelper = (*CoinStorageHelper)(nil)
 
 // CoinStorageHelper implements storage.CoinStorageHelper.
 type CoinStorageHelper struct {
-	b *storage.BlockStorage
+	b *modules.BlockStorage
 }
 
 // CurrentBlockIdentifier returns the current head block identifier
 // and is used to comply with the CoinStorageHelper interface.
 func (h *CoinStorageHelper) CurrentBlockIdentifier(
 	ctx context.Context,
-	transaction storage.DatabaseTransaction,
+	transaction database.Transaction,
 ) (*types.BlockIdentifier, error) {
 	return h.b.GetHeadBlockIdentifierTransactional(ctx, transaction)
 }

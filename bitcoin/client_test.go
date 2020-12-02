@@ -24,7 +24,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/coinbase/rosetta-sdk-go/storage"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -708,14 +707,14 @@ func mustMarshalMap(v interface{}) map[string]interface{} {
 func TestParseBlock(t *testing.T) {
 	tests := map[string]struct {
 		block *Block
-		coins map[string]*storage.AccountCoin
+		coins map[string]*types.AccountCoin
 
 		expectedBlock *types.Block
 		expectedError error
 	}{
 		"no fetched transactions": {
 			block: block1000,
-			coins: map[string]*storage.AccountCoin{},
+			coins: map[string]*types.AccountCoin{},
 			expectedBlock: &types.Block{
 				BlockIdentifier: blockIdentifier1000,
 				ParentBlockIdentifier: &types.BlockIdentifier{
@@ -865,7 +864,7 @@ func TestParseBlock(t *testing.T) {
 		},
 		"block 100000": {
 			block: block100000,
-			coins: map[string]*storage.AccountCoin{
+			coins: map[string]*types.AccountCoin{
 				"87a157f3fd88ac7907c05fc55e271dc4acdc5605d187d646604ca8c0e9382e03:0": {
 					Account: &types.AccountIdentifier{
 						Address: "1BNwxHGaFbeUBitpjy2AsKpJ29Ybxntqvb",
@@ -1251,7 +1250,7 @@ func TestParseBlock(t *testing.T) {
 		},
 		"missing transactions": {
 			block:         block100000,
-			coins:         map[string]*storage.AccountCoin{},
+			coins:         map[string]*types.AccountCoin{},
 			expectedError: errors.New("error finding previous tx"),
 		},
 	}

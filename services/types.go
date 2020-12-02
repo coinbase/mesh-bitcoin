@@ -45,7 +45,7 @@ const (
 	// variable instead of a constant because
 	// we typically need the pointer of this
 	// value.
-	MiddlewareVersion = "0.0.7"
+	MiddlewareVersion = "0.0.8"
 )
 
 // Client is used by the servicers to get Peer information

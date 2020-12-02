@@ -25,7 +25,7 @@ import (
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 
 	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
@@ -121,7 +121,7 @@ type Configuration struct {
 	Pruning                *PruningConfiguration
 	IndexerPath            string
 	BitcoindPath           string
-	Compressors            []*storage.CompressorEntry
+	Compressors            []*encoder.CompressorEntry
 }
 
 // LoadConfiguration attempts to create a new Configuration
@@ -167,7 +167,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = bitcoin.MainnetCurrency
 		config.ConfigPath = mainnetConfigPath
 		config.RPCPort = mainnetRPCPort
-		config.Compressors = []*storage.CompressorEntry{
+		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
 				DictionaryPath: mainnetTransactionDictionary,
@@ -183,7 +183,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = bitcoin.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
-		config.Compressors = []*storage.CompressorEntry{
+		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
 				DictionaryPath: testnetTransactionDictionary,

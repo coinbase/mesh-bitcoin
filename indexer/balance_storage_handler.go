@@ -18,11 +18,12 @@ import (
 	"context"
 
 	"github.com/coinbase/rosetta-sdk-go/parser"
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/database"
+	"github.com/coinbase/rosetta-sdk-go/storage/modules"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
-var _ storage.BalanceStorageHandler = (*BalanceStorageHandler)(nil)
+var _ modules.BalanceStorageHandler = (*BalanceStorageHandler)(nil)
 
 // BalanceStorageHandler implements storage.BalanceStorageHandler.
 type BalanceStorageHandler struct{}
@@ -41,6 +42,24 @@ func (h *BalanceStorageHandler) BlockRemoved(
 	ctx context.Context,
 	block *types.Block,
 	changes []*parser.BalanceChange,
+) error {
+	return nil
+}
+
+// AccountsReconciled updates the total accounts reconciled by count.
+func (h *BalanceStorageHandler) AccountsReconciled(
+	ctx context.Context,
+	dbTx database.Transaction,
+	count int,
+) error {
+	return nil
+}
+
+// AccountsSeen updates the total accounts seen by count.
+func (h *BalanceStorageHandler) AccountsSeen(
+	ctx context.Context,
+	dbTx database.Transaction,
+	count int,
 ) error {
 	return nil
 }

@@ -22,7 +22,7 @@ import (
 
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 
-	"github.com/coinbase/rosetta-sdk-go/storage"
+	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
 	"github.com/coinbase/rosetta-sdk-go/utils"
 	"github.com/stretchr/testify/assert"
@@ -70,7 +70,7 @@ func TestLoadConfiguration(t *testing.T) {
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
 				},
-				Compressors: []*storage.CompressorEntry{
+				Compressors: []*encoder.CompressorEntry{
 					{
 						Namespace:      transactionNamespace,
 						DictionaryPath: mainnetTransactionDictionary,
@@ -99,7 +99,7 @@ func TestLoadConfiguration(t *testing.T) {
 					Depth:     pruneDepth,
 					MinHeight: minPruneHeight,
 				},
-				Compressors: []*storage.CompressorEntry{
+				Compressors: []*encoder.CompressorEntry{
 					{
 						Namespace:      transactionNamespace,
 						DictionaryPath: testnetTransactionDictionary,
