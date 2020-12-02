@@ -7,7 +7,6 @@ require (
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/coinbase/rosetta-sdk-go v0.6.3
 	github.com/dgraph-io/badger/v2 v2.2007.2
-	github.com/google/addlicense v0.0.0-20200906110928-a0294312aa76 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/stretchr/testify v1.6.1
 	go.uber.org/zap v1.16.0
