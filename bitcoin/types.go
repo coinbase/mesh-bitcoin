@@ -94,7 +94,7 @@ func CreateMainNetParams() (*chaincfg.Params) {
 	return params
 }
 
-// CreateTestNet3Params is a function to override default mainnet settings with address prefixes
+// CreateTestNet3Params is a function to override default testnet settings with address prefixes
 func CreateTestNet3Params() (*chaincfg.Params) {
 	params := &chaincfg.TestNet3Params
 	params.PubKeyHashAddrID = 111
