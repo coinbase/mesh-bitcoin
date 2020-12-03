@@ -99,7 +99,12 @@ var (
 		Symbol:   "BTC",
 		Decimals: Decimals,
 	}
-
+	
+	// Mainnet address encoding magics
+	MainnetParams.PubKeyHashAddrID = []byte{0}
+	MainnetParams.ScriptHashAddrID = []byte{5}
+	MainnetParams.Bech32HRPSegwit = "bc"
+	
 	// TestnetGenesisBlockIdentifier is the genesis block for testnet.
 	TestnetGenesisBlockIdentifier = &types.BlockIdentifier{
 		Hash: "000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943",
@@ -114,6 +119,11 @@ var (
 		Decimals: Decimals,
 	}
 
+	// Testnet address encoding magics
+	TestnetParams.PubKeyHashAddrID = []byte{111}
+	TestnetParams.ScriptHashAddrID = []byte{196}
+	TestnetParams.Bech32HRPSegwit = "tb"
+	
 	// OperationTypes are all supported operation.Types.
 	OperationTypes = []string{
 		InputOpType,
