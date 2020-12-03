@@ -85,6 +85,22 @@ const (
 	P2PKHScriptPubkeySize = 25               // P2PKH size
 )
 
+func CreateMainNetParams() (*chaincfg.Params) {
+	params := &chaincfg.MainNetParams
+	params.PubKeyHashAddrID = 0
+	params.ScriptHashAddrID = 5
+	params.Bech32HRPSegwit = "bc"
+	return params
+}
+
+func CreateTestNet3Params() (*chaincfg.Params) {
+	params := &chaincfg.TestNet3Params
+	params.PubKeyHashAddrID = 111
+	params.ScriptHashAddrID = 196
+	params.Bech32HRPSegwit = "tb"
+	return params
+}
+
 var (
 	// MainnetGenesisBlockIdentifier is the genesis block for mainnet.
 	MainnetGenesisBlockIdentifier = &types.BlockIdentifier{
@@ -92,7 +108,7 @@ var (
 	}
 
 	// MainnetParams are the params for mainnet.
-	MainnetParams = &chaincfg.MainNetParams
+	MainnetParams = CreateMainNetParams()
 
 	// MainnetCurrency is the *types.Currency for mainnet.
 	MainnetCurrency = &types.Currency{
@@ -100,29 +116,19 @@ var (
 		Decimals: Decimals,
 	}
 	
-	// Mainnet address encoding magics
-	MainnetParams.PubKeyHashAddrID = []byte{0}
-	MainnetParams.ScriptHashAddrID = []byte{5}
-	MainnetParams.Bech32HRPSegwit = "bc"
-	
 	// TestnetGenesisBlockIdentifier is the genesis block for testnet.
 	TestnetGenesisBlockIdentifier = &types.BlockIdentifier{
 		Hash: "000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943",
 	}
 
 	// TestnetParams are the params for testnet.
-	TestnetParams = &chaincfg.TestNet3Params
+	TestnetParams = CreateTestNet3Params()
 
 	// TestnetCurrency is the *types.Currency for testnet.
 	TestnetCurrency = &types.Currency{
 		Symbol:   "tBTC",
 		Decimals: Decimals,
 	}
-
-	// Testnet address encoding magics
-	TestnetParams.PubKeyHashAddrID = []byte{111}
-	TestnetParams.ScriptHashAddrID = []byte{196}
-	TestnetParams.Bech32HRPSegwit = "tb"
 	
 	// OperationTypes are all supported operation.Types.
 	OperationTypes = []string{
