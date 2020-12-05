@@ -330,6 +330,36 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	}
 
 	ops := 0
+	for _, transaction := range block.Transactions {
+		ops += len(transaction.Operations)
+	}
+
+	logger.Debugw(
+		"block added",
+		"hash", block.BlockIdentifier.Hash,
+		"index", block.BlockIdentifier.Index,
+		"transactions", len(block.Transactions),
+		"ops", ops,
+	)
+
+	return nil
+}
+
+// BlockEncountered is called by the syncer when a block is encountered.
+func (i *Indexer) BlockEncountered(ctx context.Context, block *types.Block) error {
+	logger := utils.ExtractLogger(ctx, "indexer")
+
+	err := i.blockStorage.EncounterBlock(ctx, block)
+	if err != nil {
+		return fmt.Errorf(
+			"%w: unable to encounter block to storage %s:%d",
+			err,
+			block.BlockIdentifier.Hash,
+			block.BlockIdentifier.Index,
+		)
+	}
+
+	ops := 0
 
 	// Close channels of all blocks waiting.
 	i.waiter.Lock()
@@ -375,11 +405,9 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	i.waiter.Unlock()
 
 	logger.Debugw(
-		"block added",
+		"block encountered",
 		"hash", block.BlockIdentifier.Hash,
 		"index", block.BlockIdentifier.Index,
-		"transactions", len(block.Transactions),
-		"ops", ops,
 	)
 
 	return nil
@@ -444,6 +472,8 @@ func (i *Indexer) findCoin(
 				err,
 			)
 		}
+
+		// TODO: check encounter bank of coins to enable full pre-syncing
 
 		// Attempt to find coin
 		coin, owner, err := i.coinStorage.GetCoinTransactional(
