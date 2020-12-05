@@ -351,6 +351,10 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 				continue
 			}
 
+			if op.CoinChange.CoinAction != types.CoinCreated {
+				continue
+			}
+
 			delete(i.coinCache, op.CoinChange.CoinIdentifier.Identifier)
 		}
 	}
@@ -376,6 +380,11 @@ func (i *Indexer) BlockEncountered(ctx context.Context, block *types.Block) erro
 	for _, tx := range block.Transactions {
 		for _, op := range tx.Operations {
 			if op.CoinChange == nil {
+				continue
+			}
+
+			// We only care about newly accessible coins.
+			if op.CoinChange.CoinAction != types.CoinCreated {
 				continue
 			}
 
