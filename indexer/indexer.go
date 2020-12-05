@@ -101,7 +101,7 @@ type Indexer struct {
 
 	// store coins created in encountered before added
 	coinCache      map[string]*types.AccountCoin
-	coinCacheMutex sync.Mutex
+	coinCacheMutex *sdkUtils.PriorityMutex
 
 	encountered      int64 // if increases, then retry coin lookup
 	encounteredMutex sync.Mutex
@@ -200,15 +200,16 @@ func Initialize(
 	}
 
 	i := &Indexer{
-		cancel:        cancel,
-		network:       config.Network,
-		pruningConfig: config.Pruning,
-		client:        client,
-		database:      localStore,
-		blockStorage:  blockStorage,
-		waiter:        newWaitTable(),
-		asserter:      asserter,
-		coinCache:     map[string]*types.AccountCoin{},
+		cancel:         cancel,
+		network:        config.Network,
+		pruningConfig:  config.Pruning,
+		client:         client,
+		database:       localStore,
+		blockStorage:   blockStorage,
+		waiter:         newWaitTable(),
+		asserter:       asserter,
+		coinCache:      map[string]*types.AccountCoin{},
+		coinCacheMutex: new(sdkUtils.PriorityMutex),
 	}
 
 	coinStorage := modules.NewCoinStorage(
@@ -344,7 +345,7 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	}
 
 	// clean cache intermediate
-	i.coinCacheMutex.Lock()
+	i.coinCacheMutex.Lock(true)
 	for _, tx := range block.Transactions {
 		for _, op := range tx.Operations {
 			if op.CoinChange == nil {
@@ -376,7 +377,7 @@ func (i *Indexer) BlockEncountered(ctx context.Context, block *types.Block) erro
 	logger := utils.ExtractLogger(ctx, "indexer")
 
 	// load intermediate
-	i.coinCacheMutex.Lock()
+	i.coinCacheMutex.Lock(false)
 	for _, tx := range block.Transactions {
 		for _, op := range tx.Operations {
 			if op.CoinChange == nil {
@@ -548,7 +549,7 @@ func (i *Indexer) findCoin(
 		// Check encounter table
 		// TODO: check encounter bank of coins to enable full pre-syncing
 		// otherwise will still be stuck
-		i.coinCacheMutex.Lock()
+		i.coinCacheMutex.Lock(false)
 		accCoin, ok := i.coinCache[coinIdentifier]
 		i.coinCacheMutex.Unlock()
 		if ok {
