@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
@@ -97,6 +98,13 @@ type Indexer struct {
 	workers        []modules.BlockWorker
 
 	waiter *waitTable
+
+	// store coins created in encountered before added
+	coinCache      map[string]*types.AccountCoin
+	coinCacheMutex sync.Mutex
+
+	encountered      int64 // if increases, then retry coin lookup
+	encounteredMutex sync.Mutex
 }
 
 // CloseDatabase closes a storage.Database. This should be called
@@ -200,6 +208,7 @@ func Initialize(
 		blockStorage:  blockStorage,
 		waiter:        newWaitTable(),
 		asserter:      asserter,
+		coinCache:     map[string]*types.AccountCoin{},
 	}
 
 	coinStorage := modules.NewCoinStorage(
@@ -334,6 +343,19 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 		ops += len(transaction.Operations)
 	}
 
+	// clean cache intermediate
+	i.coinCacheMutex.Lock()
+	for _, tx := range block.Transactions {
+		for _, op := range tx.Operations {
+			if op.CoinChange == nil {
+				continue
+			}
+
+			delete(i.coinCache, op.CoinChange.CoinIdentifier.Identifier)
+		}
+	}
+	i.coinCacheMutex.Unlock()
+
 	logger.Debugw(
 		"block added",
 		"hash", block.BlockIdentifier.Hash,
@@ -348,6 +370,30 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 // BlockEncountered is called by the syncer when a block is encountered.
 func (i *Indexer) BlockEncountered(ctx context.Context, block *types.Block) error {
 	logger := utils.ExtractLogger(ctx, "indexer")
+
+	// load intermediate
+	i.coinCacheMutex.Lock()
+	for _, tx := range block.Transactions {
+		for _, op := range tx.Operations {
+			if op.CoinChange == nil {
+				continue
+			}
+
+			i.coinCache[op.CoinChange.CoinIdentifier.Identifier] = &types.AccountCoin{
+				Account: op.Account,
+				Coin: &types.Coin{
+					CoinIdentifier: op.CoinChange.CoinIdentifier,
+					Amount:         op.Amount,
+				},
+			}
+		}
+	}
+	i.coinCacheMutex.Unlock()
+
+	// Update so that lookers know it exists
+	i.encounteredMutex.Lock()
+	i.encountered++
+	i.encounteredMutex.Unlock()
 
 	err := i.blockStorage.EncounterBlock(ctx, block)
 	if err != nil {
@@ -452,6 +498,7 @@ func (i *Indexer) findCoin(
 	coinIdentifier string,
 ) (*types.Coin, *types.AccountIdentifier, error) {
 	for ctx.Err() == nil {
+		startEncountered := i.encountered
 		databaseTransaction := i.database.ReadTransaction(ctx)
 		defer databaseTransaction.Discard(ctx)
 
@@ -473,8 +520,6 @@ func (i *Indexer) findCoin(
 			)
 		}
 
-		// TODO: check encounter bank of coins to enable full pre-syncing
-
 		// Attempt to find coin
 		coin, owner, err := i.coinStorage.GetCoinTransactional(
 			ctx,
@@ -491,6 +536,15 @@ func (i *Indexer) findCoin(
 			return nil, nil, fmt.Errorf("%w: unable to lookup coin %s", err, coinIdentifier)
 		}
 
+		// Check encounter table
+		// TODO: check encounter bank of coins to enable full pre-syncing
+		// otherwise will still be stuck
+		i.coinCacheMutex.Lock()
+		if accCoin, ok := i.coinCache[coinIdentifier]; ok {
+			return accCoin.Coin, accCoin.Account, nil
+		}
+		i.coinCacheMutex.Unlock()
+
 		// Locking here prevents us from adding sending any done
 		// signals while we are determining whether or not to add
 		// to the WaitTable.
@@ -505,7 +559,7 @@ func (i *Indexer) findCoin(
 
 		// If the block has changed, we try to look up the transaction
 		// again.
-		if types.Hash(currHeadBlock) != types.Hash(coinHeadBlock) {
+		if types.Hash(currHeadBlock) != types.Hash(coinHeadBlock) || i.encountered != startEncountered {
 			i.waiter.Unlock()
 			continue
 		}
