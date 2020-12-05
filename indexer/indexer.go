@@ -549,10 +549,11 @@ func (i *Indexer) findCoin(
 		// TODO: check encounter bank of coins to enable full pre-syncing
 		// otherwise will still be stuck
 		i.coinCacheMutex.Lock()
-		if accCoin, ok := i.coinCache[coinIdentifier]; ok {
+		accCoin, ok := i.coinCache[coinIdentifier]
+		i.coinCacheMutex.Unlock()
+		if ok {
 			return accCoin.Coin, accCoin.Account, nil
 		}
-		i.coinCacheMutex.Unlock()
 
 		// Locking here prevents us from adding sending any done
 		// signals while we are determining whether or not to add
