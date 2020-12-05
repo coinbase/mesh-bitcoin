@@ -623,9 +623,10 @@ func (i *Indexer) findCoins(
 	btcBlock *bitcoin.Block,
 	coins []string,
 ) (map[string]*types.AccountCoin, error) {
-	if err := i.checkHeaderMatch(ctx, btcBlock); err != nil {
-		return nil, fmt.Errorf("%w: check header match failed", err)
-	}
+	// TODO: we need to abort correctly when this occurs still
+	// if err := i.checkHeaderMatch(ctx, btcBlock); err != nil {
+	// 	return nil, fmt.Errorf("%w: check header match failed", err)
+	// }
 
 	coinMap := map[string]*types.AccountCoin{}
 	remainingCoins := []string{}
