@@ -445,19 +445,21 @@ func (i *Indexer) BlockEncountered(ctx context.Context, block *types.Block) erro
 	// Look for all remaining waiting transactions associated
 	// with the next block that have not yet been closed. We should
 	// abort these waits as they will never be closed by a new transaction.
-	for txHash, val := range i.waiter.table {
-		if val.earliestBlock == block.BlockIdentifier.Index+1 && !val.channelClosed {
-			logger.Debugw(
-				"aborting channel",
-				"hash", block.BlockIdentifier.Hash,
-				"index", block.BlockIdentifier.Index,
-				"channel", txHash,
-			)
-			val.channelClosed = true
-			val.aborted = true
-			close(val.channel)
-		}
-	}
+
+	// TODO: need to fix this
+	// for txHash, val := range i.waiter.table {
+	// 	if val.earliestBlock == block.BlockIdentifier.Index+1 && !val.channelClosed {
+	// 		logger.Debugw(
+	// 			"aborting channel",
+	// 			"hash", block.BlockIdentifier.Hash,
+	// 			"index", block.BlockIdentifier.Index,
+	// 			"channel", txHash,
+	// 		)
+	// 		val.channelClosed = true
+	// 		val.aborted = true
+	// 		close(val.channel)
+	// 	}
+	// }
 	i.waiter.Unlock()
 
 	logger.Debugw(
