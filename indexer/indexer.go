@@ -463,7 +463,7 @@ func (i *Indexer) BlockSeen(ctx context.Context, block *types.Block) error {
 	i.waiter.Unlock()
 
 	logger.Debugw(
-		"block encountered",
+		"block seen",
 		"hash", block.BlockIdentifier.Hash,
 		"index", block.BlockIdentifier.Index,
 	)
