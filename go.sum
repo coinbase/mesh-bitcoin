@@ -76,6 +76,8 @@ github.com/coinbase/rosetta-sdk-go v0.6.5-0.20201205170004-5e50069967e4 h1:rHlMs
 github.com/coinbase/rosetta-sdk-go v0.6.5-0.20201205170004-5e50069967e4/go.mod h1:MvQfsL2KlJ5786OdDviRIJE3agui2YcvS1CaQPDl1Yo=
 github.com/coinbase/rosetta-sdk-go v0.6.5-0.20201205202626-20e9956fc386 h1:Y7JTSEw9lZezKc4NCEGqA0iN8Tr7wWR+RZP5gOvS/WY=
 github.com/coinbase/rosetta-sdk-go v0.6.5-0.20201205202626-20e9956fc386/go.mod h1:MvQfsL2KlJ5786OdDviRIJE3agui2YcvS1CaQPDl1Yo=
+github.com/coinbase/rosetta-sdk-go v0.6.5-0.20201206160637-6155702fc1d7 h1:53EVYPuXEXL/3/OuGtWy0gtz/2HSiMhKMSWrgEEoudY=
+github.com/coinbase/rosetta-sdk-go v0.6.5-0.20201206160637-6155702fc1d7/go.mod h1:MvQfsL2KlJ5786OdDviRIJE3agui2YcvS1CaQPDl1Yo=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=

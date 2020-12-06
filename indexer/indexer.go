@@ -361,6 +361,25 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	}
 	i.coinCacheMutex.Unlock()
 
+	// Look for all remaining waiting transactions associated
+	// with the next block that have not yet been closed. We should
+	// abort these waits as they will never be closed by a new transaction.
+	i.waiter.Lock()
+	for txHash, val := range i.waiter.table {
+		if val.earliestBlock == block.BlockIdentifier.Index+1 && !val.channelClosed {
+			logger.Debugw(
+				"aborting channel",
+				"hash", block.BlockIdentifier.Hash,
+				"index", block.BlockIdentifier.Index,
+				"channel", txHash,
+			)
+			val.channelClosed = true
+			val.aborted = true
+			close(val.channel)
+		}
+	}
+	i.waiter.Unlock()
+
 	logger.Debugw(
 		"block added",
 		"hash", block.BlockIdentifier.Hash,
@@ -372,8 +391,8 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	return nil
 }
 
-// BlockEncountered is called by the syncer when a block is encountered.
-func (i *Indexer) BlockEncountered(ctx context.Context, block *types.Block) error {
+// BlockSeen is called by the syncer when a block is encountered.
+func (i *Indexer) BlockSeen(ctx context.Context, block *types.Block) error {
 	logger := utils.ExtractLogger(ctx, "indexer")
 
 	// load intermediate
@@ -405,7 +424,7 @@ func (i *Indexer) BlockEncountered(ctx context.Context, block *types.Block) erro
 	i.encountered++
 	i.encounteredMutex.Unlock()
 
-	err := i.blockStorage.EncounterBlock(ctx, block)
+	err := i.blockStorage.SeeBlock(ctx, block)
 	if err != nil {
 		return fmt.Errorf(
 			"%w: unable to encounter block to storage %s:%d",
@@ -441,25 +460,6 @@ func (i *Indexer) BlockEncountered(ctx context.Context, block *types.Block) erro
 		val.channelClosed = true
 		close(val.channel)
 	}
-
-	// Look for all remaining waiting transactions associated
-	// with the next block that have not yet been closed. We should
-	// abort these waits as they will never be closed by a new transaction.
-
-	// TODO: need to fix this
-	// for txHash, val := range i.waiter.table {
-	// 	if val.earliestBlock == block.BlockIdentifier.Index+1 && !val.channelClosed {
-	// 		logger.Debugw(
-	// 			"aborting channel",
-	// 			"hash", block.BlockIdentifier.Hash,
-	// 			"index", block.BlockIdentifier.Index,
-	// 			"channel", txHash,
-	// 		)
-	// 		val.channelClosed = true
-	// 		val.aborted = true
-	// 		close(val.channel)
-	// 	}
-	// }
 	i.waiter.Unlock()
 
 	logger.Debugw(
@@ -567,6 +567,7 @@ func (i *Indexer) findCoin(
 		// we created our databaseTransaction.
 		currHeadBlock, err := i.blockStorage.GetHeadBlockIdentifier(ctx)
 		if err != nil {
+			i.waiter.Unlock()
 			return nil, nil, fmt.Errorf("%w: unable to get head block identifier", err)
 		}
 
@@ -625,10 +626,9 @@ func (i *Indexer) findCoins(
 	btcBlock *bitcoin.Block,
 	coins []string,
 ) (map[string]*types.AccountCoin, error) {
-	// TODO: we need to abort correctly when this occurs still
-	// if err := i.checkHeaderMatch(ctx, btcBlock); err != nil {
-	// 	return nil, fmt.Errorf("%w: check header match failed", err)
-	// }
+	if err := i.checkHeaderMatch(ctx, btcBlock); err != nil {
+		return nil, fmt.Errorf("%w: check header match failed", err)
+	}
 
 	coinMap := map[string]*types.AccountCoin{}
 	remainingCoins := []string{}
