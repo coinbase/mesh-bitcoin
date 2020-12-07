@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
 	"sync"
 	"time"
 
@@ -59,6 +60,12 @@ const (
 
 	// zeroValue is 0 as a string
 	zeroValue = "0"
+
+	// overclockMultiplier is the amount
+	// we multiply runtime.NumCPU by to determine
+	// how many concurrent compressions we should
+	// perform when pre-storing block data.
+	overclockMultiplier = 4
 )
 
 var (
@@ -277,6 +284,7 @@ func (i *Indexer) Sync(ctx context.Context) error {
 		syncer.WithCacheSize(syncer.DefaultCacheSize),
 		syncer.WithSizeMultiplier(sizeMultiplier),
 		syncer.WithPastBlocks(pastBlocks),
+		syncer.WithSeenConcurrency(int64(runtime.NumCPU()*overclockMultiplier)),
 	)
 
 	return syncer.Sync(ctx, startIndex, indexPlaceholder)
