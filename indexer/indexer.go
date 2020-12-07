@@ -329,6 +329,8 @@ func (i *Indexer) Prune(ctx context.Context) error {
 func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	logger := utils.ExtractLogger(ctx, "indexer")
 
+	start := time.Now()
+
 	err := i.blockStorage.AddBlock(ctx, block)
 	if err != nil {
 		return fmt.Errorf(
@@ -338,6 +340,8 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 			block.BlockIdentifier.Index,
 		)
 	}
+
+	addBlockTime := time.Since(start)
 
 	ops := 0
 	for _, transaction := range block.Transactions {
@@ -361,6 +365,8 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	}
 	i.coinCacheMutex.Unlock()
 
+	cleanCacheTime := time.Since(start) - addBlockTime
+
 	// Look for all remaining waiting transactions associated
 	// with the next block that have not yet been closed. We should
 	// abort these waits as they will never be closed by a new transaction.
@@ -380,12 +386,18 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	}
 	i.waiter.Unlock()
 
+	waiterIteration := time.Since(start) - addBlockTime - cleanCacheTime
+
 	logger.Debugw(
 		"block added",
 		"hash", block.BlockIdentifier.Hash,
 		"index", block.BlockIdentifier.Index,
 		"transactions", len(block.Transactions),
 		"ops", ops,
+		"total add time", time.Since(start),
+		"add time", addBlockTime,
+		"clean cache time", cleanCacheTime,
+		"waiter iteration", waiterIteration,
 	)
 
 	return nil
