@@ -36,6 +36,7 @@ import (
 	sdkUtils "github.com/coinbase/rosetta-sdk-go/utils"
 	"github.com/dgraph-io/badger/v2"
 	"github.com/dgraph-io/badger/v2/options"
+	"golang.org/x/sync/semaphore"
 )
 
 const (
@@ -66,6 +67,9 @@ const (
 	// how many concurrent compressions we should
 	// perform when pre-storing block data.
 	overclockMultiplier = 4
+
+	// semaphoreWeight is the weight of each semaphore request.
+	semaphoreWeight = int64(1)
 )
 
 var (
@@ -112,6 +116,8 @@ type Indexer struct {
 
 	encountered      int64 // if increases, then retry coin lookup
 	encounteredMutex sync.Mutex
+
+	seenSemaphore *semaphore.Weighted
 }
 
 // CloseDatabase closes a storage.Database. This should be called
@@ -193,7 +199,7 @@ func Initialize(
 		return nil, fmt.Errorf("%w: unable to initialize storage", err)
 	}
 
-	blockStorage := modules.NewBlockStorage(localStore)
+	blockStorage := modules.NewBlockStorage(localStore, runtime.NumCPU()*overclockMultiplier)
 	asserter, err := asserter.NewClientWithOptions(
 		config.Network,
 		config.GenesisBlockIdentifier,
@@ -217,6 +223,7 @@ func Initialize(
 		asserter:       asserter,
 		coinCache:      map[string]*types.AccountCoin{},
 		coinCacheMutex: new(sdkUtils.PriorityMutex),
+		seenSemaphore:  semaphore.NewWeighted(int64(runtime.NumCPU())),
 	}
 
 	coinStorage := modules.NewCoinStorage(
@@ -284,7 +291,6 @@ func (i *Indexer) Sync(ctx context.Context) error {
 		syncer.WithCacheSize(syncer.DefaultCacheSize),
 		syncer.WithSizeMultiplier(sizeMultiplier),
 		syncer.WithPastBlocks(pastBlocks),
-		syncer.WithSeenConcurrency(int64(runtime.NumCPU()*overclockMultiplier)),
 	)
 
 	return syncer.Sync(ctx, startIndex, indexPlaceholder)
@@ -413,6 +419,11 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 
 // BlockSeen is called by the syncer when a block is encountered.
 func (i *Indexer) BlockSeen(ctx context.Context, block *types.Block) error {
+	if err := i.seenSemaphore.Acquire(ctx, semaphoreWeight); err != nil {
+		return err
+	}
+	defer i.seenSemaphore.Release(semaphoreWeight)
+
 	logger := utils.ExtractLogger(ctx, "indexer")
 
 	// load intermediate
