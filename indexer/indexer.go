@@ -109,7 +109,6 @@ type Indexer struct {
 	workers        []modules.BlockWorker
 
 	waiter *waitTable
-
 	// Store coins created in pre-store before persisted
 	// in add block so we can optimistically populate
 	// blocks before committed.
@@ -123,6 +122,8 @@ type Indexer struct {
 	seenMutex sync.Mutex
 
 	seenSemaphore *semaphore.Weighted
+
+	maxSync   int64
 }
 
 // CloseDatabase closes a storage.Database. This should be called
@@ -229,6 +230,8 @@ func Initialize(
 		coinCache:      map[string]*types.AccountCoin{},
 		coinCacheMutex: new(sdkUtils.PriorityMutex),
 		seenSemaphore:  semaphore.NewWeighted(int64(runtime.NumCPU())),
+		maxSync:        config.MaxSyncConcurrency,
+
 	}
 
 	coinStorage := modules.NewCoinStorage(
@@ -296,6 +299,7 @@ func (i *Indexer) Sync(ctx context.Context) error {
 		syncer.WithCacheSize(syncer.DefaultCacheSize),
 		syncer.WithSizeMultiplier(sizeMultiplier),
 		syncer.WithPastBlocks(pastBlocks),
+		syncer.WithMaxConcurrency(i.maxSync),
 	)
 
 	return syncer.Sync(ctx, startIndex, indexPlaceholder)
