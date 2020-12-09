@@ -66,7 +66,7 @@ const (
 	// we multiply runtime.NumCPU by to determine
 	// how many concurrent compressions we should
 	// perform when pre-storing block data.
-	overclockMultiplier = 4
+	overclockMultiplier = 16
 
 	// semaphoreWeight is the weight of each semaphore request.
 	semaphoreWeight = int64(1)
