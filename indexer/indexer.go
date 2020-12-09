@@ -18,6 +18,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
+	"sync"
 	"time"
 
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
@@ -34,6 +36,7 @@ import (
 	sdkUtils "github.com/coinbase/rosetta-sdk-go/utils"
 	"github.com/dgraph-io/badger/v2"
 	"github.com/dgraph-io/badger/v2/options"
+	"golang.org/x/sync/semaphore"
 )
 
 const (
@@ -58,6 +61,15 @@ const (
 
 	// zeroValue is 0 as a string
 	zeroValue = "0"
+
+	// overclockMultiplier is the amount
+	// we multiply runtime.NumCPU by to determine
+	// how many goroutines we should
+	// spwan to handle block data sequencing.
+	overclockMultiplier = 16
+
+	// semaphoreWeight is the weight of each semaphore request.
+	semaphoreWeight = int64(1)
 )
 
 var (
@@ -97,6 +109,20 @@ type Indexer struct {
 	workers        []modules.BlockWorker
 
 	waiter *waitTable
+
+	// Store coins created in pre-store before persisted
+	// in add block so we can optimistically populate
+	// blocks before committed.
+	coinCache      map[string]*types.AccountCoin
+	coinCacheMutex *sdkUtils.PriorityMutex
+
+	// When populating blocks using pre-stored blocks,
+	// we should retry if a new block was seen (similar
+	// to trying again if head block changes).
+	seen      int64
+	seenMutex sync.Mutex
+
+	seenSemaphore *semaphore.Weighted
 }
 
 // CloseDatabase closes a storage.Database. This should be called
@@ -178,7 +204,7 @@ func Initialize(
 		return nil, fmt.Errorf("%w: unable to initialize storage", err)
 	}
 
-	blockStorage := modules.NewBlockStorage(localStore)
+	blockStorage := modules.NewBlockStorage(localStore, runtime.NumCPU()*overclockMultiplier)
 	asserter, err := asserter.NewClientWithOptions(
 		config.Network,
 		config.GenesisBlockIdentifier,
@@ -192,14 +218,17 @@ func Initialize(
 	}
 
 	i := &Indexer{
-		cancel:        cancel,
-		network:       config.Network,
-		pruningConfig: config.Pruning,
-		client:        client,
-		database:      localStore,
-		blockStorage:  blockStorage,
-		waiter:        newWaitTable(),
-		asserter:      asserter,
+		cancel:         cancel,
+		network:        config.Network,
+		pruningConfig:  config.Pruning,
+		client:         client,
+		database:       localStore,
+		blockStorage:   blockStorage,
+		waiter:         newWaitTable(),
+		asserter:       asserter,
+		coinCache:      map[string]*types.AccountCoin{},
+		coinCacheMutex: new(sdkUtils.PriorityMutex),
+		seenSemaphore:  semaphore.NewWeighted(int64(runtime.NumCPU())),
 	}
 
 	coinStorage := modules.NewCoinStorage(
@@ -330,6 +359,106 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	}
 
 	ops := 0
+	for _, transaction := range block.Transactions {
+		ops += len(transaction.Operations)
+	}
+
+	// clean cache intermediate
+	i.coinCacheMutex.Lock(true)
+	for _, tx := range block.Transactions {
+		for _, op := range tx.Operations {
+			if op.CoinChange == nil {
+				continue
+			}
+
+			if op.CoinChange.CoinAction != types.CoinCreated {
+				continue
+			}
+
+			delete(i.coinCache, op.CoinChange.CoinIdentifier.Identifier)
+		}
+	}
+	i.coinCacheMutex.Unlock()
+
+	// Look for all remaining waiting transactions associated
+	// with the next block that have not yet been closed. We should
+	// abort these waits as they will never be closed by a new transaction.
+	i.waiter.Lock()
+	for txHash, val := range i.waiter.table {
+		if val.earliestBlock == block.BlockIdentifier.Index+1 && !val.channelClosed {
+			logger.Debugw(
+				"aborting channel",
+				"hash", block.BlockIdentifier.Hash,
+				"index", block.BlockIdentifier.Index,
+				"channel", txHash,
+			)
+			val.channelClosed = true
+			val.aborted = true
+			close(val.channel)
+		}
+	}
+	i.waiter.Unlock()
+
+	logger.Debugw(
+		"block added",
+		"hash", block.BlockIdentifier.Hash,
+		"index", block.BlockIdentifier.Index,
+		"transactions", len(block.Transactions),
+		"ops", ops,
+	)
+
+	return nil
+}
+
+// BlockSeen is called by the syncer when a block is encountered.
+func (i *Indexer) BlockSeen(ctx context.Context, block *types.Block) error {
+	if err := i.seenSemaphore.Acquire(ctx, semaphoreWeight); err != nil {
+		return err
+	}
+	defer i.seenSemaphore.Release(semaphoreWeight)
+
+	logger := utils.ExtractLogger(ctx, "indexer")
+
+	// load intermediate
+	i.coinCacheMutex.Lock(false)
+	for _, tx := range block.Transactions {
+		for _, op := range tx.Operations {
+			if op.CoinChange == nil {
+				continue
+			}
+
+			// We only care about newly accessible coins.
+			if op.CoinChange.CoinAction != types.CoinCreated {
+				continue
+			}
+
+			i.coinCache[op.CoinChange.CoinIdentifier.Identifier] = &types.AccountCoin{
+				Account: op.Account,
+				Coin: &types.Coin{
+					CoinIdentifier: op.CoinChange.CoinIdentifier,
+					Amount:         op.Amount,
+				},
+			}
+		}
+	}
+	i.coinCacheMutex.Unlock()
+
+	// Update so that lookers know it exists
+	i.seenMutex.Lock()
+	i.seen++
+	i.seenMutex.Unlock()
+
+	err := i.blockStorage.SeeBlock(ctx, block)
+	if err != nil {
+		return fmt.Errorf(
+			"%w: unable to encounter block to storage %s:%d",
+			err,
+			block.BlockIdentifier.Hash,
+			block.BlockIdentifier.Index,
+		)
+	}
+
+	ops := 0
 
 	// Close channels of all blocks waiting.
 	i.waiter.Lock()
@@ -355,31 +484,12 @@ func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 		val.channelClosed = true
 		close(val.channel)
 	}
-
-	// Look for all remaining waiting transactions associated
-	// with the next block that have not yet been closed. We should
-	// abort these waits as they will never be closed by a new transaction.
-	for txHash, val := range i.waiter.table {
-		if val.earliestBlock == block.BlockIdentifier.Index+1 && !val.channelClosed {
-			logger.Debugw(
-				"aborting channel",
-				"hash", block.BlockIdentifier.Hash,
-				"index", block.BlockIdentifier.Index,
-				"channel", txHash,
-			)
-			val.channelClosed = true
-			val.aborted = true
-			close(val.channel)
-		}
-	}
 	i.waiter.Unlock()
 
 	logger.Debugw(
-		"block added",
+		"block seen",
 		"hash", block.BlockIdentifier.Hash,
 		"index", block.BlockIdentifier.Index,
-		"transactions", len(block.Transactions),
-		"ops", ops,
 	)
 
 	return nil
@@ -424,6 +534,7 @@ func (i *Indexer) findCoin(
 	coinIdentifier string,
 ) (*types.Coin, *types.AccountIdentifier, error) {
 	for ctx.Err() == nil {
+		startSeen := i.seen
 		databaseTransaction := i.database.ReadTransaction(ctx)
 		defer databaseTransaction.Discard(ctx)
 
@@ -461,6 +572,14 @@ func (i *Indexer) findCoin(
 			return nil, nil, fmt.Errorf("%w: unable to lookup coin %s", err, coinIdentifier)
 		}
 
+		// Check seen CoinCache
+		i.coinCacheMutex.Lock(false)
+		accCoin, ok := i.coinCache[coinIdentifier]
+		i.coinCacheMutex.Unlock()
+		if ok {
+			return accCoin.Coin, accCoin.Account, nil
+		}
+
 		// Locking here prevents us from adding sending any done
 		// signals while we are determining whether or not to add
 		// to the WaitTable.
@@ -470,12 +589,13 @@ func (i *Indexer) findCoin(
 		// we created our databaseTransaction.
 		currHeadBlock, err := i.blockStorage.GetHeadBlockIdentifier(ctx)
 		if err != nil {
+			i.waiter.Unlock()
 			return nil, nil, fmt.Errorf("%w: unable to get head block identifier", err)
 		}
 
 		// If the block has changed, we try to look up the transaction
 		// again.
-		if types.Hash(currHeadBlock) != types.Hash(coinHeadBlock) {
+		if types.Hash(currHeadBlock) != types.Hash(coinHeadBlock) || i.seen != startSeen {
 			i.waiter.Unlock()
 			continue
 		}
