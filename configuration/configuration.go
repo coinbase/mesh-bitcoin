@@ -91,8 +91,8 @@ const (
 	// to determine mode.
 	ModeEnv= "MODE"
 
-	//MaxSyncConcurrency is an enviroment variable
-	//used to cap the syncer concurrency
+	// MaxSyncConcurrency is an environment variable
+	// used to cap the syncer concurrency
 	MaxSyncConcurrency = "MAXSYNC"
 
 	// NetworkEnv is the environment variable
@@ -133,7 +133,6 @@ type Configuration struct {
 // LoadConfiguration attempts to create a new Configuration
 // using the ENVs in the environment.
 func LoadConfiguration(baseDirectory string) (*Configuration, error) {
-
 	config := &Configuration{}
 	config.Pruning = &PruningConfiguration{
 		Frequency: pruneFrequency,
@@ -142,7 +141,6 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 	}
 	maxSyncValue := os.Getenv(MaxSyncConcurrency)
 	switch maxSyncValue {
-
 	case "":
 		config.MaxSyncConcurrency = syncer.DefaultConcurrency
 	case "0":
