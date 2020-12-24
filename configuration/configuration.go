@@ -17,6 +17,7 @@ package configuration
 import (
 	"errors"
 	"fmt"
+	"github.com/coinbase/rosetta-sdk-go/syncer"
 	"os"
 	"path"
 	"strconv"
@@ -88,7 +89,11 @@ const (
 
 	// ModeEnv is the environment variable read
 	// to determine mode.
-	ModeEnv = "MODE"
+	ModeEnv= "MODE"
+
+	//MaxSyncConcurrency is an enviroment variable
+	//used to cap the syncer concurrency
+	MaxSyncConcurrency = "MAXSYNC"
 
 	// NetworkEnv is the environment variable
 	// read to determine network.
@@ -122,18 +127,29 @@ type Configuration struct {
 	IndexerPath            string
 	BitcoindPath           string
 	Compressors            []*encoder.CompressorEntry
+	MaxSyncConcurrency     int64
 }
 
 // LoadConfiguration attempts to create a new Configuration
 // using the ENVs in the environment.
 func LoadConfiguration(baseDirectory string) (*Configuration, error) {
+
 	config := &Configuration{}
 	config.Pruning = &PruningConfiguration{
 		Frequency: pruneFrequency,
 		Depth:     pruneDepth,
 		MinHeight: minPruneHeight,
 	}
+	maxSyncValue := os.Getenv(MaxSyncConcurrency)
+	switch maxSyncValue {
 
+	case "":
+		config.MaxSyncConcurrency = syncer.DefaultConcurrency
+	case "0":
+		return nil, errors.New("syncer concurrency must be greater than zero")
+	default:
+		config.MaxSyncConcurrency, _ = strconv.ParseInt(maxSyncValue,10,64)
+	}
 	modeValue := Mode(os.Getenv(ModeEnv))
 	switch modeValue {
 	case Online:
@@ -180,6 +196,8 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		}
 		config.GenesisBlockIdentifier = bitcoin.TestnetGenesisBlockIdentifier
 		config.Params = bitcoin.TestnetParams
+
+
 		config.Currency = bitcoin.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort

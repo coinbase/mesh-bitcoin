@@ -16,11 +16,10 @@ package configuration
 
 import (
 	"errors"
+	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"os"
 	"path"
 	"testing"
-
-	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 
 	"github.com/coinbase/rosetta-sdk-go/storage/encoder"
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -28,11 +27,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+
 func TestLoadConfiguration(t *testing.T) {
 	tests := map[string]struct {
-		Mode    string
-		Network string
-		Port    string
+		Mode                string
+		Network            string
+		Port               string
+		MaxSyncConcurrency string
 
 		cfg *Configuration
 		err error
@@ -44,15 +45,17 @@ func TestLoadConfiguration(t *testing.T) {
 			Mode: string(Online),
 			err:  errors.New("NETWORK must be populated"),
 		},
-		"only mode and network set": {
+		"port not set": {
 			Mode:    string(Online),
 			Network: Mainnet,
+			MaxSyncConcurrency: "64",
 			err:     errors.New("PORT must be populated"),
 		},
 		"all set (mainnet)": {
 			Mode:    string(Online),
 			Network: Mainnet,
 			Port:    "1000",
+			MaxSyncConcurrency: "64",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
@@ -63,6 +66,7 @@ func TestLoadConfiguration(t *testing.T) {
 				Currency:               bitcoin.MainnetCurrency,
 				GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
 				Port:                   1000,
+				MaxSyncConcurrency:     64,
 				RPCPort:                mainnetRPCPort,
 				ConfigPath:             mainnetConfigPath,
 				Pruning: &PruningConfiguration{
@@ -82,6 +86,7 @@ func TestLoadConfiguration(t *testing.T) {
 			Mode:    string(Online),
 			Network: Testnet,
 			Port:    "1000",
+			MaxSyncConcurrency: "64",
 			cfg: &Configuration{
 				Mode: Online,
 				Network: &types.NetworkIdentifier{
@@ -92,6 +97,7 @@ func TestLoadConfiguration(t *testing.T) {
 				Currency:               bitcoin.TestnetCurrency,
 				GenesisBlockIdentifier: bitcoin.TestnetGenesisBlockIdentifier,
 				Port:                   1000,
+				MaxSyncConcurrency:     64,
 				RPCPort:                testnetRPCPort,
 				ConfigPath:             testnetConfigPath,
 				Pruning: &PruningConfiguration{
@@ -106,6 +112,45 @@ func TestLoadConfiguration(t *testing.T) {
 					},
 				},
 			},
+		},
+		"max sync set": {
+			Mode:    string(Online),
+			Network: Testnet,
+			Port:    "1000",
+			MaxSyncConcurrency: "",
+
+			cfg: &Configuration{
+				Mode: Online,
+				Network: &types.NetworkIdentifier{
+					Network:    bitcoin.TestnetNetwork,
+					Blockchain: bitcoin.Blockchain,
+				},
+				Params:                 bitcoin.TestnetParams,
+				Currency:               bitcoin.TestnetCurrency,
+				GenesisBlockIdentifier: bitcoin.TestnetGenesisBlockIdentifier,
+				Port:                   1000,
+				MaxSyncConcurrency:     64,
+				RPCPort:                testnetRPCPort,
+				ConfigPath:             testnetConfigPath,
+				Pruning: &PruningConfiguration{
+					Frequency: pruneFrequency,
+					Depth:     pruneDepth,
+					MinHeight: minPruneHeight,
+				},
+				Compressors: []*encoder.CompressorEntry{
+					{
+						Namespace:      transactionNamespace,
+						DictionaryPath: testnetTransactionDictionary,
+					},
+				},
+			},
+		},
+		"invalid sync concurrency ": {
+			Mode:    string(Online),
+			Network: Testnet,
+			Port:    "1000",
+			MaxSyncConcurrency: "0",
+			err:     errors.New("syncer concurrency must be greater than zero"),
 		},
 		"invalid mode": {
 			Mode:    "bad mode",
@@ -136,6 +181,7 @@ func TestLoadConfiguration(t *testing.T) {
 			os.Setenv(ModeEnv, test.Mode)
 			os.Setenv(NetworkEnv, test.Network)
 			os.Setenv(PortEnv, test.Port)
+			os.Setenv(MaxSyncConcurrency, test.MaxSyncConcurrency)
 
 			cfg, err := LoadConfiguration(newDir)
 			if test.err != nil {

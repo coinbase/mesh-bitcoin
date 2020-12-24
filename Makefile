@@ -37,7 +37,7 @@ run-mainnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
 
 run-testnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MAXSYNC"="16" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
 
 run-testnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
