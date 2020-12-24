@@ -134,7 +134,6 @@ type Configuration struct {
 // LoadConfiguration attempts to create a new Configuration
 // using the ENVs in the environment.
 func LoadConfiguration(baseDirectory string) (*Configuration, error) {
-
 	config := &Configuration{}
 	config.Pruning = &PruningConfiguration{
 		Frequency: pruneFrequency,
