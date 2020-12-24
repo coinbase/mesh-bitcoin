@@ -18,6 +18,7 @@ FROM ubuntu:18.04 as bitcoind-builder
 RUN mkdir -p /app \
   && chown -R nobody:nogroup /app
 WORKDIR /app
+# Copy the local sdk to your container
 COPY ./rosetta-sdk-go/* /app/
 # Source: https://github.com/bitcoin/bitcoin/blob/master/doc/build-unix.md#ubuntu--debian
 RUN apt-get update && apt-get install -y make gcc g++ autoconf autotools-dev bsdmainutils build-essential git libboost-all-dev \
@@ -59,13 +60,13 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 # Use native remote build context to build in any directory
-COPY . src 
+COPY . src
 RUN cd src \
   && go build \
   && cd .. \
   && mv src/rosetta-bitcoin /app/rosetta-bitcoin \
   && mv src/assets/* /app \
-  && rm -rf src 
+  && rm -rf src
 
 ## Build Final Image
 FROM ubuntu:18.04

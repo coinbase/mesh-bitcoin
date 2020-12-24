@@ -62,7 +62,7 @@ func TestIndexer_Pruning(t *testing.T) {
 			Network:    bitcoin.MainnetNetwork,
 			Blockchain: bitcoin.Blockchain,
 		},
-		MaxSyncConcurrency: 1,
+		MaxSyncConcurrency: 64,
 		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
 		Pruning: &configuration.PruningConfiguration{
 			Frequency: 50 * time.Millisecond,

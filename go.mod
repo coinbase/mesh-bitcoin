@@ -15,4 +15,6 @@ require (
 	honnef.co/go/tools v0.0.1-2020.1.5 // indirect
 )
 
-//replace github.com/coinbase/rosetta-sdk-go v0.6.5 => ../rosetta-sdk-go
+
+
+
