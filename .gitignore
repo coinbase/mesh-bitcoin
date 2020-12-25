@@ -1,3 +1,5 @@
 rosetta-bitcoin
 bitcoin-data
 cli-data
+.DS_Store
+rosetta-sdk-go
