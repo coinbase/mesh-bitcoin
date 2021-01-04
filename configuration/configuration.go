@@ -202,11 +202,9 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		}
 		config.GenesisBlockIdentifier = bitcoin.TestnetGenesisBlockIdentifier
 		config.Params = bitcoin.TestnetParams
-
 		config.Currency = bitcoin.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
-
 		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
