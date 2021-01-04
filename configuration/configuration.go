@@ -17,12 +17,11 @@ package configuration
 import (
 	"errors"
 	"fmt"
+	"github.com/coinbase/rosetta-sdk-go/syncer"
 	"os"
 	"path"
 	"strconv"
 	"time"
-
-	"github.com/coinbase/rosetta-sdk-go/syncer"
 
 	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 
@@ -140,14 +139,22 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		Depth:     pruneDepth,
 		MinHeight: minPruneHeight,
 	}
+	defaultMaxSync := false
 	maxSyncValue := os.Getenv(MaxSyncConcurrency)
-	switch maxSyncValue {
-	case "":
+	if len(maxSyncValue) == 0 {
+		defaultMaxSync = true
+	}
+	parsedValue, err := strconv.ParseInt(maxSyncValue, 10, 64)
+	if err != nil && !defaultMaxSync{
+		return nil, fmt.Errorf("%w: unable to parse maxsync %s", err, maxSyncValue)
+	}
+	switch {
+	case defaultMaxSync:
 		config.MaxSyncConcurrency = syncer.DefaultMaxConcurrency
-	case "0":
+	case parsedValue <= 0:
 		return nil, errors.New("syncer concurrency must be greater than zero")
 	default:
-		config.MaxSyncConcurrency, _ = strconv.ParseInt(maxSyncValue, 10, 64)
+		config.MaxSyncConcurrency = parsedValue
 	}
 	modeValue := Mode(os.Getenv(ModeEnv))
 	switch modeValue {
@@ -199,6 +206,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = bitcoin.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
+
 		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,

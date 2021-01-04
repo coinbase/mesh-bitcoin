@@ -232,7 +232,6 @@ func Initialize(
 		coinCacheMutex: new(sdkUtils.PriorityMutex),
 		seenSemaphore:  semaphore.NewWeighted(int64(runtime.NumCPU())),
 		maxSync:        config.MaxSyncConcurrency,
-
 	}
 
 	coinStorage := modules.NewCoinStorage(

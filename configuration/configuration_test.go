@@ -113,7 +113,7 @@ func TestLoadConfiguration(t *testing.T) {
 				},
 			},
 		},
-		"max sync set": {
+		"default max sync set": {
 			Mode:               string(Online),
 			Network:            Testnet,
 			Port:               "1000",
@@ -144,7 +144,14 @@ func TestLoadConfiguration(t *testing.T) {
 				},
 			},
 		},
-		"invalid sync concurrency ": {
+		"maxsync negative mainnet": {
+			Mode:               string(Online),
+			Network:            Mainnet,
+			Port:               "1000",
+			MaxSyncConcurrency: "-2",
+			err:                errors.New("syncer concurrency must be greater than zero"),
+		},
+		"maxsync zero testnet": {
 			Mode:               string(Online),
 			Network:            Testnet,
 			Port:               "1000",
