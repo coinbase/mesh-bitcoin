@@ -105,6 +105,8 @@ enabling it._
 You should also modify your open file settings to `100000`. This can be done on a linux-based OS
 with the command: `ulimit -n 100000`.
 
+_Note: MacOS users, if you face  `ulimit: setrlimit failed: invalid argument` error while setting `ulimit`, please run `sudo launchctl limit maxfiles 100000 200000` before setting the `ulimit`_
+
 ### Memory-Mapped Files
 `rosetta-bitcoin` uses [memory-mapped files](https://en.wikipedia.org/wiki/Memory-mapped_file) to
 persist data in the `indexer`. As a result, you **must** run `rosetta-bitcoin` on a 64-bit
