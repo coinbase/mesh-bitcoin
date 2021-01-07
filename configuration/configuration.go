@@ -139,15 +139,18 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		Depth:     pruneDepth,
 		MinHeight: minPruneHeight,
 	}
+
 	defaultMaxSync := false
 	maxSyncValue := os.Getenv(MaxSyncConcurrency)
 	if len(maxSyncValue) == 0 {
 		defaultMaxSync = true
 	}
+
 	parsedValue, err := strconv.ParseInt(maxSyncValue, 10, 64)
-	if err != nil && !defaultMaxSync{
+	if !(err == nil || defaultMaxSync) {
 		return nil, fmt.Errorf("%w: unable to parse maxsync %s", err, maxSyncValue)
 	}
+
 	switch {
 	case defaultMaxSync:
 		config.MaxSyncConcurrency = syncer.DefaultMaxConcurrency
@@ -156,6 +159,7 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 	default:
 		config.MaxSyncConcurrency = parsedValue
 	}
+
 	modeValue := Mode(os.Getenv(ModeEnv))
 	switch modeValue {
 	case Online:
