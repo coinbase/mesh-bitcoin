@@ -5,7 +5,7 @@ go 1.13
 require (
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
-	github.com/coinbase/rosetta-sdk-go v0.6.5
+	github.com/coinbase/rosetta-sdk-go v0.6.8
 	github.com/dgraph-io/badger/v2 v2.2007.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/stretchr/testify v1.6.1
