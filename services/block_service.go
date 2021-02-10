@@ -16,6 +16,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 
@@ -50,6 +51,8 @@ func (s *BlockAPIService) Block(
 	}
 
 	blockResponse, err := s.i.GetBlockLazy(ctx, request.BlockIdentifier)
+	// FIXME: delete; returns nil
+	fmt.Printf("block-resp: %+v; err: %v\n", blockResponse, err)
 	if err != nil {
 		return nil, wrapErr(ErrBlockNotFound, err)
 	}

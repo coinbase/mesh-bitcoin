@@ -25,6 +25,9 @@ build:
 build-local:
 	docker build -t rosetta-bitcoin:latest .
 
+build-def:
+	docker build -t rosetta-defi:latest -f Dockerfile.def .
+
 build-release:
 	# make sure to always set version with vX.X.X
 	docker build -t rosetta-bitcoin:$(version) .;
@@ -41,6 +44,11 @@ run-testnet-online:
 
 run-testnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+
+run-def:
+	# stop && delete prev container if exists
+	docker stop rosdef 2>/dev/null; \
+	docker run --name rosdef -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8555:8555 -p 8554:8554 rosetta-defi:latest
 
 train:
 	./zstd-train.sh $(network) transaction $(data-directory)
@@ -71,7 +79,7 @@ check-format:
 test:
 	${TEST_SCRIPT}
 
-coverage:	
+coverage:
 	if [ "${COVERALLS_TOKEN}" ]; then ${TEST_SCRIPT} -coverprofile=c.out -covermode=count; ${GOVERALLS_CMD} -coverprofile=c.out -repotoken ${COVERALLS_TOKEN}; fi
 
 coverage-local:

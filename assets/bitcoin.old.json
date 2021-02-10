@@ -1,7 +1,7 @@
 {
  "network": {
-  "blockchain": "DFI",
-  "network": "mainnet"
+  "blockchain": "Bitcoin",
+  "network": "Mainnet"
  },
  "online_url": "http://localhost:8080",
  "data_directory": "",

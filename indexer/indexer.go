@@ -26,6 +26,7 @@ import (
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 	"github.com/coinbase/rosetta-bitcoin/services"
 	"github.com/coinbase/rosetta-bitcoin/utils"
+	"github.com/rs/zerolog/log"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/storage/database"
@@ -278,6 +279,8 @@ func (i *Indexer) Sync(ctx context.Context) error {
 
 	startIndex := int64(indexPlaceholder)
 	head, err := i.blockStorage.GetHeadBlockIdentifier(ctx)
+	// FIXME: delete; head: nil
+	fmt.Printf("head block identifier: %+v; err: %+v\n", head, err)
 	if err == nil {
 		startIndex = head.Index + 1
 	}
@@ -287,6 +290,8 @@ func (i *Indexer) Sync(ctx context.Context) error {
 	// Otherwise, none are provided to the cache (the syncer will not attempt
 	// a reorg if the cache is empty).
 	pastBlocks := i.blockStorage.CreateBlockCache(ctx, syncer.DefaultPastBlockLimit)
+	// FIXME: delete; pastBlocks: 0
+	fmt.Printf("updated cache len: %v\n", len(pastBlocks))
 
 	syncer := syncer.New(
 		i.network,
@@ -346,6 +351,7 @@ func (i *Indexer) Prune(ctx context.Context) error {
 
 // BlockAdded is called by the syncer when a block is added.
 func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
+	// TODO: doesnt get called
 	logger := utils.ExtractLogger(ctx, "indexer")
 
 	err := i.blockStorage.AddBlock(ctx, block)
@@ -875,6 +881,12 @@ func (i *Indexer) GetBlockLazy(
 	ctx context.Context,
 	blockIdentifier *types.PartialBlockIdentifier,
 ) (*types.BlockResponse, error) {
+	block, msg, err := i.client.GetRawBlock(ctx, blockIdentifier)
+	logger := utils.ExtractLogger(ctx, "")
+	// resp := &types.BlockResponse{}
+	// resp.Block = block
+	log.Info().Msg(fmt.Sprintf("block: %+v\n; msg: %+v\n; err: %+v", block, msg, err))
+	logger.Infof("block: %+v\n; msg: %+v\n; err: %+v", block, msg, err)
 	return i.blockStorage.GetBlockLazy(ctx, blockIdentifier)
 }
 

@@ -24,7 +24,8 @@ import (
 
 const (
 	// Blockchain is Bitcoin.
-	Blockchain string = "Bitcoin"
+	Blockchain string = "DFI"
+	// Blockchain string = "Bitcoin"
 
 	// MainnetNetwork is the value of the network
 	// in MainnetNetworkIdentifier.
@@ -88,7 +89,8 @@ const (
 var (
 	// MainnetGenesisBlockIdentifier is the genesis block for mainnet.
 	MainnetGenesisBlockIdentifier = &types.BlockIdentifier{
-		Hash: "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+		// Hash: "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+		Hash: "279b1a87aedc7b9471d4ad4e5f12967ab6259926cd097ade188dfcf22ebfe72a",
 	}
 
 	// MainnetParams are the params for mainnet.
@@ -96,7 +98,7 @@ var (
 
 	// MainnetCurrency is the *types.Currency for mainnet.
 	MainnetCurrency = &types.Currency{
-		Symbol:   "BTC",
+		Symbol:   "DFI",
 		Decimals: Decimals,
 	}
 

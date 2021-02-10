@@ -1,7 +1,7 @@
 {
   "network": {
-    "blockchain": "Bitcoin",
-    "network": "Mainnet"
+    "blockchain": "DFI",
+    "network": "mainnet"
   },
   "data_directory": "cli-data",
   "http_timeout": 300,

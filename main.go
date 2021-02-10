@@ -101,11 +101,19 @@ func startOnlineDependencies(
 	}
 
 	g.Go(func() error {
-		return i.Sync(ctx)
+		err = i.Sync(ctx)
+		if err != nil {
+			fmt.Printf("sync error: %v", err)
+		}
+		return err
 	})
 
 	g.Go(func() error {
-		return i.Prune(ctx)
+		err = i.Prune(ctx)
+		if err != nil {
+			fmt.Printf("prune error: %v", err)
+		}
+		return err
 	})
 
 	return client, i, nil
