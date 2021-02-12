@@ -47,8 +47,8 @@ run-testnet-offline:
 
 run-def:
 	# stop && delete prev container if exists
-	docker stop rosdef 2>/dev/null; \
-	docker run --name rosdef -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8555:8555 -p 8554:8554 rosetta-defi:latest
+	docker stop rosdef 2>/dev/null && docker rm rosdef 2>/dev/null; \
+	docker run --name rosdef -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8555:8555 -p 8554:8554 rosetta-defi:latest
 
 train:
 	./zstd-train.sh $(network) transaction $(data-directory)

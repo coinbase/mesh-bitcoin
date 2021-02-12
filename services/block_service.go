@@ -16,7 +16,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 
@@ -27,17 +26,18 @@ import (
 // BlockAPIService implements the server.BlockAPIServicer interface.
 type BlockAPIService struct {
 	config *configuration.Configuration
-	i      Indexer
+	i Indexer
 }
 
 // NewBlockAPIService creates a new instance of a BlockAPIService.
 func NewBlockAPIService(
 	config *configuration.Configuration,
+	// client indexer.Client,
 	i Indexer,
 ) server.BlockAPIServicer {
 	return &BlockAPIService{
 		config: config,
-		i:      i,
+		i: i,
 	}
 }
 
@@ -51,8 +51,6 @@ func (s *BlockAPIService) Block(
 	}
 
 	blockResponse, err := s.i.GetBlockLazy(ctx, request.BlockIdentifier)
-	// FIXME: delete; returns nil
-	fmt.Printf("block-resp: %+v; err: %v\n", blockResponse, err)
 	if err != nil {
 		return nil, wrapErr(ErrBlockNotFound, err)
 	}

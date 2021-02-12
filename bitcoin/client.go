@@ -74,6 +74,12 @@ const (
 	// https://developer.bitcoin.org/reference/rpc/sendrawtransaction.html
 	requestMethodSendRawTransaction requestMethod = "sendrawtransaction"
 
+	// https://developer.bitcoin.org/reference/rpc/getrawtransaction.html
+	requestMethodGetRawTransaction requestMethod = "getrawtransaction"
+
+	// https://developer.bitcoin.org/reference/rpc/gettransaction.html
+	requestMethodGetTransaction requestMethod = "gettransaction"
+
 	// https://developer.bitcoin.org/reference/rpc/estimatesmartfee.html
 	requestMethodEstimateSmartFee requestMethod = "estimatesmartfee"
 
@@ -276,6 +282,42 @@ func (b *Client) SendRawTransaction(
 	response := &sendRawTransactionResponse{}
 	if err := b.post(ctx, requestMethodSendRawTransaction, params, response); err != nil {
 		return "", fmt.Errorf("%w: error submitting raw transaction", err)
+	}
+
+	return response.Result, nil
+}
+
+// GetRawTransaction returns the raw transaction data
+func (b *Client) GetRawTransaction(
+	ctx context.Context,
+	txid, blockhash string,
+) ([]byte, error) {
+	// Parameters:
+	//   1. txid
+	//   2. verbose (returns object if true)
+	//   3. blockhash (looks in mempool only if not provided)
+	params := []interface{}{txid, true, blockhash}
+
+	response := &getRawTransactionResponse{}
+	if err := b.post(ctx, requestMethodGetRawTransaction, params, response); err != nil {
+		return nil, fmt.Errorf("%w: error submitting raw transaction", err)
+	}
+
+	return response.Result, nil
+}
+
+// GetTransaction returns the data about in-wallet transaction
+func (b *Client) GetTransaction(
+	ctx context.Context,
+	txid string,
+) ([]byte, error) {
+	// Parameters:
+	//   1. txid
+	params := []interface{}{txid}
+
+	response := &getTransactionResponse{}
+	if err := b.post(ctx, requestMethodGetTransaction, params, response); err != nil {
+		return nil, fmt.Errorf("%w: error submitting raw transaction", err)
 	}
 
 	return response.Result, nil

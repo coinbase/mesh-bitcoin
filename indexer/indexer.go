@@ -26,7 +26,6 @@ import (
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 	"github.com/coinbase/rosetta-bitcoin/services"
 	"github.com/coinbase/rosetta-bitcoin/utils"
-	"github.com/rs/zerolog/log"
 
 	"github.com/coinbase/rosetta-sdk-go/asserter"
 	"github.com/coinbase/rosetta-sdk-go/storage/database"
@@ -87,6 +86,8 @@ type Client interface {
 		*bitcoin.Block,
 		map[string]*types.AccountCoin,
 	) (*types.Block, error)
+	GetTransaction(ctx context.Context, txid string) ([]byte, error)
+	GetRawTransaction(ctx context.Context, txid, blockhash string) ([]byte, error)
 }
 
 var _ syncer.Handler = (*Indexer)(nil)
@@ -881,13 +882,20 @@ func (i *Indexer) GetBlockLazy(
 	ctx context.Context,
 	blockIdentifier *types.PartialBlockIdentifier,
 ) (*types.BlockResponse, error) {
-	block, msg, err := i.client.GetRawBlock(ctx, blockIdentifier)
-	logger := utils.ExtractLogger(ctx, "")
-	// resp := &types.BlockResponse{}
-	// resp.Block = block
-	log.Info().Msg(fmt.Sprintf("block: %+v\n; msg: %+v\n; err: %+v", block, msg, err))
-	logger.Infof("block: %+v\n; msg: %+v\n; err: %+v", block, msg, err)
-	return i.blockStorage.GetBlockLazy(ctx, blockIdentifier)
+	rawBlock, msg, err := i.client.GetRawBlock(ctx, blockIdentifier)
+
+	// FIXME: delele
+	fmt.Printf("rawBlock: %+v\n; msg: %+v\n; err: %+v", rawBlock, msg, err)
+
+	coins := make(map[string]*types.AccountCoin)
+	block, err := i.client.ParseBlock(ctx, rawBlock, coins)
+
+	// FIXME: delele
+	fmt.Printf("block: %+v\n; err: %+v", block, err)
+
+	return &types.BlockResponse{Block: block}, err
+
+	// return i.blockStorage.GetBlockLazy(ctx, blockIdentifier)
 }
 
 // GetBlockTransaction returns a *types.Transaction if it is in the provided
@@ -897,6 +905,13 @@ func (i *Indexer) GetBlockTransaction(
 	blockIdentifier *types.BlockIdentifier,
 	transactionIdentifier *types.TransactionIdentifier,
 ) (*types.Transaction, error) {
+
+	// tx, err := i.client.GetTransaction(ctx, transactionIdentifier.Hash)
+	tx, err := i.client.GetRawTransaction(ctx, transactionIdentifier.Hash,
+		blockIdentifier.Hash)
+	// FIXME: delele
+	fmt.Printf("tx: %+v\n; err: %+v", tx, err)
+
 	return i.blockStorage.GetBlockTransaction(
 		ctx,
 		blockIdentifier,

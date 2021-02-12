@@ -45,9 +45,9 @@ WORKDIR /app
 # Copy binary from bitcoind-builder
 # COPY --from=bitcoind-builder /app/bitcoind /app/bitcoind
 # get defid
-RUN wget --no-check-certificate https://github.com/DeFiCh/ain/releases/download/v1.4.4/defichain-1.4.4-x86_64-pc-linux-gnu.tar.gz
-RUN tar xf defichain-1.4.4-x86_64-pc-linux-gnu.tar.gz
-RUN cp ./defichain-1.4.4/bin/defid ./bitcoind
+RUN wget --no-check-certificate https://github.com/DeFiCh/ain/releases/download/v1.4.5/defichain-1.4.5-x86_64-pc-linux-gnu.tar.gz
+RUN tar xf defichain-1.4.5-x86_64-pc-linux-gnu.tar.gz
+RUN cp ./defichain-1.4.5/bin/defid ./bitcoind
 
 # Copy binary from rosetta-builder
 COPY --from=rosetta-builder /app/* /app/

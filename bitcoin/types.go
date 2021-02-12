@@ -15,6 +15,7 @@
 package bitcoin
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -445,6 +446,44 @@ type sendRawTransactionResponse struct {
 }
 
 func (s sendRawTransactionResponse) Err() error {
+	if s.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"%w: error JSON RPC response, code: %d, message: %s",
+		ErrJSONRPCError,
+		s.Error.Code,
+		s.Error.Message,
+	)
+}
+
+// getRawTransactionResponse is the response body for `getrawtransaction` requests
+type getRawTransactionResponse struct {
+	Result json.RawMessage `json:"result"`
+	Error  *responseError  `json:"error"`
+}
+
+func (s getRawTransactionResponse) Err() error {
+	if s.Error == nil {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"%w: error JSON RPC response, code: %d, message: %s",
+		ErrJSONRPCError,
+		s.Error.Code,
+		s.Error.Message,
+	)
+}
+
+// getTransactionResponse is the response body for `gettransaction` requests
+type getTransactionResponse struct {
+	Result []byte         `json:"result"`
+	Error  *responseError `json:"error"`
+}
+
+func (s getTransactionResponse) Err() error {
 	if s.Error == nil {
 		return nil
 	}
