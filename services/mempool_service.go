@@ -16,6 +16,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 
@@ -73,5 +74,15 @@ func (s *MempoolAPIService) MempoolTransaction(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
-	return nil, wrapErr(ErrUnimplemented, nil)
+	// TODO: implement
+	tx, err := s.client.GetRawTransaction(ctx, request.TransactionIdentifier.Hash, "")
+	if err != nil {
+		return nil, wrapErr(ErrTransactionNotFound, nil)
+	}
+	// FIXME: delete
+	fmt.Printf(string(tx))
+
+	resp := &types.MempoolTransactionResponse{}
+
+	return resp, nil
 }

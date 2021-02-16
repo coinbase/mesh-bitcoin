@@ -296,7 +296,10 @@ func (b *Client) GetRawTransaction(
 	//   1. txid
 	//   2. verbose (returns object if true)
 	//   3. blockhash (looks in mempool only if not provided)
-	params := []interface{}{txid, true, blockhash}
+	params := []interface{}{txid, true}
+	if blockhash != "" {
+		params = append(params, blockhash)
+	}
 
 	response := &getRawTransactionResponse{}
 	if err := b.post(ctx, requestMethodGetRawTransaction, params, response); err != nil {

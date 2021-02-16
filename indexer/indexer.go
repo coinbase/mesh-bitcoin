@@ -304,6 +304,9 @@ func (i *Indexer) Sync(ctx context.Context) error {
 		syncer.WithPastBlocks(pastBlocks),
 	)
 
+	// FIXME: delete;
+	fmt.Printf("syncer: %+v; network: %v\n", syncer, i.network)
+
 	return syncer.Sync(ctx, startIndex, indexPlaceholder)
 }
 
@@ -354,6 +357,9 @@ func (i *Indexer) Prune(ctx context.Context) error {
 func (i *Indexer) BlockAdded(ctx context.Context, block *types.Block) error {
 	// TODO: doesnt get called
 	logger := utils.ExtractLogger(ctx, "indexer")
+	//FIXME: delete
+	fmt.Printf("BlockAdded got called; block: %v\n", block)
+	logger.Debugf("BlockAdded got called; block: %v\n", block)
 
 	err := i.blockStorage.AddBlock(ctx, block)
 	if err != nil {
@@ -882,20 +888,20 @@ func (i *Indexer) GetBlockLazy(
 	ctx context.Context,
 	blockIdentifier *types.PartialBlockIdentifier,
 ) (*types.BlockResponse, error) {
-	rawBlock, msg, err := i.client.GetRawBlock(ctx, blockIdentifier)
+	// rawBlock, msg, err := i.client.GetRawBlock(ctx, blockIdentifier)
 
-	// FIXME: delele
-	fmt.Printf("rawBlock: %+v\n; msg: %+v\n; err: %+v", rawBlock, msg, err)
+	// // FIXME: delele
+	// fmt.Printf("rawBlock: %+v\n; msg: %+v\n; err: %+v", rawBlock, msg, err)
 
-	coins := make(map[string]*types.AccountCoin)
-	block, err := i.client.ParseBlock(ctx, rawBlock, coins)
+	// coins := make(map[string]*types.AccountCoin)
+	// block, err := i.client.ParseBlock(ctx, rawBlock, coins)
 
-	// FIXME: delele
-	fmt.Printf("block: %+v\n; err: %+v", block, err)
+	// // FIXME: delele
+	// fmt.Printf("block: %+v\n; err: %+v", block, err)
 
-	return &types.BlockResponse{Block: block}, err
+	// return &types.BlockResponse{Block: block}, err
 
-	// return i.blockStorage.GetBlockLazy(ctx, blockIdentifier)
+	return i.blockStorage.GetBlockLazy(ctx, blockIdentifier)
 }
 
 // GetBlockTransaction returns a *types.Transaction if it is in the provided
@@ -910,7 +916,7 @@ func (i *Indexer) GetBlockTransaction(
 	tx, err := i.client.GetRawTransaction(ctx, transactionIdentifier.Hash,
 		blockIdentifier.Hash)
 	// FIXME: delele
-	fmt.Printf("tx: %+v\n; err: %+v", tx, err)
+	fmt.Printf("tx: %v; err: %+v\n", string(tx), err)
 
 	return i.blockStorage.GetBlockTransaction(
 		ctx,

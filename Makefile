@@ -27,6 +27,7 @@ build-local:
 
 build-def:
 	docker build -t rosetta-defi:latest -f Dockerfile.def .
+	# docker build --no-cache -t rosetta-defi:latest -f Dockerfile.def .
 
 build-release:
 	# make sure to always set version with vX.X.X
@@ -34,7 +35,7 @@ build-release:
 	docker save rosetta-bitcoin:$(version) | gzip > rosetta-bitcoin-$(version).tar.gz;
 
 run-mainnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
+	docker run -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 -p 8554:8554 -p 8555:8555 rosetta-bitcoin:latest
 
 run-mainnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
