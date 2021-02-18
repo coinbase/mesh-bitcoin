@@ -78,6 +78,7 @@ const (
 	requestMethodGetRawTransaction requestMethod = "getrawtransaction"
 
 	// https://developer.bitcoin.org/reference/rpc/gettransaction.html
+	// TODO: defid returns method not found
 	requestMethodGetTransaction requestMethod = "gettransaction"
 
 	// https://developer.bitcoin.org/reference/rpc/estimatesmartfee.html
@@ -291,11 +292,12 @@ func (b *Client) SendRawTransaction(
 func (b *Client) GetRawTransaction(
 	ctx context.Context,
 	txid, blockhash string,
-) ([]byte, error) {
+) (*types.Transaction, error) {
 	// Parameters:
 	//   1. txid
 	//   2. verbose (returns object if true)
 	//   3. blockhash (looks in mempool only if not provided)
+	var resp *types.Transaction
 	params := []interface{}{txid, true}
 	if blockhash != "" {
 		params = append(params, blockhash)
@@ -306,7 +308,11 @@ func (b *Client) GetRawTransaction(
 		return nil, fmt.Errorf("%w: error submitting raw transaction", err)
 	}
 
-	return response.Result, nil
+	if err := json.Unmarshal(response.Result, &resp); err != nil {
+		return nil, fmt.Errorf("%w: error unmarshaling raw transaction", err)
+	}
+
+	return resp, nil
 }
 
 // GetTransaction returns the data about in-wallet transaction

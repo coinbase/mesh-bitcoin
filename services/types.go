@@ -55,7 +55,7 @@ type Client interface {
 	SendRawTransaction(context.Context, string) (string, error)
 	SuggestedFeeRate(context.Context, int64) (float64, error)
 	RawMempool(context.Context) ([]string, error)
-	GetRawTransaction(context.Context, string, string) ([]byte, error)
+	GetRawTransaction(context.Context, string, string) (*types.Transaction, error)
 }
 
 // Indexer is used by the servicers to get block and account data.

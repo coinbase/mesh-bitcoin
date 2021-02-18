@@ -80,9 +80,11 @@ func (s *MempoolAPIService) MempoolTransaction(
 		return nil, wrapErr(ErrTransactionNotFound, nil)
 	}
 	// FIXME: delete
-	fmt.Printf(string(tx))
+	fmt.Printf("/mempool/transaction tx: %v", tx)
 
-	resp := &types.MempoolTransactionResponse{}
+	resp := &types.MempoolTransactionResponse{
+		Transaction: tx,
+	}
 
 	return resp, nil
 }
