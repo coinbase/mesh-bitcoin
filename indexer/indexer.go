@@ -87,7 +87,7 @@ type Client interface {
 		map[string]*types.AccountCoin,
 	) (*types.Block, error)
 	GetTransaction(ctx context.Context, txid string) ([]byte, error)
-	GetRawTransaction(ctx context.Context, txid, blockhash string) (*types.Transaction, error)
+	GetRawTransaction(ctx context.Context, txid, blockhash string) (*bitcoin.Transaction, error)
 }
 
 var _ syncer.Handler = (*Indexer)(nil)
@@ -912,7 +912,11 @@ func (i *Indexer) GetBlockTransaction(
 	transactionIdentifier *types.TransactionIdentifier,
 ) (*types.Transaction, error) {
 
+	// FIXME: delele
 	// tx, err := i.client.GetTransaction(ctx, transactionIdentifier.Hash)
+	fmt.Printf("requesting raw tx; tx-hash: %v; block-hash: %v;\n",
+		transactionIdentifier.Hash, blockIdentifier.Hash)
+
 	tx, err := i.client.GetRawTransaction(ctx, transactionIdentifier.Hash,
 		blockIdentifier.Hash)
 	// FIXME: delele

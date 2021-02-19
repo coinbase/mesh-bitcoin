@@ -83,7 +83,13 @@ func (s *MempoolAPIService) MempoolTransaction(
 	fmt.Printf("/mempool/transaction tx: %v", tx)
 
 	resp := &types.MempoolTransactionResponse{
-		Transaction: tx,
+		Transaction: &types.Transaction{
+			TransactionIdentifier: &types.TransactionIdentifier{
+				Hash: tx.Hash,
+			},
+		},
+
+		// Transaction: tx,
 	}
 
 	return resp, nil

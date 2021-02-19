@@ -292,12 +292,12 @@ func (b *Client) SendRawTransaction(
 func (b *Client) GetRawTransaction(
 	ctx context.Context,
 	txid, blockhash string,
-) (*types.Transaction, error) {
+) (*Transaction, error) {
 	// Parameters:
 	//   1. txid
 	//   2. verbose (returns object if true)
 	//   3. blockhash (looks in mempool only if not provided)
-	var resp *types.Transaction
+	var resp *Transaction
 	params := []interface{}{txid, true}
 	if blockhash != "" {
 		params = append(params, blockhash)
@@ -308,9 +308,14 @@ func (b *Client) GetRawTransaction(
 		return nil, fmt.Errorf("%w: error submitting raw transaction", err)
 	}
 
+	fmt.Printf("raw tx resp: %v\n", string(response.Result))
+
 	if err := json.Unmarshal(response.Result, &resp); err != nil {
 		return nil, fmt.Errorf("%w: error unmarshaling raw transaction", err)
 	}
+
+	// FIXME: delete; returns nil -_-
+	fmt.Printf("get raw tx resp: %v\n", resp)
 
 	return resp, nil
 }
