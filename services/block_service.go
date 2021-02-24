@@ -33,7 +33,6 @@ type BlockAPIService struct {
 // NewBlockAPIService creates a new instance of a BlockAPIService.
 func NewBlockAPIService(
 	config *configuration.Configuration,
-	// client indexer.Client,
 	i Indexer,
 ) server.BlockAPIServicer {
 	return &BlockAPIService{

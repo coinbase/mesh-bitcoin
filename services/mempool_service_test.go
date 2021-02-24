@@ -18,6 +18,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/coinbase/rosetta-bitcoin/bitcoin"
 	"github.com/coinbase/rosetta-bitcoin/configuration"
 	mocks "github.com/coinbase/rosetta-bitcoin/mocks/services"
 
@@ -70,9 +71,10 @@ func TestMempoolEndpoints_Online(t *testing.T) {
 		},
 	}, mem)
 
+	mockClient.On("GetRawTransaction", ctx, "", "").Return(&bitcoin.Transaction{}, nil)
 	memTransaction, err := servicer.MempoolTransaction(ctx, nil)
 	assert.Nil(t, memTransaction)
-	assert.Equal(t, ErrUnimplemented.Code, err.Code)
-	assert.Equal(t, ErrUnimplemented.Message, err.Message)
+	assert.Equal(t, ErrTransactionNotFound.Code, err.Code)
+	assert.Equal(t, ErrTransactionNotFound.Message, err.Message)
 	mockClient.AssertExpectations(t)
 }

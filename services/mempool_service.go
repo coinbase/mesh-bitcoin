@@ -74,9 +74,16 @@ func (s *MempoolAPIService) MempoolTransaction(
 		return nil, wrapErr(ErrUnavailableOffline, nil)
 	}
 
-	// TODO: implement
-	tx, err := s.client.GetRawTransaction(ctx, request.TransactionIdentifier.Hash, "")
-	if err != nil {
+	txHash := ""
+	if request != nil {
+		if request.TransactionIdentifier != nil {
+			txHash = request.TransactionIdentifier.Hash
+		}
+	}
+
+	tx, err := s.client.GetRawTransaction(ctx, txHash, "")
+	if err != nil || tx == nil || tx.Hash == "" {
+		// if err != nil || tx == nil {
 		return nil, wrapErr(ErrTransactionNotFound, nil)
 	}
 	// FIXME: delete
