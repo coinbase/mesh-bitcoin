@@ -1,4 +1,4 @@
-module github.com/coinbase/rosetta-bitcoin
+module github.com/coinbase/rosetta-defichain
 
 go 1.13
 
