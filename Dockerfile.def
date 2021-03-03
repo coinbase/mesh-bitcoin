@@ -1,3 +1,4 @@
+# TODO: remove after bitcoin node replacement onto defichain node
 FROM ubuntu:18.04 as bitcoind-builder
 
 RUN mkdir -p /app \

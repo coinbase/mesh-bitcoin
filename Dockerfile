@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Build bitcoind
-FROM ubuntu:18.04 as bitcoind-builder
+# TODO: replace bitcoin node onto defichain node
+
+# Build defichaind
+FROM ubuntu:18.04 as defichaind-builder
 
 RUN mkdir -p /app \
   && chown -R nobody:nogroup /app
@@ -33,7 +35,7 @@ RUN cd bitcoin \
   && ./configure --disable-tests --without-miniupnpc --without-gui --with-incompatible-bdb --disable-hardening --disable-zmq --disable-bench --disable-wallet \
   && make
 
-RUN mv bitcoin/src/bitcoind /app/bitcoind \
+RUN mv bitcoin/src/bitcoind /app/defichaind \
   && rm -rf bitcoin
 
 # Build Rosetta Server Components
@@ -62,7 +64,7 @@ COPY . src
 RUN cd src \
   && go build \
   && cd .. \
-  && mv src/rosetta-bitcoin /app/rosetta-bitcoin \
+  && mv src/rosetta-defichain /app/rosetta-defichain \
   && mv src/assets/* /app \
   && rm -rf src 
 
@@ -80,8 +82,8 @@ RUN mkdir -p /app \
 
 WORKDIR /app
 
-# Copy binary from bitcoind-builder
-COPY --from=bitcoind-builder /app/bitcoind /app/bitcoind
+# Copy binary from defichaind-builder
+COPY --from=defichaind-builder /app/defichaind /app/defichaind
 
 # Copy binary from rosetta-builder
 COPY --from=rosetta-builder /app/* /app/
@@ -89,4 +91,4 @@ COPY --from=rosetta-builder /app/* /app/
 # Set permissions for everything added to /app
 RUN chmod -R 755 /app/*
 
-CMD ["/app/rosetta-bitcoin"]
+CMD ["/app/rosetta-defichain"]
