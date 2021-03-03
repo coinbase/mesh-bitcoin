@@ -18,8 +18,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/coinbase/rosetta-defichain/bitcoin"
 	"github.com/coinbase/rosetta-defichain/configuration"
+	"github.com/coinbase/rosetta-defichain/defichain"
 	mocks "github.com/coinbase/rosetta-defichain/mocks/services"
 
 	"github.com/coinbase/rosetta-sdk-go/types"
@@ -71,7 +71,7 @@ func TestMempoolEndpoints_Online(t *testing.T) {
 		},
 	}, mem)
 
-	mockClient.On("GetRawTransaction", ctx, "", "").Return(&bitcoin.Transaction{}, nil)
+	mockClient.On("GetRawTransaction", ctx, "", "").Return(&defichain.Transaction{}, nil)
 	memTransaction, err := servicer.MempoolTransaction(ctx, nil)
 	assert.Nil(t, memTransaction)
 	assert.Equal(t, ErrTransactionNotFound.Code, err.Code)

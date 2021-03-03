@@ -17,8 +17,7 @@ package services
 import (
 	"context"
 
-	"github.com/coinbase/rosetta-defichain/bitcoin"
-
+	"github.com/coinbase/rosetta-defichain/defichain"
 	"github.com/coinbase/rosetta-sdk-go/types"
 )
 
@@ -41,7 +40,7 @@ const (
 	inlineFetchLimit = 100
 
 	// MiddlewareVersion is the version
-	// of rosetta-bitcoin. We set this as a
+	// of rosetta-defichain. We set this as a
 	// variable instead of a constant because
 	// we typically need the pointer of this
 	// value.
@@ -55,7 +54,7 @@ type Client interface {
 	SendRawTransaction(context.Context, string) (string, error)
 	SuggestedFeeRate(context.Context, int64) (float64, error)
 	RawMempool(context.Context) ([]string, error)
-	GetRawTransaction(context.Context, string, string) (*bitcoin.Transaction, error)
+	GetRawTransaction(context.Context, string, string) (*defichain.Transaction, error)
 }
 
 // Indexer is used by the servicers to get block and account data.
@@ -76,7 +75,7 @@ type Indexer interface {
 	GetScriptPubKeys(
 		context.Context,
 		[]*types.Coin,
-	) ([]*bitcoin.ScriptPubKey, error)
+	) ([]*defichain.ScriptPubKey, error)
 	GetBalance(
 		context.Context,
 		*types.AccountIdentifier,
@@ -86,10 +85,10 @@ type Indexer interface {
 }
 
 type unsignedTransaction struct {
-	Transaction    string                  `json:"transaction"`
-	ScriptPubKeys  []*bitcoin.ScriptPubKey `json:"scriptPubKeys"`
-	InputAmounts   []string                `json:"input_amounts"`
-	InputAddresses []string                `json:"input_addresses"`
+	Transaction    string                    `json:"transaction"`
+	ScriptPubKeys  []*defichain.ScriptPubKey `json:"scriptPubKeys"`
+	InputAmounts   []string                  `json:"input_amounts"`
+	InputAddresses []string                  `json:"input_addresses"`
 }
 
 type preprocessOptions struct {
@@ -99,7 +98,7 @@ type preprocessOptions struct {
 }
 
 type constructionMetadata struct {
-	ScriptPubKeys []*bitcoin.ScriptPubKey `json:"script_pub_keys"`
+	ScriptPubKeys []*defichain.ScriptPubKey `json:"script_pub_keys"`
 }
 
 type signedTransaction struct {
@@ -110,5 +109,5 @@ type signedTransaction struct {
 // ParseOperationMetadata is returned from
 // ConstructionParse.
 type ParseOperationMetadata struct {
-	ScriptPubKey *bitcoin.ScriptPubKey `json:"scriptPubKey"`
+	ScriptPubKey *defichain.ScriptPubKey `json:"scriptPubKey"`
 }

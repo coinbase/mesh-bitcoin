@@ -24,8 +24,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/coinbase/rosetta-defichain/bitcoin"
 	"github.com/coinbase/rosetta-defichain/configuration"
+	"github.com/coinbase/rosetta-defichain/defichain"
 	"github.com/coinbase/rosetta-defichain/indexer"
 	"github.com/coinbase/rosetta-defichain/services"
 	"github.com/coinbase/rosetta-defichain/utils"
@@ -79,15 +79,15 @@ func startOnlineDependencies(
 	cancel context.CancelFunc,
 	cfg *configuration.Configuration,
 	g *errgroup.Group,
-) (*bitcoin.Client, *indexer.Indexer, error) {
-	client := bitcoin.NewClient(
-		bitcoin.LocalhostURL(cfg.RPCPort),
+) (*defichain.Client, *indexer.Indexer, error) {
+	client := defichain.NewClient(
+		defichain.LocalhostURL(cfg.RPCPort),
 		cfg.GenesisBlockIdentifier,
 		cfg.Currency,
 	)
 
 	g.Go(func() error {
-		return bitcoin.StartBitcoind(ctx, cfg.ConfigPath, g)
+		return defichain.StartBitcoind(ctx, cfg.ConfigPath, g)
 	})
 
 	i, err := indexer.Initialize(
@@ -150,7 +150,7 @@ func main() {
 	})
 
 	var i *indexer.Indexer
-	var client *bitcoin.Client
+	var client *defichain.Client
 	if cfg.Mode == configuration.Online {
 		client, i, err = startOnlineDependencies(ctx, cancel, cfg, g)
 		if err != nil {
@@ -161,7 +161,7 @@ func main() {
 	// The asserter automatically rejects incorrectly formatted
 	// requests.
 	asserter, err := asserter.NewServer(
-		bitcoin.OperationTypes,
+		defichain.OperationTypes,
 		services.HistoricalBalanceLookup,
 		[]*types.NetworkIdentifier{cfg.Network},
 		nil,
