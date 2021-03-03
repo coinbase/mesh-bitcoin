@@ -27,7 +27,7 @@ request_funds(1){
 
 create_account(1){
   create{
-    network = {"network":"Testnet3", "blockchain":"Bitcoin"};
+    network = {"network":"Testnet3", "blockchain":"defichain"};
     key = generate_key({"curve_type": "secp256k1"});
     account = derive({
       "network_identifier": {{network}},
@@ -44,7 +44,7 @@ create_account(1){
 
 transfer(10){
   transfer_dry_run{
-    transfer_dry_run.network = {"network":"Testnet3", "blockchain":"Bitcoin"};
+    transfer_dry_run.network = {"network":"Testnet3", "blockchain":"defichain"};
     currency = {"symbol":"tBTC", "decimals":8};
 
     // We set the max_fee_amount to know how much buffer we should
@@ -165,7 +165,7 @@ transfer(10){
 
 return_funds(10){
   transfer_dry_run{
-    transfer_dry_run.network = {"network":"Testnet3", "blockchain":"Bitcoin"};
+    transfer_dry_run.network = {"network":"Testnet3", "blockchain":"defichain"};
     currency = {"symbol":"tBTC", "decimals":8};
 
     // We look for a sender that is able to pay the 
