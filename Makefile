@@ -20,36 +20,38 @@ deps:
 	go get ./...
 
 build:
-	docker build -t rosetta-bitcoin:latest https://github.com/coinbase/rosetta-bitcoin.git
+	docker build -t rosetta-defichain:latest https://github.com/DeFiCh/rosetta-defichain.git
 
 build-local:
-	docker build -t rosetta-bitcoin:latest .
+	docker build -t rosetta-defichain:latest .
 
+# TODO: remove after bitcoin node replacement onto defichain node
 build-def:
 	docker build -t rosetta-defi:latest -f Dockerfile.def .
 	# docker build --no-cache -t rosetta-defi:latest -f Dockerfile.def .
 
 build-release:
 	# make sure to always set version with vX.X.X
-	docker build -t rosetta-bitcoin:$(version) .;
-	docker save rosetta-bitcoin:$(version) | gzip > rosetta-bitcoin-$(version).tar.gz;
+	docker build -t rosetta-defichain:$(version) .;
+	docker save rosetta-defichain:$(version) | gzip > rosetta-defichain-$(version).tar.gz;
 
 run-mainnet-online:
-	docker run -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 -p 8554:8554 -p 8555:8555 rosetta-bitcoin:latest
+	docker run -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/defichain-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 -p 8554:8554 -p 8555:8555 rosetta-defichain:latest
 
 run-mainnet-offline:
-	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-defichain:latest
 
 run-testnet-online:
-	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
+	docker run -d --rm --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/defichain-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-defichain:latest
 
 run-testnet-offline:
-	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-defichain:latest
 
+# TODO: remove after bitcoin node replacement onto defichain node
 run-def:
 	# stop && delete prev container if exists
 	docker stop rosdef 2>/dev/null && docker rm rosdef 2>/dev/null; \
-	docker run --name rosdef -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8555:8555 -p 8554:8554 rosetta-defi:latest
+	docker run --name rosdef -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/defichain-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8555:8555 -p 8554:8554 rosetta-defi:latest
 
 train:
 	./zstd-train.sh $(network) transaction $(data-directory)
