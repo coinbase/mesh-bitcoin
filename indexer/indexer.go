@@ -252,7 +252,7 @@ func Initialize(
 	return i, nil
 }
 
-// waitForNode returns once bitcoind is ready to serve
+// waitForNode returns once defichaind is ready to serve
 // block queries.
 func (i *Indexer) waitForNode(ctx context.Context) error {
 	logger := utils.ExtractLogger(ctx, "indexer")
@@ -262,14 +262,14 @@ func (i *Indexer) waitForNode(ctx context.Context) error {
 			return nil
 		}
 
-		logger.Infow("waiting for bitcoind...")
+		logger.Infow("waiting for defichaind...")
 		if err := sdkUtils.ContextSleep(ctx, nodeWaitSleep); err != nil {
 			return err
 		}
 	}
 }
 
-// Sync attempts to index Bitcoin blocks using
+// Sync attempts to index Defichain blocks using
 // the defichain.Client until stopped.
 func (i *Indexer) Sync(ctx context.Context) error {
 	if err := i.waitForNode(ctx); err != nil {
@@ -310,7 +310,7 @@ func (i *Indexer) Sync(ctx context.Context) error {
 	return syncer.Sync(ctx, startIndex, indexPlaceholder)
 }
 
-// Prune attempts to prune blocks in bitcoind every
+// Prune attempts to prune blocks in defichaind every
 // pruneFrequency.
 func (i *Indexer) Prune(ctx context.Context) error {
 	logger := utils.ExtractLogger(ctx, "pruner")
@@ -329,7 +329,7 @@ func (i *Indexer) Prune(ctx context.Context) error {
 				continue
 			}
 
-			// Must meet pruning conditions in bitcoin core
+			// Must meet pruning conditions in Defichain (similar to Bitcoin core)
 			// Source:
 			// https://github.com/bitcoin/bitcoin/blob/a63a26f042134fa80356860c109edb25ac567552/src/rpc/blockchain.cpp#L953-L960
 			pruneHeight := head.Index - i.pruningConfig.Depth
@@ -338,16 +338,16 @@ func (i *Indexer) Prune(ctx context.Context) error {
 				continue
 			}
 
-			logger.Infow("attempting to prune bitcoind", "prune height", pruneHeight)
+			logger.Infow("attempting to prune defichaind", "prune height", pruneHeight)
 			prunedHeight, err := i.client.PruneBlockchain(ctx, pruneHeight)
 			if err != nil {
 				logger.Warnw(
-					"unable to prune bitcoind",
+					"unable to prune defichaind",
 					"prune height", pruneHeight,
 					"error", err,
 				)
 			} else {
-				logger.Infow("pruned bitcoind", "prune height", prunedHeight)
+				logger.Infow("pruned defichaind", "prune height", prunedHeight)
 			}
 		}
 	}
