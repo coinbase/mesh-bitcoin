@@ -37,7 +37,7 @@ import (
 )
 
 const (
-	// bytesInKB is the number of bytes in a KB. In Bitcoin, this is
+	// bytesInKB is the number of bytes in a KB. In Defichain, this is
 	// considered to be 1000.
 	bytesInKb = float64(1000) // nolint:gomnd
 
@@ -413,7 +413,7 @@ func (s *ConstructionAPIService) ConstructionCombine(
 	if err := json.Unmarshal(decodedTx, &unsigned); err != nil {
 		return nil, wrapErr(
 			ErrUnableToParseIntermediateResult,
-			fmt.Errorf("%w unable to unmarshal bitcoin transaction", err),
+			fmt.Errorf("%w unable to unmarshal defichain transaction", err),
 		)
 	}
 
@@ -499,7 +499,7 @@ func (s *ConstructionAPIService) ConstructionHash(
 	if err := json.Unmarshal(decodedTx, &signed); err != nil {
 		return nil, wrapErr(
 			ErrUnableToParseIntermediateResult,
-			fmt.Errorf("%w unable to unmarshal signed bitcoin transaction", err),
+			fmt.Errorf("%w unable to unmarshal signed defichain transaction", err),
 		)
 	}
 
@@ -541,7 +541,7 @@ func (s *ConstructionAPIService) parseUnsignedTransaction(
 	if err := json.Unmarshal(decodedTx, &unsigned); err != nil {
 		return nil, wrapErr(
 			ErrUnableToParseIntermediateResult,
-			fmt.Errorf("%w unable to unmarshal bitcoin transaction", err),
+			fmt.Errorf("%w unable to unmarshal defichain transaction", err),
 		)
 	}
 
@@ -637,7 +637,7 @@ func (s *ConstructionAPIService) parseSignedTransaction(
 	if err := json.Unmarshal(decodedTx, &signed); err != nil {
 		return nil, wrapErr(
 			ErrUnableToParseIntermediateResult,
-			fmt.Errorf("%w unable to unmarshal signed bitcoin transaction", err),
+			fmt.Errorf("%w unable to unmarshal signed defichain transaction", err),
 		)
 	}
 
@@ -771,13 +771,13 @@ func (s *ConstructionAPIService) ConstructionSubmit(
 	if err := json.Unmarshal(decodedTx, &signed); err != nil {
 		return nil, wrapErr(
 			ErrUnableToParseIntermediateResult,
-			fmt.Errorf("%w unable to unmarshal signed bitcoin transaction", err),
+			fmt.Errorf("%w unable to unmarshal signed defichain transaction", err),
 		)
 	}
 
 	txHash, err := s.client.SendRawTransaction(ctx, signed.Transaction)
 	if err != nil {
-		return nil, wrapErr(ErrBitcoind, fmt.Errorf("%w unable to submit transaction", err))
+		return nil, wrapErr(ErrDefichaind, fmt.Errorf("%w unable to submit transaction", err))
 	}
 
 	return &types.TransactionIdentifierResponse{
