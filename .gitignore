@@ -1,4 +1,6 @@
-rosetta-bitcoin
-bitcoin-data
-defi-data
+rosetta-defichain
+defichain-data
 cli-data
+
+# TODO: remove after bitcoin node replacement onto defichain node
+defi-data
