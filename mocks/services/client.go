@@ -5,8 +5,7 @@ package services
 import (
 	context "context"
 
-	bitcoin "github.com/coinbase/rosetta-defichain/defichain"
-
+	defichain "github.com/coinbase/rosetta-defichain/defichain"
 	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/coinbase/rosetta-sdk-go/types"
@@ -41,15 +40,15 @@ func (_m *Client) GetPeers(_a0 context.Context) ([]*types.Peer, error) {
 }
 
 // GetRawTransaction provides a mock function with given fields: _a0, _a1, _a2
-func (_m *Client) GetRawTransaction(_a0 context.Context, _a1 string, _a2 string) (*bitcoin.Transaction, error) {
+func (_m *Client) GetRawTransaction(_a0 context.Context, _a1 string, _a2 string) (*defichain.Transaction, error) {
 	ret := _m.Called(_a0, _a1, _a2)
 
-	var r0 *bitcoin.Transaction
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) *bitcoin.Transaction); ok {
+	var r0 *defichain.Transaction
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *defichain.Transaction); ok {
 		r0 = rf(_a0, _a1, _a2)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*bitcoin.Transaction)
+			r0 = ret.Get(0).(*defichain.Transaction)
 		}
 	}
 

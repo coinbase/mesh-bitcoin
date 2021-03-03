@@ -5,7 +5,7 @@ package indexer
 import (
 	context "context"
 
-	bitcoin "github.com/coinbase/rosetta-defichain/defichain"
+	defichain "github.com/coinbase/rosetta-defichain/defichain"
 
 	mock "github.com/stretchr/testify/mock"
 
@@ -18,15 +18,15 @@ type Client struct {
 }
 
 // GetRawBlock provides a mock function with given fields: _a0, _a1
-func (_m *Client) GetRawBlock(_a0 context.Context, _a1 *types.PartialBlockIdentifier) (*bitcoin.Block, []string, error) {
+func (_m *Client) GetRawBlock(_a0 context.Context, _a1 *types.PartialBlockIdentifier) (*defichain.Block, []string, error) {
 	ret := _m.Called(_a0, _a1)
 
-	var r0 *bitcoin.Block
-	if rf, ok := ret.Get(0).(func(context.Context, *types.PartialBlockIdentifier) *bitcoin.Block); ok {
+	var r0 *defichain.Block
+	if rf, ok := ret.Get(0).(func(context.Context, *types.PartialBlockIdentifier) *defichain.Block); ok {
 		r0 = rf(_a0, _a1)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*bitcoin.Block)
+			r0 = ret.Get(0).(*defichain.Block)
 		}
 	}
 
@@ -50,15 +50,15 @@ func (_m *Client) GetRawBlock(_a0 context.Context, _a1 *types.PartialBlockIdenti
 }
 
 // GetRawTransaction provides a mock function with given fields: ctx, txid, blockhash
-func (_m *Client) GetRawTransaction(ctx context.Context, txid string, blockhash string) (*bitcoin.Transaction, error) {
+func (_m *Client) GetRawTransaction(ctx context.Context, txid string, blockhash string) (*defichain.Transaction, error) {
 	ret := _m.Called(ctx, txid, blockhash)
 
-	var r0 *bitcoin.Transaction
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) *bitcoin.Transaction); ok {
+	var r0 *defichain.Transaction
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *defichain.Transaction); ok {
 		r0 = rf(ctx, txid, blockhash)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*bitcoin.Transaction)
+			r0 = ret.Get(0).(*defichain.Transaction)
 		}
 	}
 
@@ -119,11 +119,11 @@ func (_m *Client) NetworkStatus(_a0 context.Context) (*types.NetworkStatusRespon
 }
 
 // ParseBlock provides a mock function with given fields: _a0, _a1, _a2
-func (_m *Client) ParseBlock(_a0 context.Context, _a1 *bitcoin.Block, _a2 map[string]*types.AccountCoin) (*types.Block, error) {
+func (_m *Client) ParseBlock(_a0 context.Context, _a1 *defichain.Block, _a2 map[string]*types.AccountCoin) (*types.Block, error) {
 	ret := _m.Called(_a0, _a1, _a2)
 
 	var r0 *types.Block
-	if rf, ok := ret.Get(0).(func(context.Context, *bitcoin.Block, map[string]*types.AccountCoin) *types.Block); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *defichain.Block, map[string]*types.AccountCoin) *types.Block); ok {
 		r0 = rf(_a0, _a1, _a2)
 	} else {
 		if ret.Get(0) != nil {
@@ -132,7 +132,7 @@ func (_m *Client) ParseBlock(_a0 context.Context, _a1 *bitcoin.Block, _a2 map[st
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *bitcoin.Block, map[string]*types.AccountCoin) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *defichain.Block, map[string]*types.AccountCoin) error); ok {
 		r1 = rf(_a0, _a1, _a2)
 	} else {
 		r1 = ret.Error(1)
