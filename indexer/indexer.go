@@ -911,7 +911,6 @@ func (i *Indexer) GetBlockTransaction(
 	blockIdentifier *types.BlockIdentifier,
 	transactionIdentifier *types.TransactionIdentifier,
 ) (*types.Transaction, error) {
-
 	// FIXME: delele
 	// tx, err := i.client.GetTransaction(ctx, transactionIdentifier.Hash)
 	fmt.Printf("requesting raw tx; tx-hash: %v; block-hash: %v;\n",
