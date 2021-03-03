@@ -29,8 +29,8 @@ import (
 )
 
 const (
-	bitcoindLogger       = "bitcoind"
-	bitcoindStdErrLogger = "bitcoind stderr"
+	defichaindLogger       = "defichaind"
+	defichaindStdErrLogger = "defichaind stderr"
 )
 
 func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
@@ -51,8 +51,8 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 			message = messages[1]
 		}
 
-		// Print debug log if from bitcoindLogger
-		if identifier == bitcoindLogger {
+		// Print debug log if from defichaindLogger
+		if identifier == defichaindLogger {
 			logger.Debugw(message)
 			continue
 		}
@@ -61,12 +61,12 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 	}
 }
 
-// StartBitcoind starts a bitcoind daemon in another goroutine
+// StartDefichaind starts a defichaind daemon in another goroutine
 // and logs the results to the console.
-func StartBitcoind(ctx context.Context, configPath string, g *errgroup.Group) error {
-	logger := utils.ExtractLogger(ctx, "bitcoind")
+func StartDefichaind(ctx context.Context, configPath string, g *errgroup.Group) error {
+	logger := utils.ExtractLogger(ctx, "defichaind")
 	cmd := exec.Command(
-		"/app/bitcoind",
+		"/app/defichaind",
 		fmt.Sprintf("--conf=%s", configPath),
 	) // #nosec G204
 
@@ -81,21 +81,21 @@ func StartBitcoind(ctx context.Context, configPath string, g *errgroup.Group) er
 	}
 
 	g.Go(func() error {
-		return logPipe(ctx, stdout, bitcoindLogger)
+		return logPipe(ctx, stdout, defichaindLogger)
 	})
 
 	g.Go(func() error {
-		return logPipe(ctx, stderr, bitcoindStdErrLogger)
+		return logPipe(ctx, stderr, defichaindStdErrLogger)
 	})
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("%w: unable to start bitcoind", err)
+		return fmt.Errorf("%w: unable to start defichaind", err)
 	}
 
 	g.Go(func() error {
 		<-ctx.Done()
 
-		logger.Warnw("sending interrupt to bitcoind")
+		logger.Warnw("sending interrupt to defichaind")
 		return cmd.Process.Signal(os.Interrupt)
 	})
 

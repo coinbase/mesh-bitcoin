@@ -197,7 +197,7 @@ func (s *ConstructionAPIService) ConstructionMetadata(
 	}
 
 	// Calculated the estimated fee in Satoshis
-	satoshisPerB := (feePerKB * float64(defichain.SatoshisInBitcoin)) / bytesInKb
+	satoshisPerB := (feePerKB * float64(defichain.SatoshisInDFI)) / bytesInKb
 	estimatedFee := satoshisPerB * options.EstimatedSize
 	suggestedFee := &types.Amount{
 		Value:    fmt.Sprintf("%d", int64(estimatedFee)),
