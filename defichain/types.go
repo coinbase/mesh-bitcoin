@@ -70,7 +70,7 @@ const (
 	// of any transaction hash in Defichain.
 	TransactionHashLength = 64
 
-	// NullData is returned by defichaind
+	// NullData is returned by defid
 	// as the ScriptPubKey.Type for OP_RETURN
 	// locking scripts.
 	NullData = "nulldata"

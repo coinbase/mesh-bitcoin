@@ -14,8 +14,8 @@
 
 # TODO: replace bitcoin node onto defichain node
 
-# Build defichaind
-FROM ubuntu:18.04 as defichaind-builder
+# Build defid
+FROM ubuntu:18.04 as defid-builder
 
 RUN mkdir -p /app \
   && chown -R nobody:nogroup /app
@@ -35,7 +35,7 @@ RUN cd bitcoin \
   && ./configure --disable-tests --without-miniupnpc --without-gui --with-incompatible-bdb --disable-hardening --disable-zmq --disable-bench --disable-wallet \
   && make
 
-RUN mv bitcoin/src/bitcoind /app/defichaind \
+RUN mv bitcoin/src/bitcoind /app/defid \
   && rm -rf bitcoin
 
 # Build Rosetta Server Components
@@ -82,8 +82,8 @@ RUN mkdir -p /app \
 
 WORKDIR /app
 
-# Copy binary from defichaind-builder
-COPY --from=defichaind-builder /app/defichaind /app/defichaind
+# Copy binary from defid-builder
+COPY --from=defid-builder /app/defid /app/defid
 
 # Copy binary from rosetta-builder
 COPY --from=rosetta-builder /app/* /app/

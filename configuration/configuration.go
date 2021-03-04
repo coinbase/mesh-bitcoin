@@ -80,8 +80,8 @@ const (
 	// persistent data.
 	DataDirectory = "/data"
 
-	defichaindPath = "defichaind"
-	indexerPath    = "indexer"
+	defidPath   = "defid"
+	indexerPath = "indexer"
 
 	// allFilePermissions specifies anyone can do anything
 	// to the file.
@@ -121,7 +121,7 @@ type Configuration struct {
 	ConfigPath             string
 	Pruning                *PruningConfiguration
 	IndexerPath            string
-	DefichaindPath         string
+	DefidPath              string
 	Compressors            []*encoder.CompressorEntry
 }
 
@@ -144,9 +144,9 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 			return nil, fmt.Errorf("%w: unable to create indexer path", err)
 		}
 
-		config.DefichaindPath = path.Join(baseDirectory, defichaindPath)
-		if err := ensurePathExists(config.DefichaindPath); err != nil {
-			return nil, fmt.Errorf("%w: unable to create defichaind path", err)
+		config.DefidPath = path.Join(baseDirectory, defidPath)
+		if err := ensurePathExists(config.DefidPath); err != nil {
+			return nil, fmt.Errorf("%w: unable to create defid path", err)
 		}
 	case Offline:
 		config.Mode = Offline

@@ -52,7 +52,7 @@ func (s *MempoolAPIService) Mempool(
 
 	mempoolTransactions, err := s.client.RawMempool(ctx)
 	if err != nil {
-		return nil, wrapErr(ErrDefichaind, err)
+		return nil, wrapErr(ErrDefid, err)
 	}
 
 	transactionIdentifiers := make([]*types.TransactionIdentifier, len(mempoolTransactions))

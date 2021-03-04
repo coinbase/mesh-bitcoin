@@ -777,7 +777,7 @@ func (s *ConstructionAPIService) ConstructionSubmit(
 
 	txHash, err := s.client.SendRawTransaction(ctx, signed.Transaction)
 	if err != nil {
-		return nil, wrapErr(ErrDefichaind, fmt.Errorf("%w unable to submit transaction", err))
+		return nil, wrapErr(ErrDefid, fmt.Errorf("%w unable to submit transaction", err))
 	}
 
 	return &types.TransactionIdentifierResponse{

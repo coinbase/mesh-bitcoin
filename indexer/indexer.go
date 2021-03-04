@@ -252,7 +252,7 @@ func Initialize(
 	return i, nil
 }
 
-// waitForNode returns once defichaind is ready to serve
+// waitForNode returns once defid is ready to serve
 // block queries.
 func (i *Indexer) waitForNode(ctx context.Context) error {
 	logger := utils.ExtractLogger(ctx, "indexer")
@@ -262,7 +262,7 @@ func (i *Indexer) waitForNode(ctx context.Context) error {
 			return nil
 		}
 
-		logger.Infow("waiting for defichaind...")
+		logger.Infow("waiting for defid...")
 		if err := sdkUtils.ContextSleep(ctx, nodeWaitSleep); err != nil {
 			return err
 		}
@@ -310,7 +310,7 @@ func (i *Indexer) Sync(ctx context.Context) error {
 	return syncer.Sync(ctx, startIndex, indexPlaceholder)
 }
 
-// Prune attempts to prune blocks in defichaind every
+// Prune attempts to prune blocks in defid every
 // pruneFrequency.
 func (i *Indexer) Prune(ctx context.Context) error {
 	logger := utils.ExtractLogger(ctx, "pruner")
@@ -338,16 +338,16 @@ func (i *Indexer) Prune(ctx context.Context) error {
 				continue
 			}
 
-			logger.Infow("attempting to prune defichaind", "prune height", pruneHeight)
+			logger.Infow("attempting to prune defid", "prune height", pruneHeight)
 			prunedHeight, err := i.client.PruneBlockchain(ctx, pruneHeight)
 			if err != nil {
 				logger.Warnw(
-					"unable to prune defichaind",
+					"unable to prune defid",
 					"prune height", pruneHeight,
 					"error", err,
 				)
 			} else {
-				logger.Infow("pruned defichaind", "prune height", prunedHeight)
+				logger.Infow("pruned defid", "prune height", prunedHeight)
 			}
 		}
 	}

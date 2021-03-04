@@ -142,7 +142,7 @@ func TestLoadConfiguration(t *testing.T) {
 				assert.Contains(t, err.Error(), test.err.Error())
 			} else {
 				test.cfg.IndexerPath = path.Join(newDir, "indexer")
-				test.cfg.DefichaindPath = path.Join(newDir, "defichaind")
+				test.cfg.DefidPath = path.Join(newDir, "defid")
 				assert.Equal(t, test.cfg, cfg)
 				assert.NoError(t, err)
 			}

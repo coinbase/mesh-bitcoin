@@ -100,7 +100,7 @@ const (
 	timeMultiplier = 1000
 
 	// rpc credentials are fixed in rosetta-defichain
-	// because we never expose access to the raw defichaind
+	// because we never expose access to the raw defid
 	// endpoints (that could be used perform an attack, like
 	// changing our peers).
 	rpcUsername = "rosetta"
@@ -116,7 +116,7 @@ var (
 	ErrJSONRPCError = errors.New("JSON-RPC error")
 )
 
-// Client is used to fetch blocks from defichaind and
+// Client is used to fetch blocks from defid and
 // to parse Defichain block data into Rosetta types.
 //
 // We opted not to use existing Defichain RPC libraries
@@ -167,8 +167,7 @@ func newHTTPClient(timeout time.Duration) *http.Client {
 	return httpClient
 }
 
-// NetworkStatus returns the *types.NetworkStatusResponse for
-// defichaind.
+// NetworkStatus returns the *types.NetworkStatusResponse for defid.
 func (b *Client) NetworkStatus(ctx context.Context) (*types.NetworkStatusResponse, error) {
 	rawBlock, err := b.getBlock(ctx, nil)
 	if err != nil {
@@ -269,8 +268,7 @@ func (b *Client) ParseBlock(
 	return rblock, nil
 }
 
-// SendRawTransaction submits a serialized transaction
-// to defichaind.
+// SendRawTransaction submits a serialized transaction to defid.
 func (b *Client) SendRawTransaction(
 	ctx context.Context,
 	serializedTx string,
@@ -713,7 +711,7 @@ func (b *Client) parseOutputTransactionOperation(
 		CoinAction: types.CoinCreated,
 	}
 
-	// If we are unable to parse the output account (i.e. defichaind
+	// If we are unable to parse the output account (i.e. defid
 	// returns a blank/nonstandard ScriptPubKey), we create an address as the
 	// concatenation of the tx hash and index.
 	//

@@ -25,7 +25,7 @@ var (
 		ErrUnimplemented,
 		ErrUnavailableOffline,
 		ErrNotReady,
-		ErrDefichaind,
+		ErrDefid,
 		ErrBlockNotFound,
 		ErrUnableToDerive,
 		ErrUnclearIntent,
@@ -57,19 +57,19 @@ var (
 		Message: "Endpoint unavailable offline",
 	}
 
-	// ErrNotReady is returned when defichaind is not
+	// ErrNotReady is returned when defid is not
 	// yet ready to serve queries.
 	ErrNotReady = &types.Error{
 		Code:      2, //nolint
-		Message:   "Defichaind is not ready",
+		Message:   "Defid is not ready",
 		Retriable: true,
 	}
 
-	// ErrDefichaind is returned when defichaind
+	// ErrDefid is returned when defid
 	// errors on a request.
-	ErrDefichaind = &types.Error{
+	ErrDefid = &types.Error{
 		Code:    3, //nolint
-		Message: "Defichaind error",
+		Message: "Defid error",
 	}
 
 	// ErrBlockNotFound is returned when a block

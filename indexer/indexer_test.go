@@ -73,7 +73,7 @@ func TestIndexer_Pruning(t *testing.T) {
 	i, err := Initialize(ctx, cancel, cfg, mockClient)
 	assert.NoError(t, err)
 
-	// Waiting for defichaind...
+	// Waiting for defid...
 	mockClient.On("NetworkStatus", ctx).Return(nil, errors.New("not ready")).Once()
 	mockClient.On("NetworkStatus", ctx).Return(&types.NetworkStatusResponse{}, nil).Once()
 

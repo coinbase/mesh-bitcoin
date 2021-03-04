@@ -87,7 +87,7 @@ func startOnlineDependencies(
 	)
 
 	g.Go(func() error {
-		return defichain.StartDefichaind(ctx, cfg.ConfigPath, g)
+		return defichain.StartDefid(ctx, cfg.ConfigPath, g)
 	})
 
 	i, err := indexer.Initialize(

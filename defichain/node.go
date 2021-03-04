@@ -29,8 +29,8 @@ import (
 )
 
 const (
-	defichaindLogger       = "defichaind"
-	defichaindStdErrLogger = "defichaind stderr"
+	defidLogger       = "defid"
+	defidStdErrLogger = "defid stderr"
 )
 
 func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
@@ -51,8 +51,8 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 			message = messages[1]
 		}
 
-		// Print debug log if from defichaindLogger
-		if identifier == defichaindLogger {
+		// Print debug log if from defidLogger
+		if identifier == defidLogger {
 			logger.Debugw(message)
 			continue
 		}
@@ -61,12 +61,12 @@ func logPipe(ctx context.Context, pipe io.ReadCloser, identifier string) error {
 	}
 }
 
-// StartDefichaind starts a defichaind daemon in another goroutine
+// StartDefid starts a defid daemon in another goroutine
 // and logs the results to the console.
-func StartDefichaind(ctx context.Context, configPath string, g *errgroup.Group) error {
-	logger := utils.ExtractLogger(ctx, "defichaind")
+func StartDefid(ctx context.Context, configPath string, g *errgroup.Group) error {
+	logger := utils.ExtractLogger(ctx, "defid")
 	cmd := exec.Command(
-		"/app/defichaind",
+		"/app/defid",
 		fmt.Sprintf("--conf=%s", configPath),
 	) // #nosec G204
 
@@ -81,21 +81,21 @@ func StartDefichaind(ctx context.Context, configPath string, g *errgroup.Group) 
 	}
 
 	g.Go(func() error {
-		return logPipe(ctx, stdout, defichaindLogger)
+		return logPipe(ctx, stdout, defidLogger)
 	})
 
 	g.Go(func() error {
-		return logPipe(ctx, stderr, defichaindStdErrLogger)
+		return logPipe(ctx, stderr, defidStdErrLogger)
 	})
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("%w: unable to start defichaind", err)
+		return fmt.Errorf("%w: unable to start defid", err)
 	}
 
 	g.Go(func() error {
 		<-ctx.Done()
 
-		logger.Warnw("sending interrupt to defichaind")
+		logger.Warnw("sending interrupt to defid")
 		return cmd.Process.Signal(os.Interrupt)
 	})
 
