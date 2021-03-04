@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO: replace Bitcoin node onto DeFichain node
-
 # Build defid
 FROM ubuntu:18.04 as defid-builder
 
@@ -25,18 +23,20 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y make gcc g++ autoconf autotools-dev bsdmainutils build-essential git libboost-all-dev \
   libcurl4-openssl-dev libdb++-dev libevent-dev libssl-dev libtool pkg-config python python-pip libzmq3-dev wget
 
-# VERSION: Bitcoin Core 0.20.1
-RUN git clone https://github.com/bitcoin/bitcoin \
-  && cd bitcoin \
-  && git checkout 7ff64311bee570874c4f0dfa18f518552188df08
+# VERSION: DeFichain 1.5.1
+RUN git clone  https://github.com/DeFiCh/ain \
+  && cd ain \
+  && git checkout 5bb08f5f750eed8ff3927c44889ed3031ae96d60
 
-RUN cd bitcoin \
+# TODO: 
+# ?! Update configure flags
+RUN cd ain \
   && ./autogen.sh \
-  && ./configure --disable-tests --without-miniupnpc --without-gui --with-incompatible-bdb --disable-hardening --disable-zmq --disable-bench --disable-wallet \
+  && ./configure --disable-tests --without-miniupnpc --without-gui --with-incompatible-bdb --disable-hardening --disable-zmq --disable-bench \
   && make
 
-RUN mv bitcoin/src/bitcoind /app/defid \
-  && rm -rf bitcoin
+RUN mv ain/src/defid /app/defid \
+  && rm -rf ain
 
 # Build Rosetta Server Components
 FROM ubuntu:18.04 as rosetta-builder
@@ -60,19 +60,19 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 # Use native remote build context to build in any directory
-COPY . src 
+COPY . src
 RUN cd src \
   && go build \
   && cd .. \
   && mv src/rosetta-defichain /app/rosetta-defichain \
   && mv src/assets/* /app \
-  && rm -rf src 
+  && rm -rf src
 
 ## Build Final Image
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-  apt-get install --no-install-recommends -y libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev && \
+  apt-get install --no-install-recommends -y libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev libdb++-dev && \
   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN mkdir -p /app \
