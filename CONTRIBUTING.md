@@ -1,4 +1,4 @@
-# Contributing to rosetta-bitcoin
+# Contributing to rosetta-defichain
 
 ## Code of Conduct
 
