@@ -44,7 +44,7 @@ const (
 	// Mainnet is the DeFichain Mainnet.
 	Mainnet string = "MAINNET"
 
-	// Testnet is the DeFichain Testnet3.
+	// Testnet is the DeFichain Testnet.
 	Testnet string = "TESTNET"
 
 	// mainnetConfigPath is the path of the DeFichain
@@ -60,8 +60,6 @@ const (
 	testnetTransactionDictionary = "/app/testnet-transaction.zstd"
 	mainnetTransactionDictionary = "/app/mainnet-transaction.zstd"
 
-	// mainnetRPCPort = 8332
-	// testnetRPCPort = 18332
 	mainnetRPCPort = 8554
 	testnetRPCPort = 18554
 
