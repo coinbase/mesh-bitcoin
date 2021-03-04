@@ -25,11 +25,6 @@ build:
 build-local:
 	docker build -t rosetta-defichain:latest .
 
-# TODO: remove after Bitcoin node replacement onto DeFichain node
-build-def:
-	docker build -t rosetta-defi:latest -f Dockerfile.def .
-	# docker build --no-cache -t rosetta-defi:latest -f Dockerfile.def .
-
 build-release:
 	# make sure to always set version with vX.X.X
 	docker build -t rosetta-defichain:$(version) .;
@@ -46,12 +41,6 @@ run-testnet-online:
 
 run-testnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-defichain:latest
-
-# TODO: remove after Bitcoin node replacement onto DeFichain node
-run-def:
-	# stop && delete prev container if exists
-	docker stop rosdef 2>/dev/null && docker rm rosdef 2>/dev/null; \
-	docker run --name rosdef -d --ulimit "nofile=${NOFILE}:${NOFILE}" -v "${PWD}/defichain-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8555:8555 -p 8554:8554 rosetta-defi:latest
 
 train:
 	./zstd-train.sh $(network) transaction $(data-directory)
