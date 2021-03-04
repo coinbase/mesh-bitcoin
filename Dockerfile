@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO: replace bitcoin node onto defichain node
+# TODO: replace Bitcoin node onto DeFichain node
 
 # Build defid
 FROM ubuntu:18.04 as defid-builder

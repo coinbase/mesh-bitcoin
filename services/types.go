@@ -23,7 +23,7 @@ import (
 
 const (
 	// NodeVersion is the version of
-	// Defichain we are using.
+	// DeFichain we are using.
 	NodeVersion = "0.20.1"
 
 	// HistoricalBalanceLookup indicates

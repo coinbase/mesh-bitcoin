@@ -25,7 +25,7 @@ build:
 build-local:
 	docker build -t rosetta-defichain:latest .
 
-# TODO: remove after bitcoin node replacement onto defichain node
+# TODO: remove after Bitcoin node replacement onto DeFichain node
 build-def:
 	docker build -t rosetta-defi:latest -f Dockerfile.def .
 	# docker build --no-cache -t rosetta-defi:latest -f Dockerfile.def .
@@ -47,7 +47,7 @@ run-testnet-online:
 run-testnet-offline:
 	docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-defichain:latest
 
-# TODO: remove after bitcoin node replacement onto defichain node
+# TODO: remove after Bitcoin node replacement onto DeFichain node
 run-def:
 	# stop && delete prev container if exists
 	docker stop rosdef 2>/dev/null && docker rm rosdef 2>/dev/null; \

@@ -35,7 +35,7 @@ import (
 
 const (
 	// genesisBlockIndex is the height of the block we consider to be the
-	// genesis block of the Defichain blockchain for polling
+	// genesis block of the DeFichain blockchain for polling
 	genesisBlockIndex = 0
 
 	// requestID is the JSON-RPC request ID we use for making requests.
@@ -96,7 +96,7 @@ const (
 	dialTimeout    = 5 * time.Second
 
 	// timeMultiplier is used to multiply the time
-	// returned in Defichain blocks to be milliseconds.
+	// returned in DeFichain blocks to be milliseconds.
 	timeMultiplier = 1000
 
 	// rpc credentials are fixed in rosetta-defichain
@@ -117,9 +117,9 @@ var (
 )
 
 // Client is used to fetch blocks from defid and
-// to parse Defichain block data into Rosetta types.
+// to parse DeFichain block data into Rosetta types.
 //
-// We opted not to use existing Defichain RPC libraries
+// We opted not to use existing DeFichain RPC libraries
 // because they don't allow providing context
 // in each request.
 type Client struct {
@@ -137,7 +137,7 @@ func LocalhostURL(rpcPort int) string {
 	return fmt.Sprintf("http://localhost:%d", rpcPort)
 }
 
-// NewClient creates a new Defichain client.
+// NewClient creates a new DeFichain client.
 func NewClient(
 	baseURL string,
 	genesisBlockIdentifier *types.BlockIdentifier,
@@ -246,7 +246,7 @@ func (b *Client) GetRawBlock(
 	return block, coins, nil
 }
 
-// ParseBlock returns a parsed Defichain block given a raw defichain
+// ParseBlock returns a parsed DeFichain block given a raw DeFichain
 // block and a map of transactions containing inputs.
 func (b *Client) ParseBlock(
 	ctx context.Context,
@@ -624,7 +624,7 @@ func (b *Client) parseTxOperations(
 	txOps := []*types.Operation{}
 
 	for networkIndex, input := range tx.Inputs {
-		if defichainIsCoinbaseInput(input, txIndex, networkIndex) {
+		if deFichainIsCoinbaseInput(input, txIndex, networkIndex) {
 			txOp, err := b.coinbaseTxOperation(input, int64(len(txOps)), int64(networkIndex))
 			if err != nil {
 				return nil, err
@@ -682,7 +682,7 @@ func (b *Client) parseTxOperations(
 }
 
 // parseOutputTransactionOperation returns the types.Operation for the specified
-// `defichainOutput` transaction output.
+// `deFichainOutput` transaction output.
 func (b *Client) parseOutputTransactionOperation(
 	output *Output,
 	txHash string,
@@ -753,17 +753,17 @@ func (b *Client) getInputTxHash(
 	txIndex int,
 	inputIndex int,
 ) (string, int64, bool) {
-	if defichainIsCoinbaseInput(input, txIndex, inputIndex) {
+	if deFichainIsCoinbaseInput(input, txIndex, inputIndex) {
 		return "", -1, false
 	}
 
 	return input.TxHash, input.Vout, true
 }
 
-// defichainIsCoinbaseInput returns whether the specified input is
+// deFichainIsCoinbaseInput returns whether the specified input is
 // the coinbase input. The coinbase input is always the first input in the first
 // transaction, and does not contain a previous transaction hash.
-func defichainIsCoinbaseInput(input *Input, txIndex int, inputIndex int) bool {
+func deFichainIsCoinbaseInput(input *Input, txIndex int, inputIndex int) bool {
 	return txIndex == 0 && inputIndex == 0 && input.TxHash == "" && input.Coinbase != ""
 }
 
@@ -822,7 +822,7 @@ func (b *Client) parseAmount(amount float64) (uint64, error) {
 	return uint64(atomicAmount), nil
 }
 
-// parseOutputAccount parses a defichainScriptPubKey and returns an account
+// parseOutputAccount parses a deFichainScriptPubKey and returns an account
 // identifier. The account identifier's address corresponds to the first
 // address encoded in the script.
 func (b *Client) parseOutputAccount(
@@ -858,7 +858,7 @@ func (b *Client) coinbaseTxOperation(
 	}, nil
 }
 
-// post makes an HTTP request to a Defichain node
+// post makes an HTTP request to a DeFichain node
 func (b *Client) post(
 	ctx context.Context,
 	method requestMethod,

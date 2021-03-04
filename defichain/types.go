@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	// Blockchain is Defichain.
+	// Blockchain is DeFichain.
 	Blockchain string = "defichain"
 
 	// MainnetNetwork is the value of the network
@@ -56,7 +56,7 @@ const (
 	CoinbaseOpType = "COINBASE"
 
 	// SuccessStatus is the status of all
-	// Defichain operations because anything
+	// DeFichain operations because anything
 	// on-chain is considered successful.
 	SuccessStatus = "SUCCESS"
 
@@ -67,7 +67,7 @@ const (
 	SkippedStatus = "SKIPPED"
 
 	// TransactionHashLength is the length
-	// of any transaction hash in Defichain.
+	// of any transaction hash in DeFichain.
 	TransactionHashLength = 64
 
 	// NullData is returned by defid
@@ -137,7 +137,7 @@ var (
 )
 
 // ScriptPubKey is a script placed on the output operations
-// of a Defichain transaction that must be satisfied to spend
+// of a DeFichain transaction that must be satisfied to spend
 // the output.
 type ScriptPubKey struct {
 	ASM          string   `json:"asm"`
@@ -148,14 +148,14 @@ type ScriptPubKey struct {
 }
 
 // ScriptSig is a script on the input operations of a
-// Defichain transaction that satisfies the ScriptPubKey
+// DeFichain transaction that satisfies the ScriptPubKey
 // on an output being spent.
 type ScriptSig struct {
 	ASM string `json:"asm"`
 	Hex string `json:"hex"`
 }
 
-// BlockchainInfo is information about the Defichain network.
+// BlockchainInfo is information about the DeFichain network.
 // This struct only contains the information necessary for
 // this implementation.
 type BlockchainInfo struct {
@@ -178,7 +178,7 @@ type PeerInfo struct {
 	SyncedHeaders  int64  `json:"synced_headers"`
 }
 
-// Block is a raw Defichain block (with verbosity == 2).
+// Block is a raw DeFichain block (with verbosity == 2).
 type Block struct {
 	Hash              string  `json:"hash"`
 	Height            int64   `json:"height"`
@@ -225,7 +225,7 @@ type BlockMetadata struct {
 	Difficulty float64 `json:"difficulty,omitempty"`
 }
 
-// Transaction is a raw Defichain transaction.
+// Transaction is a raw DeFichain transaction.
 type Transaction struct {
 	Hex      string `json:"hex"`
 	Hash     string `json:"txid"`
@@ -262,7 +262,7 @@ type TransactionMetadata struct {
 	Weight   int64 `json:"weight,omitempty"`
 }
 
-// Input is a raw input in a Defichain transaction.
+// Input is a raw input in a DeFichain transaction.
 type Input struct {
 	TxHash      string     `json:"txid"`
 	Vout        int64      `json:"vout"`
@@ -286,7 +286,7 @@ func (i Input) Metadata() (map[string]interface{}, error) {
 	return types.MarshalMap(m)
 }
 
-// Output is a raw output in a Defichain transaction.
+// Output is a raw output in a DeFichain transaction.
 type Output struct {
 	Value        float64       `json:"value"`
 	Index        int64         `json:"n"`
@@ -303,7 +303,7 @@ func (o Output) Metadata() (map[string]interface{}, error) {
 }
 
 // OperationMetadata is a collection of useful
-// metadata from Defichain inputs and outputs.
+// metadata from DeFichain inputs and outputs.
 type OperationMetadata struct {
 	// Coinbase Metadata
 	Coinbase string `json:"coinbase,omitempty"`

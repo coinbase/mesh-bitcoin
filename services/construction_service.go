@@ -37,7 +37,7 @@ import (
 )
 
 const (
-	// bytesInKB is the number of bytes in a KB. In Defichain, this is
+	// bytesInKB is the number of bytes in a KB. In DeFichain, this is
 	// considered to be 1000.
 	bytesInKb = float64(1000) // nolint:gomnd
 
