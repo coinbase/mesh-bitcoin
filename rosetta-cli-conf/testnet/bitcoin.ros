@@ -188,6 +188,13 @@ return_funds(10){
     });
 
     // We load the recipient address from an ENV.
+    // The reason we read from ENV variable is that the recipient address here
+    // is the sender's address from transfer workflow which is not accessible
+    // by this workflow.
+    // When setting the ENV variable make sure to set it so that it has double
+    // quotes around, otherwise it will give a parsing issue
+    // Set it using export RECIPIENT=\"<sender's address>\"
+    // Eventually we would want it to be automatically set by transfer workflow
     recipient_address = load_env("RECIPIENT");
     recipient = {"address": {{recipient_address}}};
 
