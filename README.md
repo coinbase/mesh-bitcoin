@@ -52,7 +52,16 @@ After cloning this repository, run:
 ```text
 make build-local
 ```
+#### From Source and Developing Locally
+After cloning this repository, run:
+```text
+make build-local-dev
+```
+Note: The purpose of this command is to build rosetta-bitcoin using a local sdk - this means you must have a local copy of rosetta-sdk-go in the same folder as the Dockefile and you must add the following to the bottom of your go.mod
 
+```text
+replace github.com/coinbase/rosetta-sdk-go v0.6.5 => ./rosetta-sdk-go
+```
 ### Run
 Running the following commands will start a Docker container in
 [detached mode](https://docs.docker.com/engine/reference/run/#detached--d) with
@@ -61,25 +70,25 @@ at port `8080`.
 
 #### Mainnet:Online
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MAXSYNC=256" -e "MODE=ONLINE" -e "NETWORK=MAINNET" -e "PORT=8080" -p 8080:8080 -p 8333:8333 rosetta-bitcoin:latest
 ```
 _If you cloned the repository, you can run `make run-mainnet-online`._
 
 #### Mainnet:Offline
 ```text
-docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+docker run -d --rm -e "MAXSYNC=256" -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
 ```
 _If you cloned the repository, you can run `make run-mainnet-offline`._
 
 #### Testnet:Online
 ```text
-docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
+docker run -d --rm --ulimit "nofile=100000:100000" -v "$(pwd)/bitcoin-data:/data" -e "MAXSYNC=256" -e "MODE=ONLINE" -e "NETWORK=TESTNET" -e "PORT=8080" -p 8080:8080 -p 18333:18333 rosetta-bitcoin:latest
 ```
 _If you cloned the repository, you can run `make run-testnet-online`._
 
 #### Testnet:Offline
 ```text
-docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
+docker run -d --rm -e "MAXSYNC=256" -e "MODE=OFFLINE" -e "NETWORK=TESTNET" -e "PORT=8081" -p 8081:8081 rosetta-bitcoin:latest
 ```
 _If you cloned the repository, you can run `make run-testnet-offline`._
 

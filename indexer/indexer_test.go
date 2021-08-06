@@ -62,6 +62,7 @@ func TestIndexer_Pruning(t *testing.T) {
 			Network:    bitcoin.MainnetNetwork,
 			Blockchain: bitcoin.Blockchain,
 		},
+		MaxSyncConcurrency:     256,
 		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
 		Pruning: &configuration.PruningConfiguration{
 			Frequency: 50 * time.Millisecond,
@@ -227,6 +228,7 @@ func TestIndexer_Transactions(t *testing.T) {
 			Network:    bitcoin.MainnetNetwork,
 			Blockchain: bitcoin.Blockchain,
 		},
+		MaxSyncConcurrency:     256,
 		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
 		IndexerPath:            newDir,
 	}
@@ -445,6 +447,7 @@ func TestIndexer_Reorg(t *testing.T) {
 			Network:    bitcoin.MainnetNetwork,
 			Blockchain: bitcoin.Blockchain,
 		},
+		MaxSyncConcurrency:     256,
 		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
 		IndexerPath:            newDir,
 	}
@@ -687,6 +690,7 @@ func TestIndexer_HeaderReorg(t *testing.T) {
 			Network:    bitcoin.MainnetNetwork,
 			Blockchain: bitcoin.Blockchain,
 		},
+		MaxSyncConcurrency:     256,
 		GenesisBlockIdentifier: bitcoin.MainnetGenesisBlockIdentifier,
 		IndexerPath:            newDir,
 	}

@@ -17,6 +17,7 @@ package configuration
 import (
 	"errors"
 	"fmt"
+	"github.com/coinbase/rosetta-sdk-go/syncer"
 	"os"
 	"path"
 	"strconv"
@@ -90,6 +91,10 @@ const (
 	// to determine mode.
 	ModeEnv = "MODE"
 
+	// MaxSyncConcurrency is an environment variable
+	// used to cap the syncer concurrency
+	MaxSyncConcurrency = "MAXSYNC"
+
 	// NetworkEnv is the environment variable
 	// read to determine network.
 	NetworkEnv = "NETWORK"
@@ -122,6 +127,7 @@ type Configuration struct {
 	IndexerPath            string
 	BitcoindPath           string
 	Compressors            []*encoder.CompressorEntry
+	MaxSyncConcurrency     int64
 }
 
 // LoadConfiguration attempts to create a new Configuration
@@ -132,6 +138,26 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		Frequency: pruneFrequency,
 		Depth:     pruneDepth,
 		MinHeight: minPruneHeight,
+	}
+
+	defaultMaxSync := false
+	maxSyncValue := os.Getenv(MaxSyncConcurrency)
+	if len(maxSyncValue) == 0 {
+		defaultMaxSync = true
+	}
+
+	parsedValue, err := strconv.ParseInt(maxSyncValue, 10, 64)
+	if !(err == nil || defaultMaxSync) {
+		return nil, fmt.Errorf("%w: unable to parse maxsync %s", err, maxSyncValue)
+	}
+
+	switch {
+	case defaultMaxSync:
+		config.MaxSyncConcurrency = syncer.DefaultMaxConcurrency
+	case parsedValue <= 0:
+		return nil, errors.New("syncer concurrency must be greater than zero")
+	default:
+		config.MaxSyncConcurrency = parsedValue
 	}
 
 	modeValue := Mode(os.Getenv(ModeEnv))
