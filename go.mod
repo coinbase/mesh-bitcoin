@@ -1,6 +1,6 @@
 module github.com/coinbase/rosetta-bitcoin
 
-go 1.13
+go 1.16
 
 require (
 	github.com/btcsuite/btcd v0.21.0-beta
