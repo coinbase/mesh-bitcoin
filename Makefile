@@ -50,7 +50,9 @@ train:
 	./zstd-train.sh $(network) transaction $(data-directory)
 
 check-comments:
+	${GOLINT_INSTALL}
 	${GOLINT_CMD} -set_exit_status ${GO_FOLDERS} .
+	go mod tidy
 
 lint: | check-comments
 	golangci-lint run --timeout 2m0s -v -E ${LINT_SETTINGS},gomnd
