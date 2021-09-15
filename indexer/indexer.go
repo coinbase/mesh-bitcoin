@@ -212,6 +212,7 @@ func Initialize(
 		bitcoin.OperationStatuses,
 		services.Errors,
 		nil,
+		new(asserter.Validations),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%w: unable to initialize asserter", err)
