@@ -56,15 +56,15 @@ lint: | check-comments
 	golangci-lint run --timeout 2m0s -v -E ${LINT_SETTINGS},gomnd
 
 add-license:
-    ${ADDLICENSE_INSTALL}
+	${ADDLICENSE_INSTALL}
 	${ADDLICENCE_SCRIPT} .
 
 check-license:
-    ${ADDLICENSE_INSTALL}
+	${ADDLICENSE_INSTALL}
 	${ADDLICENCE_SCRIPT} -check .
 
 shorten-lines:
-    ${GOLINES_INSTALL}
+	${GOLINES_INSTALL}
 	${GOLINES_CMD} -w --shorten-comments ${GO_FOLDERS} .
 
 format:
@@ -79,7 +79,7 @@ test:
 	${TEST_SCRIPT}
 
 coverage:
-    ${GOVERALLS_INSTALL}
+	${GOVERALLS_INSTALL}
 	if [ "${COVERALLS_TOKEN}" ]; then ${TEST_SCRIPT} -coverprofile=c.out -covermode=count; ${GOVERALLS_CMD} -coverprofile=c.out -repotoken ${COVERALLS_TOKEN}; fi
 
 coverage-local:
