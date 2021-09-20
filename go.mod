@@ -3,8 +3,8 @@ module github.com/coinbase/rosetta-bitcoin
 go 1.16
 
 require (
-	github.com/btcsuite/btcd v0.21.0-beta
-	github.com/btcsuite/btcutil v1.0.2
+	github.com/btcsuite/btcd v0.22.0-beta
+	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/coinbase/rosetta-sdk-go v0.7.0
 	github.com/dgraph-io/badger/v2 v2.2007.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
