@@ -231,4 +231,4 @@ _Please reach out on our [community](https://community.rosetta-api.org) if you w
 ## License
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
 
-© 2020 Coinbase
+© 2021 Coinbase
