@@ -26,7 +26,7 @@ information [here](https://rosetta-api.org).
 
 ## Features
 * Rosetta API implementation (both Data API and Construction API)
-* UTXO cache for all accounts (accessible using the Rosetta API `/account/balance` function)
+* UTXO cache for all accounts (accessible using the Rosetta `/account/balance` API)
 * Stateless, offline, curve-based transaction construction from any SegWit-Bech32 Address
 
 ## System Requirements
@@ -203,7 +203,7 @@ To validate `rosetta-bitcoin`, [install `rosetta-cli`](https://github.com/coinba
 * `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json` - This command validates that the Data API implementation is correct using the Bitcoin `mainnet` node. It also ensures that the implementation does not miss any balance-changing operations.
 
 ## Issues
-Interested in helping fix issues in this repository? You can find to-dos in the [Issues](https://github.com/coinbase/rosetta-bitcoin/issues) section with the `help wanted` tag. Be sure to reach out on our [community](https://community.rosetta-api.org) before you tackle anything on this list.
+Interested in helping fix issues in this repository? You can find to-dos in the [Issues](https://github.com/coinbase/rosetta-bitcoin/issues) section. Be sure to reach out on our [community](https://community.rosetta-api.org) before you tackle anything on this list.
 
 ## Development
 * `make deps` to install dependencies
