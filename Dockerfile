@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Build bitcoind
-FROM ubuntu:18.04 as bitcoind-builder
+FROM ubuntu:20.04 as bitcoind-builder
 
 RUN mkdir -p /app \
   && chown -R nobody:nogroup /app
@@ -37,7 +37,7 @@ RUN mv bitcoin/src/bitcoind /app/bitcoind \
   && rm -rf bitcoin
 
 # Build Rosetta Server Components
-FROM ubuntu:18.04 as rosetta-builder
+FROM ubuntu:20.04 as rosetta-builder
 
 RUN mkdir -p /app \
   && chown -R nobody:nogroup /app
@@ -67,7 +67,7 @@ RUN cd src \
   && rm -rf src 
 
 ## Build Final Image
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 RUN apt-get update && \
   apt-get install --no-install-recommends -y libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev && \
