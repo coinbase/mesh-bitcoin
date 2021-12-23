@@ -16,7 +16,7 @@
 
 <p align="center"><b>
 ROSETTA-BITCOIN IS CONSIDERED <a href="https://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha">ALPHA SOFTWARE</a>.
-USE AT YOUR OWN RISK! COINBASE ASSUMES NO RESPONSIBILITY NOR LIABILITY IF THERE IS A BUG IN THIS IMPLEMENTATION.
+USE AT YOUR OWN RISK! COINBASE ASSUMES NO RESPONSIBILITY OR LIABILITY IF THERE IS A BUG IN THIS IMPLEMENTATION.
 </b></p>
 
 ## Overview
@@ -26,7 +26,7 @@ information [here](https://rosetta-api.org).
 
 ## Features
 * Rosetta API implementation (both Data API and Construction API)
-* UTXO cache for all accounts (accessible using the Rosetta API `/account/balance` function)
+* UTXO cache for all accounts (accessible using the Rosetta `/account/balance` API)
 * Stateless, offline, curve-based transaction construction from any SegWit-Bech32 Address
 
 ## System Requirements
@@ -128,6 +128,7 @@ you can find a high-level overview of how everything fits together:
 
 #### Concurrent Block Syncing
 To speed up indexing, `rosetta-bitcoin` uses concurrent block processing with a "wait free" design (using [the channels function](https://golangdocs.com/channels-in-golang) instead of [the sleep function](https://pkg.go.dev/time#Sleep) to signal which threads are unblocked). This allows `rosetta-bitcoin` to fetch multiple inputs from disk while it waits for inputs that appeared in recently processed blocks to save to disk.
+
 <p align="center">
   <a href="https://www.rosetta-api.org">
     <img width="90%" alt="Concurrent Block Syncing" src="https://www.rosetta-api.org/img/rosetta_bitcoin_concurrent_block_synching.jpg">
@@ -143,6 +144,7 @@ and run one of the following commands:
 
 ## Issues
 Interested in helping fix issues in this repository? You can find to-dos in the [Issues](https://github.com/coinbase/rosetta-bitcoin/issues) section with the `help wanted` tag. Be sure to reach out on our [community](https://community.rosetta-api.org) before you tackle anything on this list.
+
 
 ## Development
 * `make deps` to install dependencies
