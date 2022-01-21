@@ -146,12 +146,12 @@ func defaultBadgerOptions(
 
 	// By default, we do not compress the table at all. Doing so can
 	// significantly increase memory usage.
-	opts.Compression = options.ZSTD
+	opts.Compression = options.None
 
 	// Load tables into memory and memory map value logs.
 	opts.TableLoadingMode = options.FileIO
 	opts.ValueLogLoadingMode = options.FileIO
-
+	
 	// Use an extended table size for larger commits.
 	opts.MaxTableSize = database.DefaultMaxTableSize
 
@@ -182,7 +182,7 @@ func defaultBadgerOptions(
 	// filters will be immediately discarded from the cache).
 	opts.LoadBloomsOnOpen = false
 
-	opts.IndexCacheSize = 1 << 30 // 1GB
+	opts.BlockSize = 1 << 20 // 1MB
 
 	return opts
 }
