@@ -38,7 +38,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-import _ "net/http/pprof"
 
 const (
 	// readTimeout is the maximum duration for reading the entire
@@ -122,10 +121,6 @@ func main() {
 	defer func() {
 		_ = loggerRaw.Sync()
 	}()
-
-	go func() {
-        log.Println(http.ListenAndServe(":6060", nil))
-    }()
 
 	ctx := context.Background()
 	ctx = ctxzap.ToContext(ctx, loggerRaw)
