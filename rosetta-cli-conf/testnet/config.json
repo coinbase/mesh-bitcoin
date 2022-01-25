@@ -11,6 +11,7 @@
   "tip_delay": 1800,
   "memory_limit_disabled": false,
   "compression_disabled": true,
+  "max_reorg_depth": 50,
   "construction": {
     "constructor_dsl_file": "bitcoin.ros",
     "end_conditions": {
