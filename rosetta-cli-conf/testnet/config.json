@@ -9,7 +9,7 @@
   "max_online_connections": 500,
   "max_sync_concurrency": 32,
   "tip_delay": 1800,
-  "memory_limit_disabled": true,
+  "memory_limit_disabled": false,
   "compression_disabled": true,
   "construction": {
     "constructor_dsl_file": "bitcoin.ros",
