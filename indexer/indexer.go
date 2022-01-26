@@ -184,6 +184,8 @@ func defaultBadgerOptions(
 
 	opts.BlockSize = 1 << 20 // 1MB
 
+	opts.NumCompactors = 2
+
 	return opts
 }
 
