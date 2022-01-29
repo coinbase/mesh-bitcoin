@@ -70,6 +70,8 @@ const (
 
 	// semaphoreWeight is the weight of each semaphore request.
 	semaphoreWeight = int64(1)
+
+	blockLeftShift = 20
 )
 
 var (
@@ -182,7 +184,7 @@ func defaultBadgerOptions(
 	// filters will be immediately discarded from the cache).
 	opts.LoadBloomsOnOpen = false
 
-	opts.BlockSize = 1 << 20 // 1MB
+	opts.BlockSize = 1 << blockLeftShift // 1MB
 
 	opts.NumCompactors = 2
 
