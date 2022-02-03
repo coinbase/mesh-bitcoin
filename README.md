@@ -16,7 +16,7 @@
 
 <p align="center"><b>
 ROSETTA-BITCOIN IS CONSIDERED <a href="https://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha">ALPHA SOFTWARE</a>.
-USE AT YOUR OWN RISK! COINBASE ASSUMES NO RESPONSIBILITY NOR LIABILITY IF THERE IS A BUG IN THIS IMPLEMENTATION.
+USE AT YOUR OWN RISK! COINBASE ASSUMES NO RESPONSIBILITY OR LIABILITY IF THERE IS A BUG IN THIS IMPLEMENTATION.
 </b></p>
 
 ## Overview
@@ -26,7 +26,7 @@ information [here](https://rosetta-api.org).
 
 ## Features
 * Rosetta API implementation (both Data API and Construction API)
-* UTXO cache for all accounts (accessible using the Rosetta API `/account/balance` function)
+* UTXO cache for all accounts (accessible using the Rosetta `/account/balance` API)
 * Stateless, offline, curve-based transaction construction from any SegWit-Bech32 Address
 
 ## System Requirements
@@ -115,43 +115,11 @@ _If you cloned the repository, you can run `make run-testnet-offline`._
 from [`rosetta-sdk-go`](https://github.com/coinbase/rosetta-sdk-go) instead
 of a new Bitcoin-specific implementation of packages of similar functionality. Below
 you can find a high-level overview of how everything fits together:
-```text
-                               +------------------------------------------------------------------+
-                               |                                                                  |
-                               |                 +--------------------------------------+         |
-                               |                 |                                      |         |
-                               |                 |                 indexer              |         |
-                               |                 |                                      |         |
-                               |                 | +--------+                           |         |
-                               +-------------------+ pruner <----------+                |         |
-                               |                 | +--------+          |                |         |
-                         +-----v----+            |                     |                |         |
-                         | bitcoind |            |              +------+--------+       |         |
-                         +-----+----+            |     +--------> block_storage <----+  |         |
-                               |                 |     |        +---------------+    |  |         |
-                               |                 | +---+----+                        |  |         |
-                               +-------------------> syncer |                        |  |         |
-                                                 | +---+----+                        |  |         |
-                                                 |     |        +--------------+     |  |         |
-                                                 |     +--------> coin_storage |     |  |         |
-                                                 |              +------^-------+     |  |         |
-                                                 |                     |             |  |         |
-                                                 +--------------------------------------+         |
-                                                                       |             |            |
-+-------------------------------------------------------------------------------------------+     |
-|                                                                      |             |      |     |
-|         +------------------------------------------------------------+             |      |     |
-|         |                                                                          |      |     |
-|         |                     +---------------------+-----------------------+------+      |     |
-|         |                     |                     |                       |             |     |
-| +-------+---------+   +-------+---------+   +-------+-------+   +-----------+----------+  |     |
-| | account_service |   | network_service |   | block_service |   | construction_service +--------+
-| +-----------------+   +-----------------+   +---------------+   +----------------------+  |
-|                                                                                           |
-|                                         server                                            |
-|                                                                                           |
-+-------------------------------------------------------------------------------------------+
-```
+<p align="center">
+  <a href="https://www.rosetta-api.org">
+    <img width="90%" alt="Architecture" src="https://www.rosetta-api.org/img/rosetta_bitcoin_architecture.jpg">
+  </a>
+</p>
 
 ### Optimizations
 * Automatically prune bitcoind while indexing blocks
@@ -160,41 +128,12 @@ you can find a high-level overview of how everything fits together:
 
 #### Concurrent Block Syncing
 To speed up indexing, `rosetta-bitcoin` uses concurrent block processing with a "wait free" design (using [the channels function](https://golangdocs.com/channels-in-golang) instead of [the sleep function](https://pkg.go.dev/time#Sleep) to signal which threads are unblocked). This allows `rosetta-bitcoin` to fetch multiple inputs from disk while it waits for inputs that appeared in recently processed blocks to save to disk.
-```text
-                                                   +----------+
-                                                   | bitcoind |
-                                                   +-----+----+
-                                                         |
-                                                         |
-          +---------+ fetch block data / unpopulated txs |
-          | block 1 <------------------------------------+
-          +---------+                                    |
-       +-->   tx 1  |                                    |
-       |  +---------+                                    |
-       |  |   tx 2  |                                    |
-       |  +----+----+                                    |
-       |       |                                         |
-       |       |           +---------+                   |
-       |       |           | block 2 <-------------------+
-       |       |           +---------+                   |
-       |       +----------->   tx 3  +--+                |
-       |                   +---------+  |                |
-       +------------------->   tx 4  |  |                |
-       |                   +---------+  |                |
-       |                                |                |
-       | retrieve previously synced     |   +---------+  |
-       | inputs needed for future       |   | block 3 <--+
-       | blocks while waiting for       |   +---------+
-       | populated blocks to save to    +--->   tx 5  |
-       | disk                               +---------+
-       +------------------------------------>   tx 6  |
-       |                                    +---------+
-       |
-       |
-+------+--------+
-|  coin_storage |
-+---------------+
-```
+
+<p align="center">
+  <a href="https://www.rosetta-api.org">
+    <img width="90%" alt="Concurrent Block Syncing" src="https://www.rosetta-api.org/img/rosetta_bitcoin_concurrent_block_synching.jpg">
+  </a>
+</p>
 
 ## Testing with rosetta-cli
 To validate `rosetta-bitcoin`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install)
