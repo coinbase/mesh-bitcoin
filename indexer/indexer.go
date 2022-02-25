@@ -150,7 +150,7 @@ func defaultBadgerOptions(
 	// significantly increase memory usage.
 	opts.Compression = options.None
 
-	// Load tables into memory and memory map value logs.
+	// Load tables into standard I/O value logs.
 	opts.TableLoadingMode = options.FileIO
 	opts.ValueLogLoadingMode = options.FileIO
 	
@@ -184,8 +184,11 @@ func defaultBadgerOptions(
 	// filters will be immediately discarded from the cache).
 	opts.LoadBloomsOnOpen = false
 
+	// BlockSize sets the size of any block in SSTable. SSTable is divided into multiple blocks
+	// internally. We set each block to 1MB.
 	opts.BlockSize = 1 << blockLeftShift // 1MB
 
+	// NumCompactors sets the number of compaction workers to run concurrently.
 	opts.NumCompactors = 2
 
 	return opts
