@@ -6,10 +6,12 @@
   "data_directory": "cli-data",
   "http_timeout": 300,
   "max_retries": 5,
-  "max_online_connections": 1000,
+  "max_online_connections": 250,
+  "max_sync_concurrency": 16,
   "tip_delay": 1800,
-  "memory_limit_disabled": true,
+  "memory_limit_disabled": false,
   "compression_disabled": true,
+  "max_reorg_depth": 50,
   "construction": {
     "constructor_dsl_file": "bitcoin.ros",
     "end_conditions": {

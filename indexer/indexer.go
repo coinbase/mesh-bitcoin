@@ -70,6 +70,8 @@ const (
 
 	// semaphoreWeight is the weight of each semaphore request.
 	semaphoreWeight = int64(1)
+
+	blockLeftShift = 20
 )
 
 var (
@@ -148,10 +150,10 @@ func defaultBadgerOptions(
 	// significantly increase memory usage.
 	opts.Compression = options.None
 
-	// Load tables into memory and memory map value logs.
-	opts.TableLoadingMode = options.MemoryMap
-	opts.ValueLogLoadingMode = options.MemoryMap
-
+	// Load tables into standard I/O value logs.
+	opts.TableLoadingMode = options.FileIO
+	opts.ValueLogLoadingMode = options.FileIO
+	
 	// Use an extended table size for larger commits.
 	opts.MaxTableSize = database.DefaultMaxTableSize
 
@@ -181,6 +183,13 @@ func defaultBadgerOptions(
 	// a waste to enable with a limited index cache size (as many of the loaded bloom
 	// filters will be immediately discarded from the cache).
 	opts.LoadBloomsOnOpen = false
+
+	// BlockSize sets the size of any block in SSTable. SSTable is divided into multiple blocks
+	// internally. We set each block to 1MB.
+	opts.BlockSize = 1 << blockLeftShift // 1MB
+
+	// NumCompactors sets the number of compaction workers to run concurrently.
+	opts.NumCompactors = 2
 
 	return opts
 }
