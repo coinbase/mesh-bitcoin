@@ -193,89 +193,7 @@ make run-testnet-offline
   </a>
 </p>
 
-<<<<<<< HEAD
-### Optimizations
-
-* Automatically prune bitcoind while indexing blocks
-* Reduce sync time with concurrent block indexing
-* Use [Zstandard compression](https://github.com/facebook/zstd) to reduce the size of data stored on disk without needing to write a manual byte-level encoding
-
-#### Concurrent Block Syncing
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
->>>>>>> b225834 (Update README file content)
-To speed up indexing, `rosetta-bitcoin` uses concurrent block processing with a "wait free" design (using [the channels function](https://golangdocs.com/channels-in-golang) instead of [the sleep function](https://pkg.go.dev/time#Sleep) to signal which threads are unblocked). This allows `rosetta-bitcoin` to fetch multiple inputs from disk while it waits for inputs that appeared in recently processed blocks to save to disk.
-
-<p align="center">
-  <a href="https://www.rosetta-api.org">
-    <img width="90%" alt="Concurrent Block Syncing" src="https://www.rosetta-api.org/img/rosetta_bitcoin_concurrent_block_synching.jpg">
-  </a>
-</p>
-=======
-<<<<<<< HEAD
-To speed up indexing, `rosetta-bitcoin` uses concurrent block processing
-with a "wait free" design (using channels instead of sleeps to signal
-which threads are unblocked). This allows `rosetta-bitcoin` to fetch
-multiple inputs from disk while it waits for inputs that appeared
-in recently processed blocks to save to disk.
-```text
-                                                   +----------+
-                                                   | bitcoind |
-                                                   +-----+----+
-                                                         |
-                                                         |
-          +---------+ fetch block data / unpopulated txs |
-          | block 1 <------------------------------------+
-          +---------+                                    |
-       +-->   tx 1  |                                    |
-       |  +---------+                                    |
-       |  |   tx 2  |                                    |
-       |  +----+----+                                    |
-       |       |                                         |
-       |       |           +---------+                   |
-       |       |           | block 2 <-------------------+
-       |       |           +---------+                   |
-       |       +----------->   tx 3  +--+                |
-       |                   +---------+  |                |
-       +------------------->   tx 4  |  |                |
-       |                   +---------+  |                |
-       |                                |                |
-       | retrieve previously synced     |   +---------+  |
-       | inputs needed for future       |   | block 3 <--+
-       | blocks while waiting for       |   +---------+
-       | populated blocks to save to    +--->   tx 5  |
-       | disk                               +---------+
-       +------------------------------------>   tx 6  |
-       |                                    +---------+
-       |
-       |
-+------+--------+
-|  coin_storage |
-+---------------+
-```
->>>>>>> 9148112 (Update README file content)
-
-## Testing with rosetta-cli
-
-To validate `rosetta-bitcoin`, [install `rosetta-cli`](https://github.com/coinbase/rosetta-cli#install) and run one of the following commands:
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates that the Data API information in the `testnet` network is correct. It also ensures that the implementation does not miss any balance-changing operations.
-* `rosetta-cli check:construction --configuration-file rosetta-cli-conf/testnet/config.json` - This command validates the blockchain’s construction, signing, and broadcasting.
-* `rosetta-cli check:data --configuration-file rosetta-cli-conf/mainnet/config.json` - This command validates that the Data API information in the `mainnet` network is correct. It also ensures that the implementation does not miss any balance-changing operations.
-
-## Issues
-
-<<<<<<< HEAD
-Interested in helping fix issues in this repository? You can find to-dos in the [Issues](https://github.com/coinbase/rosetta-bitcoin/issues) section with the `help wanted` tag. Be sure to reach out on our [community](https://community.rosetta-api.org) before you tackle anything on this list.
-=======
-<<<<<<< HEAD
-=======
-_Please reach out on our [community](https://community.rosetta-api.org) if you want to tackle anything on this list!_
-=======
-=======
 ### Concurrent Block Syncing
->>>>>>> 35a880d (Add additional sections and formatting update to README)
 
 To speed up indexing, `rosetta-bitcoin` uses concurrent block processing with a "wait free" design (using [the channels function](https://golangdocs.com/channels-in-golang) instead of [the sleep function](https://pkg.go.dev/time#Sleep) to signal which threads are unblocked). This allows `rosetta-bitcoin` to fetch multiple inputs from disk while it waits for inputs that appeared in recently processed blocks to save to disk.
 
@@ -299,20 +217,9 @@ Read the [How to Test your Rosetta Implementation](https://www.rosetta-api.org/d
 
 You may contribute to the `rosetta-bitcoin` project in various ways:
 
-<<<<<<< HEAD
-=======
->>>>>>> f96f966 (Update README file)
->>>>>>> 7713a64 (Update README file)
-=======
->>>>>>> b65cc77 (Merge conflict resolution in README)
->>>>>>> 67bbd87 (Update README file content)
->>>>>>> 9148112 (Update README file content)
->>>>>>> b225834 (Update README file content)
-=======
 * [Asking Questions](CONTRIBUTING.md/#asking-questions)
 * [Providing Feedback](CONTRIBUTING.md/#providing-feedback)
 * [Reporting Issues](CONTRIBUTING.md/#reporting-issues)
->>>>>>> 35a880d (Add additional sections and formatting update to README)
 
 Read our [Contributing](CONTRIBUTING.MD) documentation for more information.
 
@@ -348,20 +255,4 @@ You can find community implementations for a variety of blockchains in the [rose
 ## License
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 © 2022 Coinbase
-=======
-<<<<<<< HEAD
-© 2021 Coinbase
-=======
-<<<<<<< HEAD
-© 2021 Coinbase
-=======
-© 2022 Coinbase
->>>>>>> 67bbd87 (Update README file content)
->>>>>>> 9148112 (Update README file content)
->>>>>>> b225834 (Update README file content)
-=======
-© 2022 Coinbase
->>>>>>> 35a880d (Add additional sections and formatting update to README)
