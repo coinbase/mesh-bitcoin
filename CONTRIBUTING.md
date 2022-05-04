@@ -22,7 +22,7 @@ You can report issues by submitting bug reports, feature requests, or pull reque
 
 #### Bug Reports
 
-* EBefore filing a bug report, ensure that your issue [has not already been reported][1]. It may already be fixed!
+Before filing a bug report, ensure that your issue [has not already been reported][1]. It may already be fixed!
 
 If your bug hasn’t been fixed, follow these steps to file a bug report:
 

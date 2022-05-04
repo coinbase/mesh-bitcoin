@@ -16,9 +16,8 @@
 
 <p align="center"><b>
 ROSETTA-BITCOIN IS CONSIDERED <a href="https://en.wikipedia.org/wiki/Software_release_life_cycle#Alpha">ALPHA SOFTWARE</a>.
-USE AT YOUR OWN RISK. 
-This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
-</b></p>
+USE AT YOUR OWN RISK.</b><p>
+<p align="center">This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).</p>
 
 ## Overview
 
@@ -45,7 +44,7 @@ The `rosetta-bitcoin` implementation has been tested on an [AWS c5.2xlarge insta
 
 1. Adjust your [network settings](#network-settings) to the recommended connections.
 2. Install and run Docker as directed in the [Deployment](#deployment) section below.
-3. Run the [Testnet:Online](#testnetonline) command.
+3. Run the [`Testnet:Online`](#testnetonline) command.
 
 ### Network Settings
 
@@ -84,7 +83,7 @@ While working on improvements to this repository, we recommend that you use thes
 
 As specified in the [Rosetta API Principles](https://www.rosetta-api.org/docs/automated_deployment.html), all Rosetta implementations must be deployable via Docker and support running via either an [`online` or `offline` mode](https://www.rosetta-api.org/docs/node_deployment.html#multiple-modes).
 
-**YOU MUST INSTALL DOCKER FOR THESE INSTRUCTIONS TO WORK. [DOWNLOAD DOCKER](https://www.docker.com/get-started)**
+**YOU MUST [INSTALL DOCKER](https://www.docker.com/get-started) FOR THESE INSTRUCTIONS TO WORK.**
 
 #### Image Installation
 
@@ -134,11 +133,11 @@ Running these commands will start a Docker container in [detached mode](https://
 
 `PORT` is the port to use for Rosetta.
 
-###### Examples
+##### Command Examples
 
 You can run these commands from the command line. If you cloned the repository, you can use the `make` commands shown after the examples.
 
-**Mainnet:Online**
+###### **Mainnet:Online**
 
 Uncloned repo:
 ```text
@@ -149,7 +148,7 @@ Cloned repo:
 make run-mainnet-online
 ```
 
-**Mainnet:Offline**
+###### **Mainnet:Offline**
 
 Uncloned repo:
 ```text
@@ -158,8 +157,9 @@ docker run -d --rm -e "MODE=OFFLINE" -e "NETWORK=MAINNET" -e "PORT=8081" -p 8081
 Cloned repo:
 ```text
 make run-mainnet-offline
+```
 
-**Testnet:Online**
+###### **Testnet:Online**
 
 Uncloned repo:
 ```text
@@ -171,7 +171,7 @@ Cloned repo:
 make run-testnet-online
 ```
 
-[**Testnet:Offline**]{#testnetoffline}
+###### **Testnet:Offline**
 
 Uncloned repo:
 ```text
@@ -248,7 +248,7 @@ Our documentation is divided into the following sections:
 * [rosetta-specifications](https://github.com/coinbase/rosetta-specifications) — Much of the SDK code is generated from this repository.
 * [rosetta-cli](https://github.com/coinbase/rosetta-ecosystem) — Use the `rosetta-cli` tool to test your Rosetta API implementation. The tool also provides the ability to look up block contents and account balances.
 
-### Reference Implementations
+### Sample Implementations
 
 You can find community implementations for a variety of blockchains in the [rosetta-ecosystem](https://github.com/coinbase/rosetta-ecosystem) repository, and in the [ecosystem category](https://community.rosetta-api.org/c/ecosystem) of our community site. 
 
