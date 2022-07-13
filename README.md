@@ -112,26 +112,20 @@ Running these commands will start a Docker container in [detached mode](https://
 
 ##### Required Arguments
 
-**`MODE`** 
-**Type:** `String`
-**Options:** `ONLINE`, `OFFLINE`
-**Default:** None
+**`MODE`** - Determines whether Rosetta can make outbound connections.
+- **Type:** `String`
+- **Options:** `ONLINE`, `OFFLINE`
+- **Default:** None
 
-`MODE` determines if Rosetta can make outbound connections.
+**`NETWORK`** - The Ethereum network to launch or communicate with.
+- **Type:** `String`
+- **Options:** `MAINNET`, `ROPSTEN`, `RINKEBY`, `GOERLI` or `TESTNET`
+- **Default:** `ROPSTEN`, but only for backwards compatibility if you use `TESTNET`
 
-**`NETWORK`**
-**Type:** `String`
-**Options:** `MAINNET`, `ROPSTEN`, `RINKEBY`, `GOERLI` or `TESTNET`
-**Default:** `ROPSTEN`, but only for backwards compatibility if you use `TESTNET`
-
-`NETWORK` is the Ethereum network to launch or communicate with.
-
-**`PORT`**
-**Type:** `Integer`
-**Options:** `8080`, any compatible port number
-**Default:** None
-
-`PORT` is the port to use for Rosetta.
+**`PORT`** - The port to use for Rosetta.
+- **Type:** `Integer`
+- **Options:** `8080`, any compatible port number.
+- **Default:** None
 
 ##### Command Examples
 
