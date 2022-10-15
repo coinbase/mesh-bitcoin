@@ -48,6 +48,9 @@ const (
 	// Testnet is Bitcoin Testnet3.
 	Testnet string = "TESTNET"
 
+	// Regtest is Bitcoin Regtest
+	Regtest string = "REGTEST"
+
 	// mainnetConfigPath is the path of the Bitcoin
 	// configuration file for mainnet.
 	mainnetConfigPath = "/app/bitcoin-mainnet.conf"
@@ -56,6 +59,10 @@ const (
 	// configuration file for testnet.
 	testnetConfigPath = "/app/bitcoin-testnet.conf"
 
+	// regtestConfigPath is the path of the Bitcoin
+	// configuration file for testnet.
+	regtestConfigPath = "/app/bitcoin-regtest.conf"
+
 	// Zstandard compression dictionaries
 	transactionNamespace         = "transaction"
 	testnetTransactionDictionary = "/app/testnet-transaction.zstd"
@@ -63,6 +70,7 @@ const (
 
 	mainnetRPCPort = 8332
 	testnetRPCPort = 18332
+	regtestRPCPort = 18443
 
 	// min prune depth is 288:
 	// https://github.com/bitcoin/bitcoin/blob/ad2952d17a2af419a04256b10b53c7377f826a27/src/validation.h#L84
@@ -183,6 +191,22 @@ func LoadConfiguration(baseDirectory string) (*Configuration, error) {
 		config.Currency = bitcoin.TestnetCurrency
 		config.ConfigPath = testnetConfigPath
 		config.RPCPort = testnetRPCPort
+		config.Compressors = []*encoder.CompressorEntry{
+			{
+				Namespace:      transactionNamespace,
+				DictionaryPath: testnetTransactionDictionary,
+			},
+		}
+	case Regtest:
+		config.Network = &types.NetworkIdentifier{
+			Blockchain: bitcoin.Blockchain,
+			Network:    bitcoin.RegtestNetwork,
+		}
+		config.GenesisBlockIdentifier = bitcoin.TestnetGenesisBlockIdentifier
+		config.Params = bitcoin.RegtestParams
+		config.Currency = bitcoin.TestnetCurrency
+		config.ConfigPath = regtestConfigPath
+		config.RPCPort = regtestRPCPort
 		config.Compressors = []*encoder.CompressorEntry{
 			{
 				Namespace:      transactionNamespace,
