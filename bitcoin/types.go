@@ -34,6 +34,10 @@ const (
 	// in TestnetNetworkIdentifier.
 	TestnetNetwork string = "Testnet3"
 
+	// RegtestNetwork is the value of the network
+	// in RegtestNetworkIdentifier.
+	RegtestNetwork string = "Regtest"
+
 	// Decimals is the decimals value
 	// used in Currency.
 	Decimals = 8
@@ -107,6 +111,9 @@ var (
 
 	// TestnetParams are the params for testnet.
 	TestnetParams = &chaincfg.TestNet3Params
+
+	// RegtestParams are the params for regtest.
+	RegtestParams = &chaincfg.RegressionNetParams
 
 	// TestnetCurrency is the *types.Currency for testnet.
 	TestnetCurrency = &types.Currency{
