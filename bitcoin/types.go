@@ -89,6 +89,24 @@ const (
 	P2PKHScriptPubkeySize = 25               // P2PKH size
 )
 
+// CreateMainNetParams is a function to override default mainnet settings with address prefixes
+func CreateMainNetParams() (*chaincfg.Params) {
+	params := &chaincfg.MainNetParams
+	params.PubKeyHashAddrID = 0
+	params.ScriptHashAddrID = 5
+	params.Bech32HRPSegwit = "bc"
+	return params
+}
+
+// CreateTestNet3Params is a function to override default testnet settings with address prefixes
+func CreateTestNet3Params() (*chaincfg.Params) {
+	params := &chaincfg.TestNet3Params
+	params.PubKeyHashAddrID = 111
+	params.ScriptHashAddrID = 196
+	params.Bech32HRPSegwit = "tb"
+	return params
+}
+
 var (
 	// MainnetGenesisBlockIdentifier is the genesis block for mainnet.
 	MainnetGenesisBlockIdentifier = &types.BlockIdentifier{
@@ -96,21 +114,21 @@ var (
 	}
 
 	// MainnetParams are the params for mainnet.
-	MainnetParams = &chaincfg.MainNetParams
+	MainnetParams = CreateMainNetParams()
 
 	// MainnetCurrency is the *types.Currency for mainnet.
 	MainnetCurrency = &types.Currency{
 		Symbol:   "BTC",
 		Decimals: Decimals,
 	}
-
+	
 	// TestnetGenesisBlockIdentifier is the genesis block for testnet.
 	TestnetGenesisBlockIdentifier = &types.BlockIdentifier{
 		Hash: "000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943",
 	}
 
 	// TestnetParams are the params for testnet.
-	TestnetParams = &chaincfg.TestNet3Params
+	TestnetParams = CreateTestNet3Params()
 
 	// RegtestParams are the params for regtest.
 	RegtestParams = &chaincfg.RegressionNetParams
@@ -120,7 +138,7 @@ var (
 		Symbol:   "tBTC",
 		Decimals: Decimals,
 	}
-
+	
 	// OperationTypes are all supported operation.Types.
 	OperationTypes = []string{
 		InputOpType,
