@@ -773,11 +773,13 @@ func (b *Client) parseAmount(amount float64) (uint64, error) {
 func (b *Client) parseOutputAccount(
 	scriptPubKey *ScriptPubKey,
 ) *types.AccountIdentifier {
-	if len(scriptPubKey.Addresses) != 1 {
-		return &types.AccountIdentifier{Address: scriptPubKey.Hex}
+	if scriptPubKey.Address == "" {
+		if len(scriptPubKey.Addresses) != 1 {
+			return &types.AccountIdentifier{Address: scriptPubKey.Hex}
+		}
+		return &types.AccountIdentifier{Address: scriptPubKey.Addresses[0]}
 	}
-
-	return &types.AccountIdentifier{Address: scriptPubKey.Addresses[0]}
+	return &types.AccountIdentifier{Address: scriptPubKey.Address}
 }
 
 // coinbaseTxOperation constructs a transaction operation for the coinbase input.

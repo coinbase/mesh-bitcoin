@@ -150,6 +150,7 @@ type ScriptPubKey struct {
 	RequiredSigs int64    `json:"reqSigs,omitempty"`
 	Type         string   `json:"type"`
 	Addresses    []string `json:"addresses,omitempty"`
+	Address      string   `json:"address,omitempty"`
 }
 
 // ScriptSig is a script on the input operations of a
