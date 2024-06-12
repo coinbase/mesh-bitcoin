@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"strconv"
@@ -835,11 +835,15 @@ func (b *Client) post(
 	if err != nil {
 		return fmt.Errorf("%w: error posting to rpc-api", err)
 	}
-	defer res.Body.Close()
-
+	defer func() {
+		if cerr := res.Body.Close(); cerr != nil {
+			// Log or handle the error
+			fmt.Printf("Failed to close response body: %v", cerr)
+		}
+	}()
 	// We expect JSON-RPC responses to return `200 OK` statuses
 	if res.StatusCode != http.StatusOK {
-		val, _ := ioutil.ReadAll(res.Body)
+		val, _ := io.ReadAll(res.Body)
 		return fmt.Errorf("invalid response: %s %s", res.Status, string(val))
 	}
 
