@@ -1,8 +1,3 @@
-<p align="center">
-  <a href="https://www.mesh-api.org">
-    <img width="90%" alt="Mesh" src="https://www.mesh-api.org/img/mesh_header.png">
-  </a>
-</p>
 <h3 align="center">
    Mesh Bitcoin
 </h3>
@@ -23,7 +18,7 @@ USE AT YOUR OWN RISK.</b><p>
 
 The `mesh-bitcoin` repository provides a reference implementation of the Mesh API for Bitcoin in Golang. This repository was created for developers of Bitcoin-like (a.k.a., UTXO) blockchains, who may find it easier to fork this reference implementation than write one from scratch.
 
-[Mesh](https://www.mesh-api.org/docs/welcome.html) is an open-source specification and set of tools that makes integrating with blockchains simpler, faster, and more reliable. The Mesh API is specified in the [OpenAPI 3.0 format](https://www.openapis.org).
+[Mesh](https://docs.cdp.coinbase.com/mesh/docs/welcome/) is an open-source specification and set of tools that makes integrating with blockchains simpler, faster, and more reliable. The Mesh API is specified in the [OpenAPI 3.0 format](https://www.openapis.org).
 
 Requests and responses can be crafted with auto-generated code using [Swagger Codegen](https://swagger.io/tools/swagger-codegen) or [OpenAPI Generator](https://openapi-generator.tech), are human-readable (easy to debug and understand), and can be used in servers and browsers.
 
@@ -78,12 +73,6 @@ While working on improvements to this repository, we recommend that you use thes
 * `make salus` to check for security concerns
 * `make build-local` to build a Docker image from the local context
 * `make coverage-local` to generate a coverage report
-
-### Deployment
-
-As specified in the [Mesh API Principles](https://www.mesh-api.org/docs/automated_deployment.html), all Mesh implementations must be deployable via Docker and support running via either an [`online` or `offline` mode](https://www.mesh-api.org/docs/node_deployment.html#multiple-modes).
-
-**YOU MUST [INSTALL DOCKER](https://www.docker.com/get-started) FOR THESE INSTRUCTIONS TO WORK.**
 
 #### Image Installation
 
@@ -181,21 +170,9 @@ make run-testnet-offline
 
 `mesh-bitcoin` uses the `syncer`, `storage`, `parser`, and `server` package from [`mesh-sdk-go`](https://github.com/coinbase/mesh-sdk-go) instead of a new Bitcoin-specific implementation of packages of similar functionality. Below you can find an overview of how everything fits together:
 
-<p align="center">
-  <a href="https://www.mesh-api.org">
-    <img width="90%" alt="Architecture" src="https://www.mesh-api.org/img/mesh_bitcoin_architecture.jpg">
-  </a>
-</p>
-
 ### Concurrent Block Syncing
 
 To speed up indexing, `mesh-bitcoin` uses concurrent block processing with a "wait free" design (using [the channels function](https://golangdocs.com/channels-in-golang) instead of [the sleep function](https://pkg.go.dev/time#Sleep) to signal which threads are unblocked). This allows `mesh-bitcoin` to fetch multiple inputs from disk while it waits for inputs that appeared in recently processed blocks to save to disk.
-
-<p align="center">
-  <a href="https://www.mesh-api.org">
-    <img width="90%" alt="Concurrent Block Syncing" src="https://www.mesh-api.org/img/mesh_bitcoin_concurrent_block_synching.jpg">
-  </a>
-</p>
 
 ## Test the Implementation with the mesh-cli Tool
 
@@ -205,7 +182,7 @@ To validate `mesh-bitcoin`, [install `mesh-cli`](https://github.com/coinbase/mes
 * `mesh-cli check:construction --configuration-file mesh-cli-conf/testnet/config.json` - This command validates the blockchain’s construction, signing, and broadcasting.
 * `mesh-cli check:data --configuration-file mesh-cli-conf/mainnet/config.json` - This command validates that the Data API information in the `mainnet` network is correct. It also ensures that the implementation does not miss any balance-changing operations.
 
-Read the [How to Test your Mesh Implementation](https://www.mesh-api.org/docs/mesh_test.html) documentation for additional details.
+Read the [How to Test your Mesh Implementation](https://docs.cdp.coinbase.com/mesh/docs/mesh-test/) documentation for additional details.
 
 ## Contributing
 
@@ -217,24 +194,14 @@ You may contribute to the `mesh-bitcoin` project in various ways:
 
 Read our [Contributing](CONTRIBUTING.MD) documentation for more information.
 
-When you've finished an implementation for a blockchain, share your work in the [ecosystem category of the community site](https://community.mesh-api.org/c/ecosystem). Platforms looking for implementations for certain blockchains will be monitoring this section of the website for high-quality implementations they can use for integration. Make sure that your implementation meets the [expectations](https://www.mesh-api.org/docs/node_deployment.html) of any implementation.
-
 You can also find community implementations for a variety of blockchains in the [mesh-ecosystem](https://github.com/coinbase/mesh-ecosystem) repository.
 
 ## Documentation
 
-You can find the Mesh API documentation at [mesh-api.org](https://www.mesh-api.org/docs/welcome.html). 
+You can find the Mesh API documentation [here](https://docs.cdp.coinbase.com/mesh/docs/welcome/). 
 
-Check out the [Getting Started](https://www.mesh-api.org/docs/getting_started.html) section to start diving into Mesh. 
+Check out the [Getting Started](https://docs.cdp.coinbase.com/mesh/docs/getting-started/) section to start diving into Mesh. 
 
-Our documentation is divided into the following sections:
-
-* [Product Overview](https://www.mesh-api.org/docs/welcome.html)
-* [Getting Started](https://www.mesh-api.org/docs/getting_started.html)
-* [Mesh API Spec](https://www.mesh-api.org/docs/Reference.html)
-* [Testing](https://www.mesh-api.org/docs/mesh_cli.html)
-* [Best Practices](https://www.mesh-api.org/docs/node_deployment.html)
-* [Repositories](https://www.mesh-api.org/docs/mesh_specifications.html)
 
 ## Related Projects
 
@@ -244,7 +211,7 @@ Our documentation is divided into the following sections:
 
 ### Sample Implementations
 
-You can find community implementations for a variety of blockchains in the [mesh-ecosystem](https://github.com/coinbase/mesh-ecosystem) repository, and in the [ecosystem category](https://community.mesh-api.org/c/ecosystem) of our community site. 
+You can find community implementations for a variety of blockchains in the [mesh-ecosystem](https://github.com/coinbase/mesh-ecosystem) repository. 
 
 ## License
 This project is available open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
