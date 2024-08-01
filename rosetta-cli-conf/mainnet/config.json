@@ -8,10 +8,10 @@
   "max_retries": 5,
   "max_online_connections": 1000,
   "tip_delay": 1800,
-  "compression_disabled": true,
-  "memory_limit_disabled": true,
+  "compression_disabled": false,
+  "memory_limit_disabled": false,
   "data": {
-    "initial_balance_fetch_disabled": true,
+    "initial_balance_fetch_disabled": false,
     "end_conditions": {
       "reconciliation_coverage": {
         "coverage": 0.95,
